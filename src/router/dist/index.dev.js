@@ -43,27 +43,17 @@ _vue["default"].use(_vueRouter["default"]);
 
 var routes = [{
   path: "/",
-  redirect: "/cc",
   component: _Home["default"],
+  name: 'home',
   meta: {
     title: "首页",
-    icon: "el-icon-user"
-  },
-  alwaysShow: true,
-  children: [{
-    path: "/cc",
-    component: function component() {
-      return Promise.resolve().then(function () {
-        return _interopRequireWildcard(require("../views/About.vue"));
-      });
-    },
-    meta: {
-      title: "cc"
-    }
-  }]
+    icon: "el-icon-user",
+    affix: true
+  }
 }, {
   path: "/about",
   name: "About",
+  redirect: "/tr",
   component: function component() {
     return Promise.resolve().then(function () {
       return _interopRequireWildcard(require("../views/About.vue"));
@@ -73,7 +63,218 @@ var routes = [{
     title: "关于我们",
     icon: "el-icon-heavy-rain"
   },
-  hidden: true
+  children: [{
+    path: "/bb",
+    name: "bb",
+    redirect: "/tr",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "bb"
+    },
+    children: [{
+      path: "/tr",
+      name: "tr",
+      component: function component() {
+        return Promise.resolve().then(function () {
+          return _interopRequireWildcard(require("../views/About.vue"));
+        });
+      },
+      meta: {
+        title: "tr"
+      }
+    }, {
+      path: "pa",
+      name: "pa",
+      component: function component() {
+        return Promise.resolve().then(function () {
+          return _interopRequireWildcard(require("../views/About.vue"));
+        });
+      },
+      meta: {
+        title: "pa"
+      }
+    }]
+  }, {
+    path: "/dd",
+    name: "dd",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "dd"
+    }
+  }, {
+    path: "/ee",
+    name: "ee",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "ee"
+    }
+  }, {
+    path: "/hh",
+    name: "hh",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "hh"
+    }
+  }, {
+    path: "/ii",
+    name: "ii",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "ii"
+    }
+  }, {
+    path: "/gg",
+    name: "gg",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "gg"
+    }
+  }, {
+    path: "/vv",
+    name: "vv",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "vv"
+    }
+  }, {
+    path: "/mm",
+    name: "mm",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "mm"
+    }
+  }, {
+    path: "/nn",
+    name: "nn",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "nn"
+    }
+  }, {
+    path: "/zz",
+    name: "zz",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "zz"
+    }
+  }, {
+    path: "/pp",
+    name: "pp",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "pp"
+    }
+  }, {
+    path: "/oo",
+    name: "oo",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "oo"
+    }
+  }, {
+    path: "/tt",
+    name: "tt",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "tt"
+    }
+  }, {
+    path: "/ww",
+    name: "ww",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "ww"
+    }
+  }, {
+    path: "/qq",
+    name: "qq",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "qq"
+    }
+  }, {
+    path: "/ss",
+    name: "ss",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "ss"
+    }
+  }, {
+    path: "/cc",
+    name: "cc",
+    component: function component() {
+      return Promise.resolve().then(function () {
+        return _interopRequireWildcard(require("../views/About.vue"));
+      });
+    },
+    meta: {
+      title: "cc"
+    }
+  }]
 }, {
   path: "/contact",
   name: "About",

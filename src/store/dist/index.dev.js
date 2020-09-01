@@ -21,6 +21,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+console.log(tagsView);
+
 _vue["default"].use(_vuex["default"]); // https://webpack.js.org/guides/dependency-management/#requirecontext
 // const modulesFiles = require.context('./modules', true, /\.js$/)
 // // you do not need `import app from './modules/app'`
@@ -37,7 +39,7 @@ _vue["default"].use(_vuex["default"]); // https://webpack.js.org/guides/dependen
 var store = new _vuex["default"].Store({
   // modules,
   modules: {
-    tagsView: tagsView
+    tagsView: tagsView["default"]
   },
   getters: _getters["default"]
 });

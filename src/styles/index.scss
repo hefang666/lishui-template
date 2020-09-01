@@ -190,3 +190,28 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+@font-face {
+  font-family: 'iconfont';  /* project id 2039660 */
+  src: url('//at.alicdn.com/t/font_2039660_v565zt2zwx.eot');
+  src: url('//at.alicdn.com/t/font_2039660_v565zt2zwx.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_2039660_v565zt2zwx.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_2039660_v565zt2zwx.woff') format('woff'),
+  url('//at.alicdn.com/t/font_2039660_v565zt2zwx.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_2039660_v565zt2zwx.svg#iconfont') format('svg');
+}
+
+[class^=snt-icon] {
+  font-family: "iconfont";
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+}
+
+.snt-icon-quanping:after {
+  content: '\e607';
+}
+.snt-icon-list:after {
+  content: '\e613';
+}

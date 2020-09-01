@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.native.prevent="handleScroll">
+  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container">
     <slot />
   </el-scrollbar>
 </template>
@@ -71,6 +71,29 @@ export default {
           $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
         }
       }
+    },
+    tagScrollDis (position) {
+      const $container = this.$refs.scrollContainer.$el
+      const $containerWidth = $container.offsetWidth
+      const $scrollWrapper = this.scrollWrapper
+      const tagList = this.$parent.$refs.tag
+      let tagBoxWidth = 0;
+
+      // 计算tag的总宽度
+      tagList.forEach((tag)=> {
+        tagBoxWidth += tag.$el.offsetWidth
+      })
+
+      if(tagBoxWidth <= $containerWidth) return false;
+
+      // 计算移动的位置
+      if(position == 'left') {
+        $scrollWrapper.scrollLeft = ($scrollWrapper.scrollLeft - $containerWidth) < 0 ? 0 : $scrollWrapper.scrollLeft - $containerWidth
+      } else {
+        var distance = tagBoxWidth - $containerWidth - $scrollWrapper.scrollLeft
+        distance = distance >=  $containerWidth ? $containerWidth : distance
+        $scrollWrapper.scrollLeft+=distance
+      }
     }
   }
 }
@@ -85,9 +108,11 @@ export default {
   ::v-deep {
     .el-scrollbar__bar {
       bottom: 0px;
+      display: none;
     }
     .el-scrollbar__wrap {
-      height: 49px;
+      height: 24px;
+      overflow-x: hidden;
     }
   }
 }
