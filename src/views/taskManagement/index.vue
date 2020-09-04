@@ -1,15 +1,15 @@
 <template>
-	<div class="task_management_pages">
+	<div class="task_management_pages button-box">
 		<div class="header-box">
 			<div class="header-left">
 				<el-button-group>
-					<el-button type="primary" plain>全部</el-button>
-					<el-button type="primary" plain>待完成</el-button>
-					<el-button type="primary" plain>进行中</el-button>
-					<el-button type="primary" plain>已超期</el-button>
-					<el-button type="primary" plain>暂停</el-button>
-					<el-button type="primary" plain>已完成</el-button>
-					<el-button type="primary" plain>已关闭</el-button>
+					<el-button type="primary" plain :class="searchName == 'all' ? 'item-active' : ''" @click="searchConditional('all')">全部</el-button>
+					<el-button type="primary" plain :class="searchName == 'toBeCompleted' ? 'item-active' : ''" @click="searchConditional('toBeCompleted')">待完成</el-button>
+					<el-button type="primary" plain :class="searchName == 'haveInHand' ? 'item-active' : ''" @click="searchConditional('haveInHand')">进行中</el-button>
+					<el-button type="primary" plain :class="searchName == 'overdue' ? 'item-active' : ''" @click="searchConditional('overdue')">已超期</el-button>
+					<el-button type="primary" plain :class="searchName == 'suspend' ? 'item-active' : ''" @click="searchConditional('suspend')">暂停</el-button>
+					<el-button type="primary" plain :class="searchName == 'completed' ? 'item-active' : ''" @click="searchConditional('completed')">已完成</el-button>
+					<el-button type="primary" plain :class="searchName == 'closed' ? 'item-active' : ''" @click="searchConditional('closed')">已关闭</el-button>
 				</el-button-group>
 				<div class="search-box">
 					<el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="searchWords"></el-input>
@@ -30,7 +30,7 @@
 				<el-table
 					ref="multipleTable"
 					:data="tableData"
-					:row-class-name="tableRowClassName"
+					:stripe="true"
 					tooltip-effect="dark"
 					height="830"
 					style="width: 100%"
@@ -48,77 +48,31 @@
 					<el-table-column prop="missionStatus" label="任务状态" show-overflow-tooltip></el-table-column>
 					<el-table-column label="操作" min-width="200">
 						<template slot-scope="scope">
-							<el-button type="text" class="operate-button operate-button-active" disabled="disabled" @click="handleEdit(scope.$index, scope.row)">关闭</el-button>
-							<el-button type="text" class="operate-button" @click="handleDelete(scope.$index, scope.row)">完成</el-button>
+							<el-button type="text" class="operate-button operate-button-active" disabled="disabled" @click="handleClose(scope.$index, scope.row)">关闭</el-button>
+							<el-button type="text" class="operate-button" @click="handleComplete(scope.$index, scope.row)">完成</el-button>
 							<el-button type="text" class="operate-button" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-							<el-button type="text" class="operate-button" @click="handleDelete(scope.$index, scope.row)">查看</el-button>
+							<el-button type="text" class="operate-button" @click="handleSee(scope.$index, scope.row)">查看</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</div>
-			<div class="pages-box">
-				<el-pagination
-					@size-change="handleSizeChange"
-					@current-change="handleCurrentChange"
-					:current-page="currentPage"
-					:page-sizes="[10, 20, 30, 50]"
-					:page-size="100"
-					:pager-count="5"
-					layout="sizes, prev, pager, next, jumper, total"
-					:total="400"
-				></el-pagination>
-			</div>
+			<page :pageData="[30, 40, 50, 100]" :total="400" @changePageSize="changePageSize" @changeCurrentPage="changeCurrentPage"></page>
 		</div>
 
 		<!-- 新增任务弹框 -->
-		<el-dialog title="新增任务" :visible.sync="dialogAdd">
-			<el-form :model="addForm">
-				<div class="list-item">
-					<el-form-item class="has-two-item" label="任务名称：" label-width="120px" prop="taskName" :rules="[{ required: true, message: '任务名称不能为空' }]">
-						<el-input type="taskName" v-model="addForm.taskName" autocomplete="off"></el-input>
-					</el-form-item>
-					<el-form-item class="has-two-item" label="任务负责人：" label-width="120px" prop="inCharge" :rules="[{ required: true, message: '任务负责人不能为空' }]">
-						<el-input type="inCharge" v-model="addForm.inCharge" autocomplete="off"></el-input>
-					</el-form-item>
-				</div>
-				<div class="list-item">
-					<el-form-item class="has-two-item" label="开始时间：" label-width="120px" prop="estimatedStartTime" :rules="[{ required: true, message: '开始时间不能为空' }]">
-						<el-input type="estimatedStartTime" v-model="addForm.estimatedStartTime" autocomplete="off"></el-input>
-					</el-form-item>
-					<el-form-item
-						class="has-two-item"
-						label="预计结束时间："
-						label-width="120px"
-						prop="estimatedEndTime"
-						:rules="[{ required: true, message: '预计结束时间不能为空' }]"
-					>
-						<el-input type="estimatedEndTime" v-model="addForm.estimatedEndTime" autocomplete="off"></el-input>
-					</el-form-item>
-				</div>
-				<div class="list-item">
-					<el-form-item class="has-two-item" label="任务类别：" label-width="120px" prop="taskType" :rules="[{ required: true, message: '任务类别不能为空', trigger: 'change' }]">
-						<el-select v-model="addForm.taskType" placeholder="请选择任务类别">
-							<el-option label="普通任务" value="puTong"></el-option>
-							<el-option label="临时任务" value="liShi"></el-option>
-						</el-select>
-					</el-form-item>
-					<el-form-item class="has-two-item" label="巡检片区：" label-width="120px" prop="inspectionArea" :rules="[{ required: true, message: '巡检片区不能为空' }]">
-						<el-input type="inspectionArea" v-model="addForm.inspectionArea" autocomplete="off"></el-input>
-					</el-form-item>
-				</div>
-				<el-form-item label="备注：" label-width="120px"><el-input type="textarea" :rows="3" v-model="addForm.remarks" autocomplete="off"></el-input></el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click="closeAdd">取 消</el-button>
-				<el-button type="primary" @click="closeAdd">确 定</el-button>
-			</div>
-		</el-dialog>
+		<add-task :dialogAdd="dialogAdd" @getAddData="getAddData"></add-task>
 	</div>
 </template>
 
 <script>
+import AddTask from './addTask/AddTask.vue';
+import Page from '@/components/page/Page.vue';
 export default {
 	name: 'TaskManagement',
+	components: {
+		AddTask,
+		Page
+	},
 	data() {
 		return {
 			searchWords: '',
@@ -196,52 +150,68 @@ export default {
 			currentPage: 1,
 
 			// 是否显示新增弹窗
-			dialogAdd: true,
-			addForm: {
-				taskName: '',
-				inCharge: '',
-				estimatedStartTime: '',
-				estimatedEndTime: '',
-				taskType: '',
-				inspectionArea: '',
-				remarks: ''
-			}
+			dialogAdd: false,
+			
+			// 当前选中的筛选类别名字（顶部左侧的input组 all）
+			searchName: 'all'
 		};
 	},
 	methods: {
 		handleSelectionChange(val) {
 			this.multipleSelection = val;
 		},
+		
+		// 关闭任务
+		handleClose(index, row) {
+			console.log(index, row);
+		},
+		
+		// 查看任务
+		handleSee(index,row) {
+			console.log(index, row);
+		},
+		
+		// 完成任务
+		handleComplete(index, row) {
+			console.log(index, row);
+		},
+		
+		// 修改任务
 		handleEdit(index, row) {
 			console.log(index, row);
 		},
-		handleDelete(index, row) {
-			console.log(index, row);
+		
+		
+		// 按状态筛选则并为input添加样式
+		searchConditional(name) {
+			this.searchName = name
 		},
-		tableRowClassName() {},
-		handleSizeChange(val) {
-			console.log(`每页 ${val} 条`);
-		},
-		handleCurrentChange(val) {
-			console.log(`当前页: ${val}`);
-		},
-
 		// 打开新增弹窗
 		addTask() {
 			this.dialogAdd = true;
 		},
 		// 关闭新增弹窗
-		closeAdd() {
-			this.dialogAdd = false;
+		getAddData(data) {
+			console.log(data);
+			this.dialogAdd = data.dialogAdd;
+		},
+		
+		// 获取从分页传过来的每页多少条数据
+		changePageSize(data) {
+			console.log(data);
+		},
+		// 获取从分页传过来的当前页数
+		changeCurrentPage(data) {
+			console.log(data);
 		}
 	},
 	mounted() {}
 };
 </script>
-<style lang="scss">
-@import '../../styles/element-ui-new.scss';
-</style>
+
 <style scoped lang="scss">
+@import '../../styles/element-ui-new.scss';
+@import '../../styles/input-public.scss';
 
 .task_management_pages {
 	padding: 10px;
@@ -295,22 +265,5 @@ export default {
 			margin-top: 10px;
 		}
 	}
-
-	.list-item {
-		display: flex;
-		justify-content: space-between;
-
-		.has-two-item {
-			width: 46%;
-		}
-	}
-
-	// .has-two-item:nth-of-type(odd) {
-	// 	float: left;
-	// }
-
-	// .has-two-item:nth-of-type(even) {
-	// 	float: right;
-	// }
 }
 </style>
