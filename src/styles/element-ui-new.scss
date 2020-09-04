@@ -114,7 +114,6 @@
 	}
 }
 
-
 /*
 * 	重写table样式
 */
@@ -199,7 +198,8 @@
 */
 .page-box {
 	/deep/ .el-pagination.is-background .el-pager li:not(.disabled):hover {
-		color: #4b77be;
+		color: #FFFFFF;
+		background: #4b77be;
 	}
 	/deep/ .el-pagination.is-background .el-pager li:not(.disabled).active {
 		background-color: #4b77be;
