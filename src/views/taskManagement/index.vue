@@ -3,17 +3,76 @@
 		<div class="header-box">
 			<div class="header-left">
 				<el-button-group>
-					<el-button type="primary" plain :class="searchName == 'all' ? 'item-active' : ''" @click="searchConditional('all')">全部</el-button>
-					<el-button type="primary" plain :class="searchName == 'toBeCompleted' ? 'item-active' : ''" @click="searchConditional('toBeCompleted')">待完成</el-button>
-					<el-button type="primary" plain :class="searchName == 'haveInHand' ? 'item-active' : ''" @click="searchConditional('haveInHand')">进行中</el-button>
-					<el-button type="primary" plain :class="searchName == 'overdue' ? 'item-active' : ''" @click="searchConditional('overdue')">已超期</el-button>
-					<el-button type="primary" plain :class="searchName == 'suspend' ? 'item-active' : ''" @click="searchConditional('suspend')">暂停</el-button>
-					<el-button type="primary" plain :class="searchName == 'completed' ? 'item-active' : ''" @click="searchConditional('completed')">已完成</el-button>
-					<el-button type="primary" plain :class="searchName == 'closed' ? 'item-active' : ''" @click="searchConditional('closed')">已关闭</el-button>
+					<el-button
+					  type="primary"
+					  plain
+					  :class="searchName == 'all' ? 'item-active' : ''"
+						@click="searchConditional('all')"
+					>
+						全部
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'toBeCompleted' ? 'item-active' : ''"
+						@click="searchConditional('toBeCompleted')"
+					>
+						待完成
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'haveInHand' ? 'item-active' : ''"
+						@click="searchConditional('haveInHand')"
+					>
+						进行中
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'haveInHand' ? 'item-active' : ''"
+						@click="searchConditional('haveInHand')"
+					>
+						已超期
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'haveInHand' ? 'item-active' : ''"
+						@click="searchConditional('haveInHand')"
+					>
+						暂停
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'haveInHand' ? 'item-active' : ''"
+						@click="searchConditional('haveInHand')"
+					>
+						已完成
+					</el-button>
+					<el-button
+					  type="primary"
+						plain
+						:class="searchName == 'haveInHand' ? 'item-active' : ''"
+						@click="searchConditional('haveInHand')"
+					>
+						已关闭
+					</el-button>
 				</el-button-group>
 				<div class="search-box">
-					<el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="searchWords"></el-input>
-					<el-button class="search-button" type="primary">查询</el-button>
+					<el-input
+					  placeholder="请输入内容"
+						prefix-icon="el-icon-search"
+						v-model="searchWords"
+					>
+				  </el-input>
+					<el-button
+					  class="search-button"
+						type="primary"
+					>
+						查询
+					</el-button>
 				</div>
 			</div>
 			<div class="header-right">

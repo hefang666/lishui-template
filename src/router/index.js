@@ -38,7 +38,7 @@ const routes = [
   },
   {
     path: '/plan',
-    component: () => import('@/views/taskManagement'),
+    component: () => import('@/views/planManagement'),
     name: 'plan',
     meta: {title: '计划管理', icon: 'el-icon-user'}
   }
