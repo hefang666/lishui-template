@@ -1,6 +1,6 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Home from "@/views/Home/index.vue";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '@/views/Home/index.vue';
 
 Vue.use(VueRouter);
 
@@ -25,21 +25,27 @@ Vue.use(VueRouter);
  */
 const routes = [
   {
-    path: "/",
+    path: '/',
     component: Home,
-    name: "home",
-    meta: { title: "首页", icon: "el-icon-user", affix: true }
+    name: 'home',
+    meta: {title: '首页', icon: 'el-icon-user', affix: true}
   },
   {
-    path: "/plan",
-    component: () => import("@/views/taskManagement"),
-    name: "plan",
-    meta: { title: "任务管理", icon: "el-icon-user" },
+    path: '/task',
+    component: () => import('@/views/taskManagement'),
+    name: 'task',
+    meta: {title: '任务管理', icon: 'el-icon-user'},
+  },
+  {
+    path: '/plan',
+    component: () => import('@/views/taskManagement'),
+    name: 'plan',
+    meta: {title: '计划管理', icon: 'el-icon-user'}
   }
 ];
 
 const router = new VueRouter({
   routes
 });
-export { routes };
+export {routes};
 export default router;
