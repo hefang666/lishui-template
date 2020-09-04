@@ -5,9 +5,6 @@ import store from "./store";
 import Element from "element-ui";
 import "./styles/element-variables.scss";
 import "@/styles/index.scss";
-// import ol from 'openlayers';
-
-// Vue.prototype.$ol = ol;
 
 Vue.use(Element);
 

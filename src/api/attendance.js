@@ -1,9 +1,9 @@
-// 考勤管理模块api
+// 考勤管理模块
 import request from '@/utils/request'
 
 export function GetPageListAsync(params) {
     return request({
-        url: '/api/services/app/AppVersionService/AddAppVersion', // 考勤列表
+        url: '/api/WorkRecordService/GetPageListAsync', // 考勤列表
         method: 'POST',
         data: params
     })

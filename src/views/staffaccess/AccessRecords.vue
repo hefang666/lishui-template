@@ -6,7 +6,7 @@
     <div class="m-grid-right-col">
       <el-form ref="form" :inline="true" :model="form" class="fixFrom">
         <el-form-item label="姓名：">
-          <el-input v-model="form.UserName" placeholder="请输入姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入姓名" prefix-icon="el-icon-search"/>
         </el-form-item>
         <el-button type="primary" @click="getList">查询</el-button>
       </el-form>
@@ -138,7 +138,7 @@ export default {
         UserName:_this.form.UserName
       }
       GetPageListAsync(para).then(res => {
-        console.log(res)
+        console.log(res,1111)
       })
     },
     // 切换每页显示的数量
@@ -161,6 +161,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~@/styles/element-ui-new.scss';
+@import '~@/styles/input-public.scss';
+
 /deep/.el-dialog__header {
   background-color: #1890ff;
 }
