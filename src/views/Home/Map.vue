@@ -72,7 +72,7 @@ export default {
   data() {
     return {
       map: {},
-      zoomMap: '18',
+      zoomMap: '12',
       isOverlayEnter: false,
       position: []
     };
@@ -98,7 +98,7 @@ export default {
       layers: [tdMap, dmLayer],
       center: [106.548293, 29.565552],
       zoom: zoomMap,
-      maxZoom: 50,
+      maxZoom: 20,
       minZoom: 5,
       target: 'map'
     });
