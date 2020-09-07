@@ -59,11 +59,11 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="paginationOption.current"
+        :current-page="paginationOption.PageIndex"
         :page-sizes="[10, 20, 30, 40]"
-        :page-size="paginationOption.size"
+        :page-size="paginationOption.maxResultCount"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="paginationOption.total"
+        :total="paginationOption.totalCount"
         background
       >
       </el-pagination>

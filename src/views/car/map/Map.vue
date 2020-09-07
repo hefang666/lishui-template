@@ -15,18 +15,18 @@
         label-width="100px"
         :inline="true"
       >
-      <el-form-item label="车牌：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
-        <el-form-item label="信号：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
-        <el-form-item label="车辆状态：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
-        <el-form-item label="车主：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
-        <el-form-item label="当前：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
-        <el-form-item label="速度：" prop="name">
-        <span class="info">{{ infoForm.name }}</span> </el-form-item>
+      <el-form-item label="车牌：" prop="">
+        <span class="info">88888</span> </el-form-item>
+        <el-form-item label="信号：" prop="">
+        <span class="info">强</span> </el-form-item>
+        <el-form-item label="车辆状态：" prop="">
+        <span class="info">正常行驶</span> </el-form-item>
+        <el-form-item label="车主：" prop="">
+        <span class="info">张三</span> </el-form-item>
+        <el-form-item label="当前：" prop="">
+        <span class="info">渝中区上清寺</span> </el-form-item>
+        <el-form-item label="速度：" prop="">
+        <span class="info">60km/h</span> </el-form-item>
       </el-form>
     </div>
     <div

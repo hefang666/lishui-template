@@ -1,9 +1,9 @@
-// 考勤管理模块
+// 访客管理模块
 import request from '@/utils/request'
 
 export function GetPageList(params) {
     return request({
-        url: '/api/services/Security/VisitPointService/GetPageList', // 考勤列表
+        url: '/api/services/Security/VisitPointService/GetPageList', // 访客列表
         method: 'POST',
         data: params
     })

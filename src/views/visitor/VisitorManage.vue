@@ -1,12 +1,12 @@
 <template>
-  <di class="container">
+  <div class="container">
     <div class="m-tree-left-col">
       <c-tree></c-tree>
     </div>
     <div class="m-grid-right-col">
       <el-form ref="form" :inline="true" :model="form" class="fixFrom">
         <el-form-item label="姓名：">
-          <el-input v-model="form.name" placeholder="请输入姓名" />
+          <el-input v-model="form.pointName" placeholder="请输入访客姓名/电话" />
         </el-form-item>
         <el-form-item label="来访时间：">
           <el-date-picker
@@ -117,12 +117,13 @@
         </div></el-dialog
       >
     </div>
-  </di>
+  </div>
 </template>
 
 <script>
 import cTable from "@/components/table/cTable";
 import cTree from "@/components/tree/cTree";
+import { GetPageList } from '@/api/visitor';
 
 const columnMap = [
   {
@@ -130,33 +131,33 @@ const columnMap = [
     slot: true
   },
   {
-    prop: "name",
+    prop: "pointName",
     label: "姓名",
     width: "200",
     align: "center"
   },
   {
-    prop: "number",
+    prop: "IdCardNumber",
     label: "证件号码",
     align: "center"
   },
   {
-    prop: "tel",
+    prop: "PhoneNumber",
     label: "电话号码",
     align: "center"
   },
   {
-    prop: "dress",
+    prop: "CheckAddress",
     label: "登记地点",
     align: "center"
   },
   {
-    prop: "registerDate",
+    prop: "VisitTime",
     label: "登记时间",
     align: "center"
   },
   {
-    prop: "leaveDate",
+    prop: "LeaveTime",
     label: "离开时间",
     align: "center"
   }
@@ -167,21 +168,17 @@ export default {
     return {
       // 查询列表数据
       form: {
-        name: "",
-        date: ""
+        pointName:''
       },
-      // dateSelect: "",
       columnMap: columnMap,
+      // 分页参数
       page: {
-        current: 1,
-        size: 10,
-        total: 0
+        PageIndex: 1,
+        MaxResultCount: 10,
+        totalCount:0
       },
       // 分页参数
-      pagination: {
-        pageIndex: 1,
-        pageSize: 20
-      },
+      pagination: {},
       // table参数
       options: {
         stripe: true, // 是否为斑马纹 table
@@ -191,16 +188,7 @@ export default {
       },
       loading: false,
       // 列表数据
-      tableData: [
-        {
-          name: "王小虎",
-          number: "001",
-          tel: "150000000",
-          dress: "重庆水厂",
-          registerDate: "2020-09-01",
-          leaveDate: "20209-01"
-        }
-      ],
+      tableData: [],
       dialogVisible: false, // 查看详情弹窗是否显示
       detilForm: {}, // 详情数据
       detilFormRules: {},
@@ -210,15 +198,42 @@ export default {
       addLoading: false
     };
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
-    getList() {},
+    // 获取列表
+    getList() {
+      let _this=this
+      _this.loading = true
+      let para ={
+        pointName:_this.form.pointName,
+        PageIndex:_this.page.PageIndex,
+        MaxResultCount:_this.page.MaxResultCount,
+      }
+      GetPageList(para).then(res => {
+        console.log(res)
+        setTimeout(() => {
+          _this.tableData = res.result.items
+          _this.page.totalCount =  res.result.totalCount
+          _this.loading = false
+        }, 300)
+        
+      })
+    },
     // 切换每页显示的数量
     handleSizeChange(val) {
-      console.log(val);
+      var _self = this
+      console.log('每页 ' + val + ' 页')
+      _self.PageIndex = val
+      _self.getList();
     },
     // 切换页码
     handleCurrentChange(val) {
-      console.log(val);
+       var _self = this
+      _self.MaxResultCount = val
+      console.log('当前页: ' + val)
+      
     },
     // 查看详情
     handleCheckInfo(index, row) {

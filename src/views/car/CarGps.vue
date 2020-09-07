@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    
     <div class="m-tree-left-col">
       <div class="search-box">
         <el-input placeholder="请输入车牌号/车主" v-model="form" prefix-icon="el-icon-search"></el-input>
@@ -9,9 +8,8 @@
           <div class="car-total">车辆总数：100</div>
           <div class="online-otal">在线：10</div>
         </div>
-        
+        <c-tree></c-tree>
       </div>
-      <c-tree></c-tree>
     </div>
     <div class="m-grid-right-col"><Map ref="map" /></div>
   </div>
@@ -67,5 +65,6 @@ export default {
   margin-left: 190px;
   overflow: hidden;
   flex: 1;
+  min-height: calc(100vh - 24px);
 }
 </style>

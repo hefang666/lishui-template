@@ -5,12 +5,12 @@ module.exports = {
         port: 8080,
         open: true, // 配置自动启动浏览器 
         proxy: {
-            '/api': {
+            '/v1': {
                 target: 'http://192.168.9.44:9090', // 接口地址
                 changeOrigin: true,
                 ws: true,
                 pathRewrite: {
-                    '^/api': ''
+                    '^/v1': ''
                 }
             }
         }

@@ -59,7 +59,7 @@
 <script>
 import cTable from "@/components/table/cTable";
 import cTree from "@/components/tree/cTree";
-import { GetPageListAsync } from '@/api/attendance'
+import { GetPageList } from '@/api/attendance'
 
 const columnMap = [
   {
@@ -137,7 +137,7 @@ export default {
       let para ={
         UserName:_this.form.UserName
       }
-      GetPageListAsync(para).then(res => {
+      GetPageList(para).then(res => {
         console.log(res,1111)
       })
     },
