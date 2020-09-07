@@ -5,66 +5,76 @@
         <div class="cancel-box" @click="closeChooseArea">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
-        <div class="table-box">
-          <el-table
-            ref="multipleTable"
-            :data="tableData"
-            :stripe="true"
-            tooltip-effect="dark"
-            height="400"
-            style="width: 100%"
-            :highlight-current-row="true"
-            @row-click="clickRow"
-          >
-            <el-table-column
-              align="center"
-              prop="name"
-              label="片区名称"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="pipeLength"
-              label="管道长度"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="number"
-              label="设备点数量"
-            ></el-table-column>
-            <el-table-column align="center" label="操作">
-              <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  class="operate-button"
-                  @click="handleSee(scope.$index, scope.row)"
-                  >查看</el-button
-                >
-              </template>
-            </el-table-column>
-          </el-table>
+        <div class="content_box">
+          <div class="table-box">
+            <el-table
+              ref="multipleTable"
+              :data="tableData"
+              :stripe="true"
+              tooltip-effect="dark"
+              height="400"
+              style="width: 100%"
+              :highlight-current-row="true"
+              @row-click="clickRow"
+            >
+              <el-table-column
+                align="center"
+                prop="name"
+                label="片区名称"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="pipeLength"
+                label="管道长度"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                prop="number"
+                label="设备点数量"
+              ></el-table-column>
+              <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    class="operate-button"
+                    @click="handleSee(scope.$index, scope.row)"
+                    >查看</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <page
+            :page-data="[30, 40, 50, 100]"
+            :total="400"
+            @changePageSize="changePageSize"
+            @changeCurrentPage="changeCurrentPage"
+          ></page>
         </div>
-        <page
-          :pageData="[30, 40, 50, 100]"
-          :total="400"
-          @changePageSize="changePageSize"
-          @changeCurrentPage="changeCurrentPage"
-        ></page>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeChooseArea">返回</el-button>
         <el-button type="primary" @click="determine">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 查看路线弹窗 -->
+    <view-route
+      :dialog-route="dialogRoute"
+      @getRouteData="getRouteData"
+    ></view-route>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page.vue';
+import ViewRoute from '../public/ViewRoute.vue';
 export default {
   name: 'ChooseArea',
   props: ['dialogArea'],
   components: {
-    Page
+    Page,
+    ViewRoute
   },
   data() {
     return {
@@ -86,7 +96,8 @@ export default {
           number: 10
         }
       ],
-      checkedName: ''
+      checkedName: '',
+      dialogRoute: false
     };
   },
   methods: {
@@ -124,7 +135,13 @@ export default {
       console.log(data);
     },
     // 查看按钮
-    handleSee() {}
+    handleSee() {
+      this.dialogRoute = true;
+    },
+    // 关闭查看路线弹窗
+    getRouteData(data) {
+      this.dialogRoute = data.dialogRoute;
+    }
   },
   mounted() {}
 };

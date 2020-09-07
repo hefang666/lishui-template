@@ -56,7 +56,7 @@
         </el-button-group>
         <div class="search-box">
           <el-input
-            placeholder="请输入内容"
+            placeholder="请输入任务名称"
             prefix-icon="el-icon-search"
             v-model="searchWords"
           ></el-input>
@@ -167,7 +167,7 @@
         </el-table>
       </div>
       <page
-        :pageData="[30, 40, 50, 100]"
+        :page-data="[30, 40, 50, 100]"
         :total="400"
         @changePageSize="changePageSize"
         @changeCurrentPage="changeCurrentPage"
@@ -175,18 +175,26 @@
     </div>
 
     <!-- 新增任务弹框 -->
-    <add-task :dialogAdd="dialogAdd" @getAddData="getAddData"></add-task>
+    <add-task :dialog-add="dialogAdd" @getAddData="getAddData"></add-task>
+    <!-- 查看任务弹窗 -->
+    <view-task :dialog-view="dialogView" @getViewData="getViewData"></view-task>
+    <!-- 修改任务的弹窗 -->
+    <edit-task :dialog-edit="dialogEdit" @getEditData="getEditData"></edit-task>
   </div>
 </template>
 
 <script>
 import AddTask from './addTask/AddTask.vue';
 import Page from '@/components/page/Page.vue';
+import ViewTask from './viewTask/ViewTask.vue';
+import EditTask from './editTask/EditTask.vue';
 export default {
   name: 'TaskManagement',
   components: {
     AddTask,
-    Page
+    Page,
+    ViewTask,
+    EditTask
   },
   data() {
     return {
@@ -267,6 +275,12 @@ export default {
       // 是否显示新增弹窗
       dialogAdd: false,
 
+      // 是否显示查看弹窗
+      dialogView: false,
+
+      // 是否显示修改弹窗
+      dialogEdit: false,
+
       // 当前选中的筛选类别名字（顶部左侧的input组 all）
       searchName: 'all'
     };
@@ -284,6 +298,7 @@ export default {
     // 查看任务
     handleSee(index, row) {
       console.log(index, row);
+      this.dialogView = true;
     },
 
     // 完成任务
@@ -294,6 +309,7 @@ export default {
     // 修改任务
     handleEdit(index, row) {
       console.log(index, row);
+      this.dialogEdit = true;
     },
 
     // 按状态筛选则并为input添加样式
@@ -309,7 +325,14 @@ export default {
       console.log(data);
       this.dialogAdd = data.dialogAdd;
     },
-
+    // 关闭查看弹窗
+    getViewData(data) {
+      this.dialogView = data.dialogView;
+    },
+    // 关闭修改弹窗
+    getEditData(data) {
+      this.dialogEdit = data.dialogEdit;
+    },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
       console.log(data);

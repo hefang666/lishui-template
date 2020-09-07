@@ -5,35 +5,37 @@
         <div class="cancel-box" @click="closeChoosePeople">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
-        <div class="search-box">
-          <el-input
-            placeholder="请输入内容"
-            prefix-icon="el-icon-search"
-            v-model="searchWords"
-          ></el-input>
-          <el-button class="search-button" type="primary">查询</el-button>
+        <div class="content_box">
+          <div class="search-box">
+            <el-input
+              placeholder="请输入内容"
+              prefix-icon="el-icon-search"
+              v-model="searchWords"
+            ></el-input>
+            <el-button class="search-button" type="primary">查询</el-button>
+          </div>
+          <div class="table-box">
+            <el-table
+              ref="multipleTable"
+              :data="tableData"
+              :stripe="true"
+              tooltip-effect="dark"
+              height="400"
+              style="width: 100%"
+              :highlight-current-row="true"
+              @row-click="clickRow"
+            >
+              <el-table-column prop="name" label="姓名"></el-table-column>
+              <el-table-column prop="tel" label="联系方式"></el-table-column>
+            </el-table>
+          </div>
+          <page
+            :page-data="[30, 40, 50, 100]"
+            :total="400"
+            @changePageSize="changePageSize"
+            @changeCurrentPage="changeCurrentPage"
+          ></page>
         </div>
-        <div class="table-box">
-          <el-table
-            ref="multipleTable"
-            :data="tableData"
-            :stripe="true"
-            tooltip-effect="dark"
-            height="400"
-            style="width: 100%"
-            :highlight-current-row="true"
-            @row-click="clickRow"
-          >
-            <el-table-column prop="name" label="姓名"></el-table-column>
-            <el-table-column prop="tel" label="联系方式"></el-table-column>
-          </el-table>
-        </div>
-        <page
-          :pageData="[30, 40, 50, 100]"
-          :total="400"
-          @changePageSize="changePageSize"
-          @changeCurrentPage="changeCurrentPage"
-        ></page>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeChoosePeople">取 消</el-button>

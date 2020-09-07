@@ -1,12 +1,12 @@
 <template>
-  <div class="addTask-box dialog-box button-box">
-    <el-dialog title="新增任务" :visible.sync="dialogAdd">
+  <div class="editTask-box dialog-box button-box">
+    <el-dialog title="修改任务" :visible.sync="dialogEdit">
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeAdd">
+        <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          <el-form :model="addForm">
+          <el-form :model="editForm">
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
@@ -18,7 +18,7 @@
                 <div class="list-item-content-box">
                   <el-input
                     type="taskName"
-                    v-model="addForm.taskName"
+                    v-model="editForm.taskName"
                     autocomplete="off"
                   ></el-input>
                 </div>
@@ -32,9 +32,9 @@
                   class="choose-active"
                   type="primary"
                   plain
-                  v-if="addForm.inCharge != ''"
-                  v-model="addForm.inCharge"
-                  >{{ addForm.inCharge }}</el-button
+                  v-if="editForm.inCharge != ''"
+                  v-model="editForm.inCharge"
+                  >{{ editForm.inCharge }}</el-button
                 >
                 <el-button type="primary" plain @click="choosePerson"
                   >选择人员</el-button
@@ -49,7 +49,7 @@
               >
                 <div class="list-item-content-box">
                   <el-date-picker
-                    v-model="addForm.estimatedStartTime"
+                    v-model="editForm.estimatedStartTime"
                     type="datetime"
                     placeholder="预计任务开始时间"
                   ></el-date-picker>
@@ -62,7 +62,7 @@
               >
                 <div class="list-item-content-box">
                   <el-date-picker
-                    v-model="addForm.estimatedEndTime"
+                    v-model="editForm.estimatedEndTime"
                     type="datetime"
                     placeholder="预计任务结束时间"
                   ></el-date-picker>
@@ -85,7 +85,7 @@
               >
                 <div class="list-item-content-box">
                   <el-select
-                    v-model="addForm.taskType"
+                    v-model="editForm.taskType"
                     placeholder="请选择任务类别"
                   >
                     <el-option label="普通任务" value="puTong"></el-option>
@@ -99,7 +99,7 @@
                 label-width="120px"
               >
                 <div class="list-item-content-box">
-                  <!-- <el-input type="inspectionArea" v-model="addForm.inspectionArea" autocomplete="off"></el-input> -->
+                  <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
                   <el-button type="primary" plain @click="chooseArea"
                     >选择片区</el-button
                   >
@@ -110,7 +110,7 @@
               ><el-input
                 type="textarea"
                 :rows="3"
-                v-model="addForm.remarks"
+                v-model="editForm.remarks"
                 autocomplete="off"
               ></el-input
             ></el-form-item>
@@ -118,8 +118,8 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="closeAdd">取 消</el-button>
-        <el-button type="primary" @click="closeAdd">确 定</el-button>
+        <el-button @click="closeEdit">取 消</el-button>
+        <el-button type="primary" @click="closeEdit">保存</el-button>
       </div>
     </el-dialog>
 
@@ -140,15 +140,15 @@
 import ChoosePeople from '../public/ChoosePeople.vue';
 import ChooseArea from '../public/ChooseArea.vue';
 export default {
-  name: 'AddTask',
-  props: ['dialogAdd'],
+  name: 'EditTask',
+  props: ['dialogEdit'],
   components: {
     ChoosePeople,
     ChooseArea
   },
   data() {
     return {
-      addForm: {
+      editForm: {
         taskName: '',
         inCharge: '测试人员',
         estimatedStartTime: '',
@@ -165,12 +165,12 @@ export default {
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
-    closeAdd() {
+    closeEdit() {
       let data = {
-        dialogAdd: false,
+        dialogEdit: false,
         data: []
       };
-      this.$emit('getAddData', data);
+      this.$emit('getEditData', data);
     },
     // 点击选择负责人按钮
     choosePerson() {
@@ -185,7 +185,7 @@ export default {
     checkedPerson(data) {
       console.log(data);
       this.dialogCharge = data.dialogCharge;
-      this.addForm.inCharge = data.name;
+      this.editForm.inCharge = data.name;
     },
     // 点击选择片区按钮
     chooseArea() {
@@ -199,7 +199,7 @@ export default {
     checkedArea(data) {
       console.log(data);
       this.dialogArea = data.dialogArea;
-      // this.addForm.inCharge = data.name;
+      // this.editForm.inCharge = data.name;
     }
   }
 };
@@ -209,7 +209,7 @@ export default {
 @import '@/styles/element-ui-new.scss';
 @import '@/styles/public.scss';
 
-.addTask-box {
+.editTask-box {
   .content-box {
     .list-item {
       display: flex;
