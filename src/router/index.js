@@ -34,11 +34,11 @@ const routes = [
     path: '/task',
     component: () => import('@/views/taskManagement'),
     name: 'task',
-    meta: {title: '任务管理', icon: 'el-icon-user'},
+    meta: {title: '任务管理', icon: 'el-icon-user'}
   },
   {
     path: '/plan',
-    component: () => import('@/views/planManagement'),
+    component: () => import('@/views/planManagement/index.vue'),
     name: 'plan',
     meta: {title: '计划管理', icon: 'el-icon-user'}
   }

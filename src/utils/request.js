@@ -1,12 +1,13 @@
 import axios from 'axios';
 import {MessageBox, Message} from 'element-ui';
 import store from '@/store';
+import {api} from './api';
 
 //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
 axios.defaults.withCredentials = true;
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: api, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 });
@@ -26,7 +27,6 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log(error); // for debug
     return Promise.reject(error);
   }
 );
