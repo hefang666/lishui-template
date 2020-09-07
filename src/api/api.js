@@ -2,6 +2,6 @@
 const api =
   process.env.NODE_ENV == 'development'
     ? 'http://192.168.9.101:3000/mock/105/'
-    : '';
+    : 'http://192.168.9.44:9090/';
 
 export {api};

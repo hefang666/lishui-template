@@ -14,31 +14,31 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="taskName"
+            prop="name"
             label="计划名称"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="taskType"
+            prop="cycle"
             label="巡检周期"
           ></el-table-column>
           <el-table-column
-            prop="inCharge"
+            prop="participant"
             label="负责人"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="player"
+            prop="person"
             label="参与人"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="estimatedStartTime"
+            prop="planEndTime"
             label="预计到期时间"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="estimatedEndTime"
+            prop="statuStr"
             label="计划状态"
             show-overflow-tooltip
           ></el-table-column>
@@ -68,8 +68,6 @@
       <page
         :pageData="[30, 40, 50, 100]"
         :total="400"
-        @changePageSize="changePageSize"
-        @changeCurrentPage="changeCurrentPage"
       ></page>
     </div>
 
@@ -91,70 +89,23 @@ export default {
   data() {
     return {
       multipleSelection: [],
-
       // 当前分页
-      currentPage: 1,
-
-      // 是否显示新增弹窗
-      dialogAdd: false,
-
-      // 当前选中的筛选类别名字（顶部左侧的input组 all）
-      searchName: 'all'
+      currentPage: 1
     };
+  },
+  mounted() {
+    this.getPlanList();
   },
   computed: {
     ...mapState(['planList'])
   },
   methods: {
-    ...mapActions(['changePlanList']),
+    ...mapActions(['changePlanList', 'getPlanList']),
     handleSelectionChange(val) {
       this.multipleSelection = val;
-    },
-
-    // 关闭任务
-    handleClose(index, row) {
-      console.log(index, row);
-    },
-
-    // 查看任务
-    handleSee(index, row) {
-      console.log(index, row);
-    },
-
-    // 完成任务
-    handleComplete(index, row) {
-      console.log(index, row);
-    },
-
-    // 修改任务
-    handleEdit(index, row) {
-      console.log(index, row);
-    },
-
-    // 按状态筛选则并为input添加样式
-    searchConditional(name) {
-      this.searchName = name;
-    },
-    // 打开新增弹窗
-    addTask() {
-      this.dialogAdd = true;
-    },
-    // 关闭新增弹窗
-    getAddData(data) {
-      console.log(data);
-      this.dialogAdd = data.dialogAdd;
-    },
-
-    // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
-      console.log(data);
-    },
-    // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
-      console.log(data);
     }
-  },
-  mounted() {}
+    
+  }
 };
 </script>
 
