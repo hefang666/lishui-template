@@ -5,12 +5,12 @@
     </div>
     <div class="m-grid-right-col">
       <el-form ref="form" :inline="true" :model="form" class="fixFrom">
-        <el-form-item label="姓名：">
-          <el-input v-model="form.pointName" placeholder="请输入访客姓名/电话" />
+        <el-form-item label="访客姓名/电话：">
+          <el-input v-model="form.NameOrTel" placeholder="请输入访客姓名/电话" />
         </el-form-item>
         <el-form-item label="来访时间：">
           <el-date-picker
-            v-model="form.date"
+            v-model="visitTime"
             type="daterange"
             unlink-panels
             value-format="yyyy-MM-dd"
@@ -25,7 +25,6 @@
       <c-table
         :pagedTable="tableData"
         :columnMap="columnMap"
-        :pagination="pagination"
         border
         :paginationOption="page"
         :options="options"
@@ -63,11 +62,11 @@
           :inline="true"
           :rules="detilFormRules"
         >
-          <el-form-item label="姓名：" prop="name">
-            <span class="info">{{ detilForm.name }}</span>
+          <el-form-item label="姓名：" prop="visitorName">
+            <span class="info">{{ detilForm.visitorName }}</span>
           </el-form-item>
-          <el-form-item label="证件号码：" prop="number">
-            <span class="info">{{ detilForm.number }}</span>
+          <el-form-item label="证件号码：" prop="idCardNumber">
+            <span class="info">{{ detilForm.idCardNumber }}</span>
           </el-form-item>
           <el-form-item label="联系电话：" prop="tel">
             <span class="info">{{ detilForm.tel }}</span>
@@ -123,7 +122,7 @@
 <script>
 import cTable from "@/components/table/cTable";
 import cTree from "@/components/tree/cTree";
-import { GetPageList } from '@/api/visitor';
+import { GetPageList, GetById } from '@/api/visitor';
 
 const columnMap = [
   {
@@ -166,10 +165,18 @@ export default {
   components: { cTable, cTree },
   data() {
     return {
-      // 查询列表数据
+      // 查询参数
       form: {
-        pointName:''
+        NameOrTel:'',
+        VisitTimeBegin:'',
+        VisitTimeEnd:'',
+        // codes: ["123"],
+        // PageIndex:1,
+        // MaxResultCount:10
+
       },
+      // 日期时间参数
+      visitTime:'',
       columnMap: columnMap,
       // 分页参数
       page: {
@@ -177,8 +184,8 @@ export default {
         MaxResultCount: 10,
         totalCount:0
       },
-      // 分页参数
-      pagination: {},
+      
+      // pagination: {},
       // table参数
       options: {
         stripe: true, // 是否为斑马纹 table
@@ -207,10 +214,15 @@ export default {
       let _this=this
       _this.loading = true
       let para ={
-        pointName:_this.form.pointName,
+        NameOrTel:_this.form.NameOrTel,
+        // codes:_this.JSON.stringify(codes),
+        codes: ["123"],
         PageIndex:_this.page.PageIndex,
         MaxResultCount:_this.page.MaxResultCount,
+        VisitTimeBegin:_this.visitTime[0],
+        VisitTimeEnd:_this.visitTime[1]
       }
+       
       GetPageList(para).then(res => {
         console.log(res)
         setTimeout(() => {
@@ -223,17 +235,17 @@ export default {
     },
     // 切换每页显示的数量
     handleSizeChange(val) {
-      var _self = this
+      let _self = this
       console.log('每页 ' + val + ' 页')
       _self.PageIndex = val
       _self.getList();
     },
     // 切换页码
     handleCurrentChange(val) {
-       var _self = this
+      let _self = this
       _self.MaxResultCount = val
       console.log('当前页: ' + val)
-      
+      _self.getList();
     },
     // 查看详情
     handleCheckInfo(index, row) {
@@ -241,6 +253,9 @@ export default {
       let _this = this;
       _this.detilForm = row;
       _this.dialogVisible = true;
+      GetById().then(res => {
+       _this.detilForm = res.result
+      })
     },
     // 添加离开时间
     handleAdd(index, row) {

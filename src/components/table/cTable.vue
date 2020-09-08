@@ -15,8 +15,15 @@
       :header-cell-style="getRowClass"
       v-bind="$attrs"
     >
-      <el-table-column
+      <!-- <el-table-column
         v-if="isMutipleSelection"
+        type="selection"
+        :selectable="checkboxInit"
+        width="55"
+        :align="align"
+      >
+      </el-table-column> -->
+      <el-table-column
         type="selection"
         :selectable="checkboxInit"
         width="55"

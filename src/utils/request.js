@@ -24,7 +24,7 @@ service.interceptors.request.use(
         //     // config.headers['X-Token'] = getToken()
 
         // }
-        config.headers['Authorization'] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiLmuqfmsLTmmbrmhafmsLTliqHnrqHnkIblkZjop5LoibIiLCJodHRwOi8vd3d3LmFzcG5ldGJvaWxlcnBsYXRlLmNvbS9pZGVudGl0eS9jbGFpbXMvdGVuYW50SWQiOiIxMDE1OSIsIlVzZXJOYW1lIjoiTkpMUyIsIk9yZ0lkIjoiMTAyOTQiLCJUcnVlTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoeeuoeeQhuWRmOeUqOaItyIsIkF2YXRlciI6IiIsIk9yZ05hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnROYW1lIjoi5rqn5rC05pm65oWn5rC05YqhIiwiVGVuYW50Q29ubmVjdFN0cmluZyI6IiIsIlJvbGVzIjoiMTYzMTgyIiwic3ViIjoiMTAyOTQiLCJqdGkiOiIwNTgxZDY5NS1lNTUxLTRiYTItYThiZi1lODQxY2VlZjE1OWUiLCJpYXQiOjE1OTk0NjgyNzEsIm5iZiI6MTU5OTQ2ODI3MSwiZXhwIjoxNTk5NTExNDcxLCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.wHs750RTEst8ahVXqcD44RU1seo07ZBxYRzQBHMVE4s"
+        config.headers['Authorization'] = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiLmuqfmsLTmmbrmhafmsLTliqHnrqHnkIblkZjop5LoibIiLCJodHRwOi8vd3d3LmFzcG5ldGJvaWxlcnBsYXRlLmNvbS9pZGVudGl0eS9jbGFpbXMvdGVuYW50SWQiOiIxMDE1OSIsIlVzZXJOYW1lIjoiTkpMUyIsIk9yZ0lkIjoiMTAyOTQiLCJUcnVlTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoeeuoeeQhuWRmOeUqOaItyIsIkF2YXRlciI6IiIsIk9yZ05hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnROYW1lIjoi5rqn5rC05pm65oWn5rC05YqhIiwiVGVuYW50Q29ubmVjdFN0cmluZyI6IiIsIlJvbGVzIjoiMTYzMTgyIiwic3ViIjoiMTAyOTQiLCJqdGkiOiJhMGI4MTI4Yi03MmZlLTQ3NTItOTMzNS05NTM5OWFlM2RiNzMiLCJpYXQiOjE1OTk1MzA3ODcsIm5iZiI6MTU5OTUzMDc4NywiZXhwIjoxNTk5NTczOTg3LCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.4E7NHO_OeF3AUsuYO-7XbasubL-s1uJB7gFeL_sUKe4"
             // config.headers['aa'] = 'aa'
             // console.log(config)
         return config
@@ -50,13 +50,10 @@ service.interceptors.response.use(
      */
     response => {
         const res = response.data
-            // debugger
-
         if (res.code !== 1) {
             // debugger
             if (!res.code) {
-                // console.log('00000000000000')
-                // debugger
+                // console.log('111')
             } else {
                 Message({
                     message: res.message || 'error',

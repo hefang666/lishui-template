@@ -136,8 +136,9 @@ export default {
   border-radius: 10px;
   box-shadow: 1px 1px 2px 2px#ccc;
 }
-.flex-item h2 {
+.flex-item h2,.flex-item h3 {
   text-align: center;
+  font-weight: normal;
 }
 .item-box {
   display: -webkit-flex;
