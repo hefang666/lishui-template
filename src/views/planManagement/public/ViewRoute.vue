@@ -5,7 +5,9 @@
         <div class="cancel-box" @click="closeRoute">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
-        <div class="map-box"></div>
+        <div class="map-box">
+          <map-route></map-route>
+        </div>
         <div class="content-right-box">
           <div class="right-box">
             <div class="inspection-route-information-box">
@@ -148,10 +150,13 @@
 </template>
 
 <script>
+import mapRoute from '@/components/mapRoute';
 export default {
   name: 'AddTask',
   props: ['dialogRoute'],
-  components: {},
+  components: {
+    'map-route': mapRoute
+  },
   data() {
     return {
       // tabs当前聚焦在那一个上面

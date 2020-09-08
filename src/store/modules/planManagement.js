@@ -18,18 +18,27 @@ var state = {
   planStatus: 0,
   searchText: '',
   pageIndex: 1,
-  maxResultCount: 10
+  maxResultCount: 10,
+  editModalVisble: false,
+  addModalVisible: false,
+  checkModalVisible: false
 };
 
 var mutations = {
   set_plan_list: function(state, list) {
     state.planList = list;
+  },
+  update_modal_status: function(state, modal) {
+    state[modal.name] = modal.status;
   }
 };
 
 var actions = {
   changePlanList({commit}, list) {
     commit('set_plan_list', list);
+  },
+  changeModalStatus: function({commit}, modal) {
+    commit('update_modal_status', modal);
   },
   getPlanList({commit, state}) {
     var data = {

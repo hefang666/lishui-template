@@ -1,6 +1,6 @@
 <template>
   <div class="task_management_pages">
-    <page-top></page-top>
+    <page-top ref='top'></page-top>
     <div class="content-box">
       <div class="table-box">
         <el-table
@@ -51,7 +51,7 @@
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="handleEdit(scope.$index, scope.row)"
+                  @click="handleEdit(scope.id, scope.row)"
                   >修改</el-button
                 >
                 <el-button
@@ -70,7 +70,6 @@
         :total="400"
       ></page>
     </div>
-
     <!-- 新增任务弹框 -->
     <!-- <add-task :dialogAdd="dialogAdd" @getAddData="getAddData"></add-task> -->
   </div>
@@ -97,12 +96,26 @@ export default {
     this.getPlanList();
   },
   computed: {
-    ...mapState(['planList'])
+    ...mapState(['planList', 'editModalVisble', 'addModalVisible'])
   },
   methods: {
-    ...mapActions(['changePlanList', 'getPlanList']),
+    ...mapActions(['changePlanList', 'getPlanList', 'changeModalStatus']),
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+    handleEdit (id, row) {
+      console.log(id, row)
+      this.changeModalStatus({
+        name: 'editModalVisble',
+        status: true
+      });
+    },
+    handleSee (id, row) {
+      console.log(id, row)
+      this.changeModalStatus({
+        name: 'checkModalVisible',
+        status: true
+      });
     }
     
   }

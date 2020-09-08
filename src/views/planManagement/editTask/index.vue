@@ -1,6 +1,6 @@
 <template>
   <div class="editTask-box dialog-box button-box">
-    <el-dialog title="修改任务" :visible.sync="dialogEdit">
+    <el-dialog title="修改任务" :visible.sync="editModalVisble">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -139,9 +139,10 @@
 <script>
 import ChoosePeople from '../public/ChoosePeople.vue';
 import ChooseArea from '../public/ChooseArea.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('planManagement');
 export default {
   name: 'EditTask',
-  props: ['dialogEdit'],
   components: {
     ChoosePeople,
     ChooseArea
@@ -155,7 +156,8 @@ export default {
         estimatedEndTime: '',
         taskType: '',
         inspectionArea: '',
-        remarks: ''
+        remarks: '',
+        aa: true
       },
       // 负责人弹窗状态
       dialogCharge: false,
@@ -163,14 +165,17 @@ export default {
       dialogArea: false
     };
   },
+  computed: {
+    ...mapState(['editModalVisble'])
+  },
   methods: {
+    ...mapActions(['changeModalStatus']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
-      let data = {
-        dialogEdit: false,
-        data: []
-      };
-      this.$emit('getEditData', data);
+      this.changeModalStatus({
+        name: 'editModalVisble',
+        status: false
+      })
     },
     // 点击选择负责人按钮
     choosePerson() {
@@ -178,12 +183,10 @@ export default {
     },
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.editForm.inCharge = data.name;
     },

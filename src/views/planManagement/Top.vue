@@ -13,15 +13,25 @@
         :list="list"
       ></snt-buttongroup>
     </div>
+    <add-task></add-task>
+    <edit-task></edit-task>
+    <snt-view></snt-view>
   </div>
 </template>
+
 <script>
 import Search from '@/components/search';
 import ButtonGroup from '@/components/buttonGroup';
+import addTask from './addTask'
+import editTask from './editTask'
+import view from './viewTask/ViewTask'
 export default {
   components: {
     'snt-search': Search,
-    'snt-buttongroup': ButtonGroup
+    'snt-buttongroup': ButtonGroup,
+    'add-task': addTask,
+    'edit-task': editTask,
+    'snt-view': view
   },
   data() {
     return {
@@ -32,11 +42,9 @@ export default {
       // 当前分页
       currentPage: 1,
 
-      // 是否显示新增弹窗
-      dialogAdd: false,
-
       // 当前选中的筛选类别名字（顶部左侧的input组 all）
-      searchName: 'all'
+      searchName: 'all',
+
     };
   },
   methods: {

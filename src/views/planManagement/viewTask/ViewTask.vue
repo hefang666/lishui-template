@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="新增任务" :visible.sync="dialogView">
+    <el-dialog title="新增任务" :visible.sync="checkModalVisible">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeView">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -252,13 +252,17 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '../public/ViewRoute.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('planManagement');
 export default {
   name: 'AddTask',
-  props: ['dialogView'],
   components: {
     Page,
     EquipmentInfo,
     ViewRoute
+  },
+  computed: {
+    ...mapState(['checkModalVisible'])
   },
   data() {
     return {
@@ -303,13 +307,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['changeModalStatus']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
-      let data = {
-        dialogView: false,
-        data: []
-      };
-      this.$emit('getViewData', data);
+      this.changeModalStatus({
+        name: 'checkModalVisible',
+        status: false
+      })
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
