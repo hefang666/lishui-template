@@ -27,7 +27,6 @@
         :columnMap="columnMap"
         border
         :paginationOption="page"
-        :options="options"
         :isLoadTable="loading"
         @handleSizeChange="handleSizeChange"
         @handleCurrentChange="handleCurrentChange"
@@ -45,6 +44,13 @@
               size="small"
               @click="handleAdd(scope.$index, scope.row)"
               >添加离开时间</el-button
+            >
+            <el-button
+              type="text"
+              size="small"
+              @click="handleDel(scope.$index, scope.row)"
+              style="color:#ff4949"
+              >删除</el-button
             >
           </template>
         </el-table-column>
@@ -65,20 +71,20 @@
           <el-form-item label="姓名：" prop="visitorName">
             <span class="info">{{ detilForm.visitorName }}</span>
           </el-form-item>
-          <el-form-item label="证件号码：" prop="idCardNumber">
-            <span class="info">{{ detilForm.idCardNumber }}</span>
+          <el-form-item label="证件号码：" prop="IdCardNumber">
+            <span class="info">{{ detilForm.IdCardNumber }}</span>
           </el-form-item>
-          <el-form-item label="联系电话：" prop="tel">
-            <span class="info">{{ detilForm.tel }}</span>
+          <el-form-item label="联系电话：" prop="IdCardPhoto">
+            <span class="info">{{ detilForm.IdCardPhoto }}</span>
           </el-form-item>
-          <el-form-item label="来访地址：" prop="dress">
-            <span class="info">{{ detilForm.dress }}</span>
+          <el-form-item label="来访地址：" prop="CheckAddress">
+            <span class="info">{{ detilForm.CheckAddress }}</span>
           </el-form-item>
-          <el-form-item label="来访时间：" prop="registerDate">
-            <span class="info">{{ detilForm.registerDate }}</span>
+          <el-form-item label="来访时间：" prop="VisitTime">
+            <span class="info">{{ detilForm.VisitTime }}</span>
           </el-form-item>
-          <el-form-item label="离开时间：" prop="leaveDate">
-            <span class="info">{{ detilForm.leaveDate }}</span>
+          <el-form-item label="离开时间：" prop="LeaveTime">
+            <span class="info">{{ detilForm.LeaveTime }}</span>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -97,9 +103,9 @@
           label-width="100px"
           :rules="addFormRules"
         >
-          <el-form-item label="离开时间" prop="leaveDate">
+          <el-form-item label="离开时间" prop="LeaveTime">
             <el-date-picker
-              v-model="addForm.leaveDate"
+              v-model="addForm.LeaveTime"
               type="datetime"
               placeholder="选择离开时间"
             >
@@ -122,7 +128,7 @@
 <script>
 import cTable from "@/components/table/cTable";
 import cTree from "@/components/tree/cTree";
-import { GetPageList, GetById } from '@/api/visitor';
+import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord } from '@/api/visitor';
 
 const columnMap = [
   {
@@ -130,7 +136,7 @@ const columnMap = [
     slot: true
   },
   {
-    prop: "pointName",
+    prop: "visitorName",
     label: "姓名",
     width: "200",
     align: "center"
@@ -187,15 +193,16 @@ export default {
       
       // pagination: {},
       // table参数
-      options: {
-        stripe: true, // 是否为斑马纹 table
-        loading: false, // 是否添加表格loading加载动画
-        highlightCurrentRow: true, // 是否支持当前行高亮显示
-        mutiSelect: true // 是否支持列表项选中功能
-      },
+      // options: {
+      //   stripe: true, // 是否为斑马纹 table
+      //   loading: false, // 是否添加表格loading加载动画
+      //   highlightCurrentRow: true, // 是否支持当前行高亮显示
+      //   mutiSelect: true // 是否支持列表项选中功能
+      // },
       loading: false,
       // 列表数据
       tableData: [],
+      ids:[],
       dialogVisible: false, // 查看详情弹窗是否显示
       detilForm: {}, // 详情数据
       detilFormRules: {},
@@ -222,21 +229,23 @@ export default {
         VisitTimeBegin:_this.visitTime[0],
         VisitTimeEnd:_this.visitTime[1]
       }
-       
       GetPageList(para).then(res => {
-        console.log(res)
-        setTimeout(() => {
+        // console.log(res)
+        if(res.success){
+          setTimeout(() => {
           _this.tableData = res.result.items
           _this.page.totalCount =  res.result.totalCount
           _this.loading = false
         }, 300)
+        }
+        
         
       })
     },
     // 切换每页显示的数量
     handleSizeChange(val) {
       let _self = this
-      console.log('每页 ' + val + ' 页')
+      // console.log('每页 ' + val + ' 页')
       _self.PageIndex = val
       _self.getList();
     },
@@ -244,32 +253,77 @@ export default {
     handleCurrentChange(val) {
       let _self = this
       _self.MaxResultCount = val
-      console.log('当前页: ' + val)
+      // console.log('当前页: ' + val)
       _self.getList();
     },
     // 查看详情
     handleCheckInfo(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
       let _this = this;
+      _this.loading = true
       _this.detilForm = row;
       _this.dialogVisible = true;
-      GetById().then(res => {
+      let param = {
+        id: row.id
+      }
+      GetById(param).then(res => {
        _this.detilForm = res.result
+       _this.loading = false
+       _this.getList()
       })
     },
     // 添加离开时间
     handleAdd(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
       let _this = this;
+      _this.loading = true
       _this.detilForm = row;
       _this.dialogAddVisible = true;
+      let param = {
+        id:row.id,
+        LeaveTime:""
+      }
+      getInsertLeaveTime(param).then(res => {
+       _this.detilForm = res.result
+       _this.loading = true
+       _this.getList()
+      })
     },
-    // 保存
+    // 添加时间保存
     onSubmit() {
       let _self = this;
       _self.dialogAddVisible = false;
-      _self.$message.success("保存成功！");
+      _self.$message.success("添加成功！");
+    },
+    // 删除
+    handleDel(row){
+      let _this = this
+      let data = {
+        ids:row.id
+      }
+      _this.$confirm('确定删除此数据吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        DeleteRecord(data).then(res => {
+          console.log(data)
+          if (res.success) {
+           _this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            _this.getlist()
+          } else {
+            _this.$message({
+              type: 'warning',
+              message: res.message
+            })
+          }
+        })
+      })
     }
+
   }
 };
 </script>

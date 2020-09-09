@@ -234,7 +234,17 @@ const routes = [{
                         /* webpackChunkName: "about" */
                         "../views/visitor/VisitorManage.vue"
                     ),
-                meta: { title: "访客列表" }
+                meta: { title: "访客管理" }
+            },
+            {
+                path: "VisitorPoint",
+                name: "VisitorPoint",
+                component: () =>
+                    import (
+                        /* webpackChunkName: "about" */
+                        "../views/visitor/VisitorPoint.vue"
+                    ),
+                meta: { title: "访客点管理" }
             }
         ]
     },

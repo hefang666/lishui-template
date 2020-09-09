@@ -10,7 +10,7 @@
       style="width: 100%;"
       @selection-change="handleSelectionChange"
       @current-change="handleCurrentChange"
-      @row-click="rowClickFun"
+     
       :highlight-current-row="isHighlightCurrentRow"
       :header-cell-style="getRowClass"
       v-bind="$attrs"
@@ -153,9 +153,10 @@ export default {
     handleSizeChange(val) {
       this.$emit("handleSizeChange", val);
     },
-    rowClickFun(val) {
-      this.$emit("rowClick", val);
-    },
+    // rowClickFun(val) {
+    //   console.log(val)
+    //   this.$emit("rowClick", val);
+    // },
     getRowClass({ rowIndex }) {
       if (rowIndex == 0) {
         return "background:#F2F4F5;color:#000";

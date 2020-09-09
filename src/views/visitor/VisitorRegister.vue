@@ -17,16 +17,10 @@
             <el-input v-model="ruleForm.VisitorName"></el-input>
           </el-form-item>
           <el-form-item label="证件类型：" prop="IdCardType">
-            <el-select v-model="ruleForm.IdCardType" placeholder="请选择类型">
-              <!-- <el-option
-                v-for="item in documentTypeData"
-                :key="item.id"
-                :label="item.label"
-                :value="item.value"
-              /> -->
-              <el-option label="身份证" value="身份证"></el-option>
-              <el-option label="军官证" value="军官证"></el-option>
-              <el-option label="护照" value="护照"></el-option>
+            <el-select v-model="ruleForm.IdCardType" placeholder="请选择证件类型">
+              <el-option label="身份证" value="0"></el-option>
+              <el-option label="军官证" value="1"></el-option>
+              <el-option label="护照" value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="证件号码：" prop="IdCardNumber">
@@ -77,7 +71,7 @@
             <el-form-item label="证件照片：" prop="IdCardPhoto">
               <el-upload
                 class="avatar-uploader"
-                action="/api/UploadFiles/UploadProfilePicture"
+                action="http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture"
                 :show-file-list="false"
                 :with-credentials="true"
                 :on-success="handleAvatarSuccess"
@@ -88,7 +82,6 @@
                   <img class="org-img" v-if="imageUrl" :src="imageUrl" />
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   <div class="intro-text">
-                    <!-- <div class="upload-text">点击上传</div> -->
                     <div>建议上传图片尺寸为25*25，大小不超过 5M</div>
                   </div>
                 </div>
@@ -119,7 +112,7 @@
 
 <script>
 import cTree from "@/components/tree/cTree";
-import { PostUserList, getUpload, GetInsertRecord } from '@/api/visitor';
+import { PostUserList, GetInsertRecord } from '@/api/visitor';
 
 export default {
   components: { cTree },
@@ -137,7 +130,12 @@ export default {
         Interviewees: "",
         VisitorCount: "",
         IdCardPhoto: "",
-        VisitingTime: ""
+        VisitingTime: "",
+        CheckStatus:0,
+        CheckAddress:"",
+        Resource:1,
+        Code:"123"
+
       },
       rules: {
         VisitorName: [
@@ -158,10 +156,14 @@ export default {
         Interviewees: [
           { required: true, message: "请选择被访人", trigger: "blur" }
         ],
-        VisitorCount: [{ type: "number", message: "请输入数字值" }]
+        VisitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
+        VisitingTime: [
+          { required: true, message: "请输入来访时间", trigger: "blur" },
+        ]
       },
-      // 被访人列表数据
+      // 被访人下拉列表
       intervieweesData: [],
+      // 图片地址
       imageUrl: ""
     };
   },
@@ -179,7 +181,6 @@ export default {
         maxResultCount:10
       }
       PostUserList(parm).then(res => {
-        console.log(res)
         // let data = res.result.items
         // for(let i=0; i<data.length; i++){
         //     data[i].value = data[i].id
@@ -198,11 +199,10 @@ export default {
         // console.log(_this.intervieweesData)
       })
     },
-    // 新增访客记录
+    // 保存访客记录信息
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // alert("submit!");
           GetInsertRecord(this.ruleForm).then(res => {
             console.log(res)
             this.$message.success('创建成功！')
@@ -210,13 +210,14 @@ export default {
             console.log(err)
           })
         } else {
-          console.log("error submit!!");
+          console.log("创建失败！");
           return false;
         }
       });
     },
-    // 上传照片
+    // 上传证件照片
     beforeAvatarUpload(file) {
+      // console.log(file)
       const isLt4M = file.size / 1024 < 1024 * 5;
       if (!isLt4M) {
         this.$message.error("上传图片大小不能超过 5M!");
@@ -224,17 +225,16 @@ export default {
       return isLt4M;
     },
     handleAvatarSuccess(file) {
-      if (file.code == "SUCCESS") {
-        this.$emit("input", file.data);
+      let url = "http://192.168.9.44:9090/" + file.result.items[0].url
+      console.log(file)
+      if (file.success) {
+        // this.imageUrl = file.result.items[0].url;
+        this.imageUrl = url;
+        console.log(this.imageUrl)
       }
     },
-    getUpload(id) {
-      getUpload({ fileId: id }).then(res => {
-        if (res.result) {
-          this.imageUrl = res.result;
-        }
-      });
-    },
+   
+    // 跳转到列表
     goToLink() {
       this.$router.replace("/visitor/VisitorManage");
     }
