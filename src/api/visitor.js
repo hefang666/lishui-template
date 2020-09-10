@@ -64,3 +64,17 @@ export function GetPagePointList(params) {
         data: params
     })
 }
+export function InsertVisitPoint(params) {
+    return request({
+        url: '/api/services/Security/VisitPointService/InsertVisitPoint', // 新增访客登记点
+        method: 'POST',
+        data: params
+    })
+}
+export function UpdateVisitPoint(params) {
+    return request({
+        url: '/api/services/Security/VisitPointService/UpdateVisitPoint', // 修改访客登记点
+        method: 'POST',
+        data: params
+    })
+}

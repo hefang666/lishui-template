@@ -112,8 +112,16 @@
 	/deep/ .el-button--mini {
 		padding: 5px 10px;
 	}
+	/deep/ .el-button--primary.is-plain {
+		color: #4b77be;
+		background: #ffffff;
+		border-color: #4b77be;
+	}
+	/deep/ .el-button--primary.is-plain:hover {
+		color: #FFFFFF;
+		background: #4b77be;
+	}
 }
-
 
 /*
 * 	重写table样式
@@ -130,6 +138,35 @@
 	}
 	/deep/ .el-table th, .el-table td {
 		padding: 5px;
+	}
+	/deep/ .el-table-column--selection .cell {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	/deep/ .el-table__body tr.current-row > td,
+	/deep/ .el-table--striped .el-table__body tr.el-table__row--striped.current-row td {
+		background-color: #c6e4fd;
+	}
+}
+// 查看路线页面的table
+.table-box-route {
+	/deep/ .el-table {
+		font-size: 12px;
+	}
+	/deep/ .el-table th {
+		background-color: #4b77be;
+	}
+	/deep/ .el-table thead {
+		color: #FFFFFF;
+	}
+	/deep/ .el-table .cell {
+		line-height: 19px;
+	}
+	/deep/ .el-table th {
+		padding: 5px;
+	}
+	/deep/ .el-table td {
+		padding: 0;
 	}
 	/deep/ .el-table-column--selection .cell {
 		padding-left: 10px;
@@ -165,7 +202,11 @@
 		color: #FFFFFF;
 	}
 	/deep/ .el-dialog__body {
-		padding: 16px;
+		padding:0;
+		min-height: 480px;
+	}
+	/deep/ .el-dialog__footer {
+		border-top: 1px solid #e5e5e5;
 	}
 }
 
@@ -199,9 +240,65 @@
 */
 .page-box {
 	/deep/ .el-pagination.is-background .el-pager li:not(.disabled):hover {
-		color: #4b77be;
+		color: #FFFFFF;
+		background: #4b77be;
 	}
 	/deep/ .el-pagination.is-background .el-pager li:not(.disabled).active {
 		background-color: #4b77be;
+	}
+}
+
+/*
+*		重写tabs样式
+*/
+.tabs-box {
+	/deep/ .el-tabs__nav-wrap {
+		margin-bottom: -2px;
+	}
+	/deep/ .el-tabs__header {
+		margin: 0 0 5px;
+	}
+	/deep/ .el-tabs--card > .el-tabs__header .el-tabs__nav {
+		border: none;
+	}
+	/deep/ .el-tabs--card > .el-tabs__header .el-tabs__item {
+		border-left: 1px solid transparent;
+	}
+	/deep/ .el-tabs__item.is-active {
+		color: #4b77be;
+		border-left: 1px solid #dfe4ed !important;
+		border-right: 1px solid #dfe4ed;
+		border-top: 1px solid #dfe4ed;
+		border-radius: 4px 4px 0 0;
+	}
+}
+// 查看路线中的tabs样式（只有两个元素切换）
+.tabs-box-route {
+	/deep/ .el-tabs__nav-wrap {
+		margin-bottom: -2px;
+	}
+	/deep/ .el-tabs__header {
+		margin: 0 0 5px;
+	}
+	/deep/ .el-tabs--card > .el-tabs__header .el-tabs__nav {
+		border: none;
+		width: 100%;
+	}
+	/deep/ .el-tabs__item {
+		height: 26px;
+		line-height: 26px;
+		font-size: 12px;
+		width: 50%;
+		text-align: center;
+	}
+	/deep/ .el-tabs--card > .el-tabs__header .el-tabs__item {
+		border-left: 1px solid transparent;
+	}
+	/deep/ .el-tabs__item.is-active {
+		color: #4b77be;
+		border-left: 1px solid #dfe4ed !important;
+		border-right: 1px solid #dfe4ed;
+		border-top: 1px solid #dfe4ed;
+		border-radius: 4px 4px 0 0;
 	}
 }
