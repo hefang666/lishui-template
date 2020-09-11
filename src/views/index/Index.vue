@@ -33,6 +33,12 @@
             </div>
             <h3>访客管理</h3>
           </div>
+          <div class="item-col">
+            <div class="col-icon" @click="getToVisitorPointManage">
+              <i class="el-icon-s-management"></i>
+            </div>
+            <h3>访客点管理</h3>
+          </div>
         </div>
       </div>
       <div class="flex-item">
@@ -98,6 +104,9 @@ export default {
     },
     getToVisitorManage() {
       this.$router.push({ path: "/visitor/VisitorManage" });
+    },
+    getToVisitorPointManage() {
+      this.$router.push({ path: "../visitor/VisitorPointManage" });
     },
     // 车辆管理
     getToCarRegister() {

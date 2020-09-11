@@ -7,7 +7,7 @@
         v-for="(item, index) in listData" 
         :key="index" 
         @click="changeList(index)">
-        <span>{{item.PointName}}</span>
+        <span>{{item.pointName}}</span>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@ export default {
       listData: [
         // {
         //   id: 1,
-        //   name: '李四四',
+        //   name: '李四',
           
         // },
         // {

@@ -78,3 +78,10 @@ export function UpdateVisitPoint(params) {
         data: params
     })
 }
+export function DeleteVisitPoint(params) {
+    return request({
+        url: '/api/services/Security/VisitPointService/DeleteVisitPoint', // 删除访客登记点
+        method: 'POST',
+        data: params
+    })
+}

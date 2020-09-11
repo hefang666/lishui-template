@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <div class="m-tree-left-col">
+    <div class="snt-list-left-col">
       <c-tree></c-tree>
     </div>
-    <div class="m-grid-right-col">
+    <div class="snt-table-right-col">
       <div class="form-box">
         <el-form
           ref="ruleForm"
@@ -13,8 +13,17 @@
           :label-position="labelPosition"
           label-width="110px"
         >
-          <el-form-item label="姓名：" prop="VisitorName">
-            <el-input v-model="ruleForm.VisitorName"></el-input>
+        <div class="list-item">
+          <el-form-item 
+            class="has-two-item" 
+            label="姓名：" 
+            label-width="120px" 
+            prop="VisitorName"
+           >
+            <el-input 
+            type="taskName" 
+            v-model="ruleForm.VisitorName"
+            ></el-input>
           </el-form-item>
           <el-form-item label="证件类型：" prop="IdCardType">
             <el-select v-model="ruleForm.IdCardType" placeholder="请选择证件类型">
@@ -23,6 +32,7 @@
               <el-option label="护照" value="2"></el-option>
             </el-select>
           </el-form-item>
+        </div>
           <el-form-item label="证件号码：" prop="IdCardNumber">
             <el-input v-model="ruleForm.IdCardNumber"></el-input>
           </el-form-item>
@@ -117,6 +127,17 @@ import { PostUserList, GetInsertRecord } from '@/api/visitor';
 export default {
   components: { cTree },
   data() {
+    // 验证手机号的验证规则
+    var checkMobile = (rule, value, callback) => {
+      // 验证手机号的正则表达式
+      const regMobile = /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
+      if (regMobile.test(value)) {
+        // 验证通过，合法的手机号
+        return callback()
+      }
+      // 验证不通过，不合法
+      callback(new Error('请输入合法的手机号'))
+    }
     return {
       labelPosition: "left",
       ruleForm: {
@@ -148,7 +169,7 @@ export default {
         IdCardNumber: [{ min: 1, max: 10, message: "长度在10字符", trigger: "blur" }],
         PhoneNumber: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在10字符", trigger: "blur" }
+          { validator: checkMobile, trigger: "blur" }
         ],
         CarNumber: [
           { required: true, message: "请输入车牌号码", trigger: "blur" }
@@ -233,7 +254,6 @@ export default {
         console.log(this.imageUrl)
       }
     },
-   
     // 跳转到列表
     goToLink() {
       this.$router.replace("/visitor/VisitorManage");
@@ -243,12 +263,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/element-ui-new.scss';
+@import '@/styles/public.scss';
 .container{
   width:100%;
   display: flex;
   overflow: hidden;
 }
-.m-tree-left-col {
+.snt-list-left-col {
   position: absolute;
   width: 190px;
   min-height:calc(100vh - 24px);
@@ -256,64 +278,76 @@ export default {
   transition:width 0.28s;
   border-right: 1px solid #ccc;
 }
-.m-grid-right-col {
+.snt-table-right-col {
   margin-left: 190px;
   overflow: hidden;
   padding:30px;
   flex: 1;
-}
-.form-box {
-  width: 950px;
-  padding: 20px;
-  margin-right: 50px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-}
-.footer-btn {
-  margin: auto;
-  text-align: center;
-}
-//上传图片
-.org-img {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  height: 80px;
-  width: 80px;
-}
-.avatar-uploader {
-  border: none;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  color: #8c939d;
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  text-align: center;
-}
-.avatar-uploader ::v-deep .el-upload {
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.no-avatar-wrapper {
-  display: flex;
-  align-items: center;
-  .intro-text {
-    display: flex;
-    margin-left: 20px;
-    font-size: 14px;
-    color: #ababab;
-    flex-direction: column;
-    align-items: flex-start;
-    > div {
-      line-height: 30px;
+
+  .form-box {
+    width: 950px;
+    padding: 20px;
+    margin-right: 50px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      .has-two-item {
+        width: 46%;
+        .list-item-content-box {
+          width: 220px;
+        }
+      }
     }
-    .upload-text {
-      color: #f4f4f4;
+  }
+  .footer-btn {
+    margin: auto;
+    text-align: center;
+  }
+  //上传图片
+  .org-img {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    height: 80px;
+    width: 80px;
+  }
+  .avatar-uploader {
+    border: none;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+  }
+  .avatar-uploader ::v-deep .el-upload {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .no-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    .intro-text {
+      display: flex;
+      margin-left: 20px;
+      font-size: 14px;
+      color: #ababab;
+      flex-direction: column;
+      align-items: flex-start;
+      > div {
+        line-height: 30px;
+      }
+      .upload-text {
+        color: #f4f4f4;
+      }
     }
   }
 }
+
 </style>

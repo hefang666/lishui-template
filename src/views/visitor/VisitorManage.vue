@@ -1,61 +1,111 @@
 <template>
   <div class="container">
-    <div class="m-tree-left-col">
+    <div class="snt-list-left-col">
       <c-tree></c-tree>
     </div>
-    <div class="m-grid-right-col">
-      <el-form ref="form" :inline="true" :model="form" class="fixFrom">
-        <el-form-item label="访客姓名/电话：">
-          <el-input v-model="form.NameOrTel" placeholder="请输入访客姓名/电话" />
-        </el-form-item>
-        <el-form-item label="来访时间：">
-          <el-date-picker
-            v-model="visitTime"
-            type="daterange"
-            unlink-panels
-            value-format="yyyy-MM-dd"
-            format="yyyy-MM-dd"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          />
-        </el-form-item>
-        <el-button type="primary" @click="getList">查询</el-button>
-      </el-form>
-      <c-table
-        :pagedTable="tableData"
-        :columnMap="columnMap"
-        border
-        :paginationOption="page"
-        :isLoadTable="loading"
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange"
-      >
-        <el-table-column slot="operate" label="操作">
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="small"
-              @click="handleCheckInfo(scope.$index, scope.row)"
-              >查看</el-button
+    <div class="snt-table-right-col">
+      <div class="task_management_pages button-box">
+        <div class="header-box">
+          <div class="header-left">
+            <div class="search-box">
+              <el-input
+                placeholder="请输入访客姓名/电话"
+                prefix-icon="el-icon-search"
+                clearable
+                @clear="getList" 
+                v-model="form.nameOrTel"
+                style="width:210px;margin-right:20px;"
+              ></el-input>
+              <el-date-picker
+                v-model="visitTime"
+                type="daterange"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                format="yyyy-MM-dd"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              />
+              <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
+            </div>
+          </div>
+          <div class="header-right">
+            <el-button-group>
+              <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
+            </el-button-group>
+          </div>
+        </div>
+        <div class="content-box">
+          <div class="table-box">
+            <el-table
+              ref="multipleTable"
+              :data="tableData"
+              :stripe="true"
+              tooltip-effect="dark"
+              style="width: 100%"
+              @selection-change="handleSelectionChange"
             >
-            <el-button
-              type="text"
-              size="small"
-              @click="handleAdd(scope.$index, scope.row)"
-              >添加离开时间</el-button
-            >
-            <el-button
-              type="text"
-              size="small"
-              @click="handleDel(scope.$index, scope.row)"
-              style="color:#ff4949"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </c-table>
-      <el-dialog
+              <el-table-column type="selection" width="50"></el-table-column>
+              <el-table-column
+                prop="visitorName"
+                label="姓名"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
+                prop="idCardNumber"
+                label="证件号码"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
+                prop="idPhoto"
+                label="联系电话"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
+                prop="contactAddress"
+                label="登记地点"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
+                prop="visitTime"
+                label="登记时间"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
+                prop="leaveTime"
+                label="离开时间"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <div class="operate-box">
+                    <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleCheckInfo(scope.$index, scope.row)"
+                      >查看</el-button
+                    >
+                    <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleLeaveTimeAdd"
+                      >添加离开时间</el-button
+                    >
+                    
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <page
+            :page-data="[30, 40, 50, 100]"
+            :total="totalCount"
+            @changePageSize="changePageSize"
+            @changeCurrentPage="changeCurrentPage"
+          ></page>
+        </div>
+     
+      <!-- <el-dialog
         :visible.sync="dialogVisible"
         title="访客记录"
         :close-on-click-modal="true"
@@ -90,126 +140,91 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click.native="dialogVisible = false">取消</el-button>
         </div>
-      </el-dialog>
-      <el-dialog
-        :visible.sync="dialogAddVisible"
-        title="添加离开时间"
-        :close-on-click-modal="true"
-        :show-close="true"
-        style="width:50%;margin:0 auto;"
-        ><el-form
-          ref="addForm"
-          :model="addForm"
-          label-width="100px"
-          :rules="addFormRules"
-        >
-          <el-form-item label="离开时间" prop="LeaveTime">
-            <el-date-picker
-              v-model="addForm.LeaveTime"
-              type="datetime"
-              placeholder="选择离开时间"
-            >
-            </el-date-picker> </el-form-item
-        ></el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click.native="dialogAddVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            :loading="addLoading"
-            @click.native="onSubmit"
-            >保存</el-button
+      </el-dialog> -->
+      <div class="addTask-box dialog-box button-box">
+        <el-dialog
+          :visible.sync="dialogAddLeaveTimeVisible"
+          title="添加离开时间"
           >
-        </div></el-dialog
-      >
+          <div class="content-box form-box">
+            <div class="content_box">
+              <el-form
+                ref="addFormRef"
+                :model="addForm"
+                :rules="addFormRules"
+              >
+                <el-form-item label="离开时间" prop="leaveTime">
+                  <el-date-picker
+                    v-model="addForm.leaveTime"
+                    type="datetime"
+                    placeholder="选择离开时间"
+                  >
+                  </el-date-picker> </el-form-item
+              ></el-form>
+            </div>
+          </div>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="closeAdd">取消</el-button>
+            <el-button
+              type="primary"
+              @click="onSubmit"
+              >保存</el-button
+            >
+          </div>
+        </el-dialog>
+      </div>
+      
+      <!-- 查看详情弹窗 -->
+      <view-task :dialog-view="dialogView" @getViewData="getViewData"></view-task>
+    </div>
     </div>
   </div>
 </template>
 
 <script>
-import cTable from "@/components/table/cTable";
 import cTree from "@/components/tree/cTree";
+import Page from '@/components/page/Page';
+import ViewTask from './visitorManageTask/viewTask/ViewTask';
 import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord } from '@/api/visitor';
 
-const columnMap = [
-  {
-    prop: "index",
-    slot: true
-  },
-  {
-    prop: "visitorName",
-    label: "姓名",
-    width: "200",
-    align: "center"
-  },
-  {
-    prop: "IdCardNumber",
-    label: "证件号码",
-    align: "center"
-  },
-  {
-    prop: "PhoneNumber",
-    label: "电话号码",
-    align: "center"
-  },
-  {
-    prop: "CheckAddress",
-    label: "登记地点",
-    align: "center"
-  },
-  {
-    prop: "VisitTime",
-    label: "登记时间",
-    align: "center"
-  },
-  {
-    prop: "LeaveTime",
-    label: "离开时间",
-    align: "center"
-  }
-];
 export default {
-  components: { cTable, cTree },
+  components: { cTree, Page, ViewTask },
   data() {
     return {
       // 查询参数
       form: {
-        NameOrTel:'',
-        VisitTimeBegin:'',
-        VisitTimeEnd:'',
-        // codes: ["123"],
-        // PageIndex:1,
-        // MaxResultCount:10
-
+        nameOrTel:'',
+        visitTimeBegin:'',
+        visitTimeEnd:'',
+        codes: ["1"],
+        pageIndex: 1,
+        maxResultCount: 30,
       },
       // 日期时间参数
       visitTime:'',
-      columnMap: columnMap,
-      // 分页参数
-      page: {
-        PageIndex: 1,
-        MaxResultCount: 10,
-        totalCount:0
-      },
-      
-      // pagination: {},
-      // table参数
-      // options: {
-      //   stripe: true, // 是否为斑马纹 table
-      //   loading: false, // 是否添加表格loading加载动画
-      //   highlightCurrentRow: true, // 是否支持当前行高亮显示
-      //   mutiSelect: true // 是否支持列表项选中功能
-      // },
+      // 总条数
+      totalCount:0,
       loading: false,
       // 列表数据
       tableData: [],
-      ids:[],
-      dialogVisible: false, // 查看详情弹窗是否显示
-      detilForm: {}, // 详情数据
+      // 是否显示查看用户信息弹窗
+      dialogView: false,
+      // detilForm: {}, // 详情数据
       detilFormRules: {},
-      addForm: { leaveDate: "" }, // 添加数据
-      dialogAddVisible: false, // 添加弹窗是否显示
-      addFormRules: {},
-      addLoading: false
+      // 是否显示新增离开时间弹窗
+      dialogAddLeaveTimeVisible:false,
+      // 新增添加时间参数
+      addForm: { 
+        id:0,
+        leaveTime: "" 
+      }, 
+      addFormRules:{
+        leaveTime: [
+          { required: true, message: "离开时间不能为空", trigger: "blur" }
+        ],
+      },
+      // 批量删除id
+      ids:[],
     };
   },
   mounted() {
@@ -218,123 +233,132 @@ export default {
   methods: {
     // 获取列表
     getList() {
-      let _this=this
-      _this.loading = true
-      let para ={
-        NameOrTel:_this.form.NameOrTel,
-        // codes:_this.JSON.stringify(codes),
-        codes: ["123"],
-        PageIndex:_this.page.PageIndex,
-        MaxResultCount:_this.page.MaxResultCount,
-        VisitTimeBegin:_this.visitTime[0],
-        VisitTimeEnd:_this.visitTime[1]
-      }
-      GetPageList(para).then(res => {
-        // console.log(res)
+      this.loading = true
+      GetPageList(this.form).then(res => {
+        console.log(res)
         if(res.success){
-          setTimeout(() => {
-          _this.tableData = res.result.items
-          _this.page.totalCount =  res.result.totalCount
-          _this.loading = false
-        }, 300)
+          this.tableData = res.result.items
+          this.totalCount =  res.result.totalCount
+          this.loading = false
         }
-        
-        
       })
     },
-    // 切换每页显示的数量
-    handleSizeChange(val) {
-      let _self = this
-      // console.log('每页 ' + val + ' 页')
-      _self.PageIndex = val
-      _self.getList();
+    
+    handleSelectionChange(val) {
+      let list = []
+      this.multipleSelection = val;
+      console.log(val)
+      val.forEach((res) => {
+        list.push(res.id)
+      })
+      this.ids = list
     },
-    // 切换页码
-    handleCurrentChange(val) {
-      let _self = this
-      _self.MaxResultCount = val
-      // console.log('当前页: ' + val)
-      _self.getList();
+    // 获取从分页传过来的每页多少条数据
+		changePageSize(val) {
+      console.log(val);
+      this.form.maxResultCount = val
+      this.getList()
+		},
+		// 获取从分页传过来的当前页数
+		changeCurrentPage(val) {
+      console.log(val);
+      this.form.pageIndex = val
+      this.getList()
+    },
+    // 关闭查看弹窗
+    getViewData(data) {
+      this.dialogView = data.dialogView;
     },
     // 查看详情
     handleCheckInfo(index, row) {
+      console.log(index, row);
+      this.dialogView = true;
       // console.log(index, row);
-      let _this = this;
-      _this.loading = true
-      _this.detilForm = row;
-      _this.dialogVisible = true;
+      // let _this = this;
+      // _this.loading = true
+      // _this.detilForm = row;
+      // _this.dialogVisible = true;
       let param = {
         id: row.id
       }
       GetById(param).then(res => {
-       _this.detilForm = res.result
-       _this.loading = false
-       _this.getList()
+       this.detilForm = res.result
+       this.loading = false
+       this.getList()
       })
     },
-    // 添加离开时间
-    handleAdd(index, row) {
-      // console.log(index, row);
-      let _this = this;
-      _this.loading = true
-      _this.detilForm = row;
-      _this.dialogAddVisible = true;
-      let param = {
-        id:row.id,
-        LeaveTime:""
-      }
-      getInsertLeaveTime(param).then(res => {
-       _this.detilForm = res.result
-       _this.loading = true
-       _this.getList()
-      })
+    // 打开新增添加时间弹窗
+    handleLeaveTimeAdd() {
+      this.dialogAddLeaveTimeVisible = true;
     },
-    // 添加时间保存
+    // 关闭新增添加时间弹窗
+    closeAdd() {
+      // this.$refs.addFormRef.resetFields() // 监听对话框关闭事件
+      this.dialogAddLeaveTimeVisible = false
+    },
+    // 新增添加时间并提交 
     onSubmit() {
-      let _self = this;
-      _self.dialogAddVisible = false;
-      _self.$message.success("添加成功！");
-    },
-    // 删除
-    handleDel(row){
-      let _this = this
-      let data = {
-        ids:row.id
-      }
-      _this.$confirm('确定删除此数据吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        DeleteRecord(data).then(res => {
-          console.log(data)
-          if (res.success) {
-           _this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            _this.getlist()
-          } else {
-            _this.$message({
-              type: 'warning',
-              message: res.message
-            })
+      this.$refs.addFormRef.validate(async valid => {
+        // 如果valid的值为true，说明校验成功，反之则校验失败
+        if (!valid) return
+         getInsertLeaveTime(this.addForm).then(res => {
+          console.log(res)
+          if(res.success){
+            this.dialogAddLeaveTimeVisible = false
+            this.$message.success('添加成功！')
           }
         })
       })
-    }
+    },
+    // 删除
+    handleDel(rows){  
+      const _this = this
+      console.log(rows)
+      if (_this.ids.length === 0) {
+        _this.$message({
+          message: '请勾选要删除的行',
+          type: 'warning'
+        })
+        return
+      } else {
+        var data = this.ids
+        _this.$confirm('确定删除此数据吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          DeleteRecord(data).then(res => {
+            console.log(res)
+            if (res.success) {
+              _this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+             _this.getList()
+            } else {
+              _this.$message({
+                type: 'warning',
+                message: res.message
+              })
+            }
+          })
+        })
+      }    
+    },
 
   }
 };
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/element-ui-new.scss';
+@import '@/styles/public.scss';
 .container{
   width:100%;
   display: flex;
   overflow: hidden;
 }
-.m-tree-left-col {
+.snt-list-left-col {
   position: absolute;
   width: 190px;
   min-height:calc(100vh - 24px);
@@ -342,10 +366,51 @@ export default {
   transition:width 0.28s;
   border-right: 1px solid #ccc;
 }
-.m-grid-right-col {
+.snt-table-right-col {
   margin-left: 190px;
   overflow: hidden;
-  padding:30px;
+  // padding:30px;
   flex: 1;
+  .task_management_pages {
+    padding: 10px;
+    .header-box {
+      display: flex;
+      justify-content: space-between;
+      .header-left {
+        display: flex;
+        .search-box {
+          // margin-left: 20px;
+          display: flex;
+          .search-button {
+            margin-left: 5px;
+          }
+        }
+      }
+    }
+    .content-box {
+      margin-top: 10px;
+      .table-box {
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+      }
+      .page-box {
+        margin-top: 10px;
+      }
+    }
+  }
+}
+.addTask-box {
+  .content-box {
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      .has-two-item {
+        width: 46%;
+        .list-item-content-box {
+          width: 220px;
+        }
+      }
+    }
+  }
 }
 </style>

@@ -11,7 +11,9 @@
               <el-input
                 placeholder="请输入访客点名称"
                 prefix-icon="el-icon-search"
-                v-model="search"
+                clearable
+                @clear="getList" 
+                v-model="form.pointName"
               ></el-input>
               <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
             </div>
@@ -19,7 +21,7 @@
           <div class="header-right">
             <el-button-group>
               <el-button type="primary" plain @click="handleAdd">新增</el-button>
-              <el-button type="primary" plain @click="handleDel">删除</el-button>
+              <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
             </el-button-group>
           </div>
         </div>
@@ -52,12 +54,7 @@
                       @click="handleEdit(scope.$index, scope.row)"
                       >修改</el-button
                     >
-                    <!-- <el-button
-                      type="text"
-                      class="operate-button"
-                      @click="handleSee(scope.$index, scope.row)"
-                      >删除</el-button
-                    > -->
+                    
                   </div>
                 </template>
               </el-table-column>
@@ -73,7 +70,7 @@
         <!-- 新增弹窗 -->
         <add-task :dialogAdd.sync="dialogAdd"></add-task>
         <!-- 修改弹窗 -->
-        <edit-task :editvalue="editvalue" :dialogEdit.sync="dialogEdit"></edit-task>
+        <edit-task :editData="editData" :dialogEdit.sync="dialogEdit"></edit-task>
       </div>
     </div>
   </div>
@@ -82,9 +79,9 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
-import AddTask from './addTask/AddTask';
-import EditTask from './editTask/EditTask';
-import { GetPagePointList } from '@/api/visitor';
+import AddTask from './visitorPointTask/addTask/AddTask';
+import EditTask from './visitorPointTask/editTask/EditTask';
+import { GetPagePointList, DeleteVisitPoint } from '@/api/visitor';
 
 export default {
   components: { 
@@ -95,20 +92,27 @@ export default {
   },
   data() {
     return {
-      search:'',
+      // 查询参数
+      form: {
+        pointName:'',
+        pageIndex: 1,
+        maxResultCount: 30,
+      },
       multipleSelection: [],
+      // 列表
       tableData:[],
       loading: false,
-      // 分页参数
-      pageIndex: 1,
-      maxResultCount: 10,
+      // 总条数
       totalCount:0,
-      
       // 是否显示新增弹窗
       dialogAdd: false,
       // 是否显示修改弹窗
       dialogEdit: false,
-      editvalue:{}
+      // 查询到的信息对象
+      editData: {},
+      // 批量删除id
+      ids:[]
+
     }
   },
   mounted() {
@@ -117,60 +121,82 @@ export default {
   methods: {
     // 获取列表
     getList() {
-      let _this=this
-      _this.loading = true
-      let data = {
-        pointName:_this.PointName,
-        pageIndex:_this.pageIndex,
-        maxResultCount:_this.maxResultCount,
-      }
-      GetPagePointList(data).then(res => {
+      this.loading = true
+      GetPagePointList(this.form).then(res => {
         console.log(res)
         if(res.success){
-          setTimeout(() => {
-          _this.tableData = res.result.items
-          _this.totalCount =  res.result.totalCount
-          _this.loading = false
-        }, 300)
+          this.tableData = res.result.items
+          this.totalCount =  res.result.totalCount
+          this.loading = false
         }
       })
     },
     handleSelectionChange(val) {
+      let list = []
       this.multipleSelection = val;
+      console.log(val)
+      val.forEach((res) => {
+        list.push(res.id)
+      })
+      this.ids = list
     },
-    // 打开新增弹窗
+    // 显示新增弹窗
     handleAdd() {
       this.dialogAdd = true;
     },
     
     // 删除
-    handleDel(){
-
+    handleDel(rows){  
+      const _this = this
+      console.log(rows)
+      if (_this.ids.length === 0) {
+        _this.$message({
+          message: '请勾选要删除的行',
+          type: 'warning'
+        })
+        return
+      } else {
+        var data = this.ids
+        _this.$confirm('确定删除此数据吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          DeleteVisitPoint(data).then(res => {
+            console.log(res)
+            if (res.success) {
+              _this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+             _this.getList()
+            } else {
+              _this.$message({
+                type: 'warning',
+                message: res.message
+              })
+            }
+          })
+        })
+      }    
     },
-   
-    // 修改
+    // 显示修改弹窗
     handleEdit(index, row){
-      console.log(index, row);
-      // this.$refs.editTask.dialogEdit = true
+      console.log(index, row)
+      this.editData = row
       this.dialogEdit = true
-      this.editvalue = Object.assign({}, this.row, {
-        id:row.id,
-        code:row.code,
-        pointName:row.pointName
-      })
-     
     },
     // 获取从分页传过来的每页多少条数据
 		changePageSize(val) {
       console.log(val);
-      this.PageIndex = val
-      // this.getList()
+      this.form.maxResultCount = val
+      this.getList()
 		},
 		// 获取从分页传过来的当前页数
 		changeCurrentPage(val) {
-      this.maxResultCount = val
       console.log(val);
-      // this.getList()
+      this.form.pageIndex = val
+      this.getList()
 		}
   }
 

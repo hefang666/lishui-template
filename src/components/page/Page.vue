@@ -64,10 +64,10 @@ export default {
 			this.currentPage = val;
 			this.inputPage = val;
 			this.getShowRecoeding();
-			let data = {
-				currentPage: this.currentPage
-			};
-			this.$emit('changeCurrentPage', data);
+			// let data = {
+			// 	currentPage: this.currentPage
+			// };
+			this.$emit('changeCurrentPage', val);
 		},
 		// 设置下拉框（可选择的每页数据是多少条）
 		setPageSizeData(data) {
