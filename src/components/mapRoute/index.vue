@@ -178,7 +178,6 @@ export default {
         let routeFeatyre = new window.ol.Feature({
           geometry: new window.ol.geom.LineString(pointsPlanArray)
         });
-        // console.log(routeFeatyre);
         this.drawNavRouteSource.addFeature(routeFeatyre);
       }
 
@@ -228,7 +227,6 @@ export default {
           }
         }
       }
-      console.log(_this)
       // 选中要素
       var interval = setInterval(function () {
         var selectArrays = _this.featureSelect.getFeatures().getArray();
@@ -671,7 +669,6 @@ export default {
 
     mapOverlay () {
       let container = this.$refs.popup;
-      console.log(container)
       let overlay = new window.ol.Overlay({
         element: container,
         autoPan: true,
@@ -681,7 +678,7 @@ export default {
         positioning: 'center-center'
       });
       this.overlay = overlay;
-      this.map.addOverlay(overlay)
+      this.map.addOverlay(overlay);
     },
 
     closeOverlay () {
@@ -695,14 +692,14 @@ export default {
     */
     // 展示点
     ShowPointFunc(str) {
-        var strArr = str.split(';');
-        this.getFeatureByMapNo(strArr[0], strArr[1], "point");
+      var strArr = str.split(';');
+      this.getFeatureByMapNo(strArr[0], strArr[1], 'point');
     },
-    
+
     // 展示线
     ShowLineFunc(str) {
-        var strArr = str.split(';');
-        this.getFeatureByMapNo(strArr[0], strArr[1], "line");
+      var strArr = str.split(';');
+      this.getFeatureByMapNo(strArr[0], strArr[1], 'line');
     },
 
     /**
@@ -711,11 +708,12 @@ export default {
      * @param {String} material  设备图层
      * @param {String} featureType  是点还是线，是点就传point
      * @param {String} state  设备状态
-    */
+     */
     getFeatureByMapNo(mapNo, material, featureType, state) {
-      console.log(state)
+      console.log(state);
       // 首先判断地图中是否有该图层
-      let layerNow, _this = this;
+      let layerNow,
+      _this = this;
       let layerList = _this.map.getLayers().getArray();
       for (let i = 0; i < layerList.length; i++) {
         let url = layerList[i].values_.title;
@@ -727,31 +725,26 @@ export default {
       if (layerNow) {
         let featuresArray = layerNow.getSource().getFeatures();
         for (let i = 0; i < featuresArray.length; i++) {
-          if (featureType == "point") {
+          if (featureType == 'point') {
             if (featuresArray[i].values_.PointNumbe == mapNo) {
               let coordinate = featuresArray[i].values_.geometry.flatCoordinates;
-              console.log(coordinate)
               _this.featureType = 'point';
               _this.currentFeature = featuresArray[i];
               _this.$nextTick(() => {
-                _this.overlay.setPosition(coordinate)
-              })
-              // setHtmlByFeature("point", featuresArray[i], state);
-              // overlay.setPosition(coordinate);
+                _this.overlay.setPosition(coordinate);
+              });
             }
           } else {
             if (featuresArray[i].values_.LineNumber == mapNo) {
               let coordinate = featuresArray[i].values_.geometry.flatCoordinates;
               _this.featureType = 'line';
               _this.currentFeature = featuresArray[i];
+              var coordinatel = new Array();
+              coordinatel.push((coordinate[0] + coordinate[2]) / 2);
+              coordinatel.push((coordinate[1] + coordinate[3]) / 2);
               _this.$nextTick(() => {
-                _this.overlay.setPosition(coordinate)
-              })
-              // setHtmlByFeature("line", featuresArray[i], state);
-              // var coordinatel = new Array();
-              // coordinatel.push((coordinate[0] + coordinate[2]) / 2);
-              // coordinatel.push((coordinate[1] + coordinate[3]) / 2);
-              // overlay.setPosition(coordinatel);
+                _this.overlay.setPosition(coordinatel)
+              });
             }
           }
         }
