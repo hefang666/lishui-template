@@ -98,7 +98,7 @@ export default {
       layers: [tdMap, dmLayer],
       center: [106.548293, 29.565552],
       zoom: zoomMap,
-      maxZoom: 20,
+      maxZoom: 18,
       minZoom: 5,
       target: 'map'
     });

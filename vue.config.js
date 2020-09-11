@@ -6,5 +6,17 @@ module.exports = {
   },
   css: {
     sourceMap: true
+  },
+  devServer: {
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://192.168.9.44:9090/api/services/Inspection/PlanService/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   }
 };
