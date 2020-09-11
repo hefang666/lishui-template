@@ -1,8 +1,8 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="任务详情" :visible.sync="dialogView">
+    <el-dialog title="任务详情" :visible.sync="dialogViewDetail">
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeView">
+        <div class="cancel-box" @click="closeViewDetail">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="tabs-box">
@@ -230,7 +230,7 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="closeView">取 消</el-button>
+        <el-button @click="closeViewDetail">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -253,8 +253,8 @@ import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 export default {
-  name: 'AddTask',
-  props: ['dialogView'],
+  name: 'viewTask',
+  props: ['dialogViewDetail'],
   components: {
     Page,
     EquipmentInfo,
@@ -304,12 +304,12 @@ export default {
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
-    closeView() {
+    closeViewDetail() {
       let data = {
-        dialogView: false,
+        dialogViewDetail: false,
         data: []
       };
-      this.$emit('getViewData', data);
+      this.$emit('closeViewDetail', data);
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {

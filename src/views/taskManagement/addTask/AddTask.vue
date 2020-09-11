@@ -83,7 +83,7 @@
                   }
                 ]"
               >
-                <div class="list-item-content-box">
+                <div class="list-item-content-box select_box">
                   <el-select
                     v-model="addForm.taskType"
                     placeholder="请选择任务类别"
@@ -137,8 +137,8 @@
 </template>
 
 <script>
-import ChoosePeople from '../public/ChoosePeople.vue';
-import ChooseArea from '../public/ChooseArea.vue';
+import ChoosePeople from '@/views/public/ChoosePeople.vue';
+import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
   name: 'AddTask',
   props: ['dialogAdd'],
@@ -222,7 +222,6 @@ export default {
           color: #ffffff;
           background: #4b77be;
           border: none;
-          padding: 7px 6px;
           cursor: auto;
         }
 

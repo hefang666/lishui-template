@@ -54,7 +54,8 @@
 *	重写input的样式
 */
 .search-box,
-.form-box{
+.form-box,
+.select_box{
 	/deep/ .el-input {
 		font-size: 12px;
 	}
@@ -80,13 +81,16 @@
 /*
 *	重写下拉框
 */
-.el-select {
-	width: 100%;
+.select_box {
+	/deep/ .el-select {
+		width: 100%;
+	}
+	/deep/ .el-select .el-input__inner:focus,
+	/deep/ .el-select .el-input.is-focus .el-input__inner {
+		border-color: #4b77be;
+	}
 }
-.el-select .el-input__inner:focus,
-.el-select .el-input.is-focus .el-input__inner {
-	border-color: #4b77be;
-}
+
 
 /*
 * 	重写button样式
@@ -97,8 +101,11 @@
 		border-color: #4b77be;
 	}
 	/deep/ .el-button {
-		padding: 6px 15px;
+		// padding: 6px 15px;
 		font-size: 12px;
+		height: 28px;
+    line-height: 28px;
+    padding: 0 12px;
 	}
 	/deep/ .el-button--primary:hover {
 		background-color: #395f9d;
@@ -109,13 +116,16 @@
 		background-color: #4b77be;
 		border-color: #4b77be;
 	}
-	/deep/ .el-button--mini {
-		padding: 5px 10px;
-	}
+	// /deep/ .el-button--mini {
+	// 	padding: 5px 10px;
+	// }
 	/deep/ .el-button--primary.is-plain {
 		color: #4b77be;
 		background: #ffffff;
 		border-color: #4b77be;
+		height: 28px;
+		line-height: 28px;
+		padding: 0 12px;
 	}
 	/deep/ .el-button--primary.is-plain:hover {
 		color: #FFFFFF;

@@ -6,62 +6,15 @@
           <el-button
             type="primary"
             plain
-            :class="searchName == 'all' ? 'item-active' : ''"
-            @click="searchConditional('all')"
+            v-for="(item,index) in statusList"
+            :key="index"
+            :class="{'item-active': index == currentIndex}"
+            @click="searchConditional(index)"
           >
-            全部
+            {{item}}
           </el-button>
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'toBeCompleted' ? 'item-active' : ''"
-            @click="searchConditional('toBeCompleted')"
-            >待完成</el-button
-          >
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'haveInHand' ? 'item-active' : ''"
-            @click="searchConditional('haveInHand')"
-            >进行中</el-button
-          >
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'overdue' ? 'item-active' : ''"
-            @click="searchConditional('overdue')"
-            >已超期</el-button
-          >
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'suspend' ? 'item-active' : ''"
-            @click="searchConditional('suspend')"
-            >暂停</el-button
-          >
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'completed' ? 'item-active' : ''"
-            @click="searchConditional('completed')"
-            >已完成</el-button
-          >
-          <el-button
-            type="primary"
-            plain
-            :class="searchName == 'closed' ? 'item-active' : ''"
-            @click="searchConditional('closed')"
-            >已关闭</el-button
-          >
         </el-button-group>
-        <div class="search-box">
-          <el-input
-            placeholder="请输入任务名称"
-            prefix-icon="el-icon-search"
-            v-model="searchWords"
-          ></el-input>
-          <el-button class="search-button" type="primary">查询</el-button>
-        </div>
+        <snt-search :placeholder="'请输入任务名称'" />
       </div>
       <div class="header-right">
         <el-button-group>
@@ -76,7 +29,7 @@
       <div class="table-box">
         <el-table
           ref="multipleTable"
-          :data="tableData"
+          :data="taskList"
           :stripe="true"
           tooltip-effect="dark"
           height="830"
@@ -85,55 +38,55 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="taskName"
+            prop="name"
             label="任务名称"
             min-width="120"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="taskType"
+            prop="type"
             label="任务类别"
             width="120"
           ></el-table-column>
           <el-table-column
-            prop="inCharge"
+            prop="person"
             label="负责人"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="player"
+            prop="participants"
             label="参与人"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="estimatedStartTime"
+            prop="planTime"
             min-width="110"
             label="预计开始时间"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="estimatedEndTime"
+            prop="planEndTime"
             min-width="110"
             label="预计完成时间"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="actualCompletionTime"
+            prop="endTime"
             min-width="110"
             label="实际完成时间"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="timeOut"
+            prop="stopTime"
             label="暂停时长"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="missionStatus"
+            prop="status"
             label="任务状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="操作" min-width="200">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
@@ -166,12 +119,14 @@
           </el-table-column>
         </el-table>
       </div>
-      <page
-        :page-data="[30, 40, 50, 100]"
-        :total="400"
-        @changePageSize="changePageSize"
-        @changeCurrentPage="changeCurrentPage"
-      ></page>
+      <div class="page-box">
+        <page
+          :page-data="[30, 40, 50, 100]"
+          :total="400"
+          @changePageSize="changePageSize"
+          @changeCurrentPage="changeCurrentPage"
+        ></page>
+      </div>
     </div>
 
     <!-- 新增任务弹框 -->
@@ -188,85 +143,27 @@ import AddTask from './addTask/AddTask.vue';
 import Page from '@/components/page/Page.vue';
 import ViewTask from './viewTask/ViewTask.vue';
 import EditTask from './editTask/EditTask.vue';
+import Search from '@/components/search';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('taskManagement');
 export default {
   name: 'TaskManagement',
   components: {
     AddTask,
     Page,
     ViewTask,
-    EditTask
+    EditTask,
+    'snt-search': Search
+  },
+  computed: {
+    ...mapState(['taskList'])
   },
   data() {
     return {
+      // 搜索框输入的搜索关键字
       searchWords: '',
-      tableData: [
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        },
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        },
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        },
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        },
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        },
-        {
-          taskName: '巡检任务',
-          taskType: '临时任务',
-          inCharge: '张三',
-          player: '李四、王五',
-          estimatedStartTime: '2019-01-01 9:00',
-          estimatedEndTime: '2019-01-01 17:00',
-          actualCompletionTime: ' ',
-          timeOut: '3小时20分',
-          missionStatus: '待完成'
-        }
-      ],
+
+      // table多选数组
       multipleSelection: [],
 
       // 当前分页
@@ -282,12 +179,20 @@ export default {
       dialogEdit: false,
 
       // 当前选中的筛选类别名字（顶部左侧的input组 all）
-      searchName: 'all'
+      searchName: 'all',
+
+      // 按状态筛选的状态内容
+      statusList: ['全部', '待完成', '进行中', '已超期', '暂停', '已完成', '已关闭'],
+
+      // 当前是第几个状态被选中
+      currentIndex: 0
     };
   },
   methods: {
+    // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
+      console.log(this.multipleSelection)
     },
 
     // 关闭任务
@@ -313,8 +218,8 @@ export default {
     },
 
     // 按状态筛选则并为input添加样式
-    searchConditional(name) {
-      this.searchName = name;
+    searchConditional(index) {
+      this.currentIndex = index;
     },
     // 打开新增弹窗
     addTask() {
@@ -340,6 +245,7 @@ export default {
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
+      this.currentPage = data;
     }
   },
   mounted() {}
@@ -381,6 +287,8 @@ export default {
 
     .page-box {
       margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

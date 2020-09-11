@@ -9,7 +9,7 @@
           <div class="table-box">
             <el-table
               ref="multipleTable"
-              :data="tableData"
+              :data="areaList"
               :stripe="true"
               tooltip-effect="dark"
               height="400"
@@ -68,7 +68,9 @@
 
 <script>
 import Page from '@/components/page/Page.vue';
-import ViewRoute from '../public/ViewRoute.vue';
+import ViewRoute from '@/views/public/ViewRoute.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('xunjianPublic');
 export default {
   name: 'ChooseArea',
   props: ['dialogArea'],
@@ -79,26 +81,12 @@ export default {
   data() {
     return {
       searchWords: '',
-      tableData: [
-        {
-          name: '东城片区路线',
-          pipeLength: '5KM',
-          number: 15
-        },
-        {
-          name: '东城片区路线1',
-          pipeLength: '10KM',
-          number: 15
-        },
-        {
-          name: '东城片区路线2',
-          pipeLength: '5KM',
-          number: 10
-        }
-      ],
-      checkedName: '',
+      areaInfo: '',
       dialogRoute: false
     };
+  },
+  computed: {
+    ...mapState(['areaList'])
   },
   methods: {
     closeChooseArea() {
@@ -109,17 +97,16 @@ export default {
     },
     // 选中的行
     clickRow(val) {
-      console.log(val);
-      this.checkedName = val.name;
+      this.areaInfo = val;
     },
     // 点击确定
     determine() {
-      if (this.checkedName == '') {
+      if (this.areaInfo == '') {
         alert('请选择巡检片区！');
         return;
       } else {
         let data = {
-          // name: this.checkedName,
+          areaInfo: this.areaInfo,
           dialogArea: false
         };
 

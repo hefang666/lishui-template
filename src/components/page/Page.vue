@@ -1,157 +1,125 @@
 <template>
-	<div class="page-box">
-		<div class="select-box">
-			<el-select v-model="pageSize" size="mini" @change="handleSizeChange">
-				<el-option v-for="(item, index) in pageSizeData" :key="index" :label="item.value" :value="item.value"></el-option>
-			</el-select>
-		</div>
-		<div class="pagination-box">
-			<el-pagination
-				background
-				:small="true"
-				@current-change="handleCurrentChange"
-				:current-page="currentPage"
-				:pager-count="5"
-				layout="pager"
-				:page-size="pageSize"
-				:total="total"
-			></el-pagination>
-			<div class="jump-box">
-				<span>到第</span>
-				<el-input class="jump-input" size="mini" type="text" v-model.number="inputPage" oninput="value=value.replace(/[^\d]/g,'')" @blur="getInputValue">
-					{{ inputPage }}
-				</el-input>
-				<span>页</span>
-				<el-button class="jump-button" type="primary" size="mini" @click="jump">跳转</el-button>
-			</div>
-		</div>
-		<div>
-			<span class="page-right">当前显示第 {{ startRecording }} 到 {{ endRecoeding }} 条记录; 共 {{ total }} 条记录</span>
-		</div>
-	</div>
+  <div class="page_box">
+    <component
+      v-for="(item, index) in assembly"
+      :key="index"
+      :is="item"
+      :page-data="pageData"
+      :page-size="pageSize"
+      :total="total"
+      :current-page="currentPageNum"
+      :input-page="inputPage"
+      :pages-num="pagesNum"
+      :start-recording="startRecording"
+      :end-recoeding="endRecoeding"
+      @handleSizeChange="handleSizeChange"
+      @handleCurrentChange="handleCurrentChange"
+    >
+    </component>
+  </div>
 </template>
 
 <script>
+import sizes from './PageSize.vue';
+import pager from './Pagination.vue';
+import jump from './PageJump.vue';
+import detail from './PageDetail.vue';
+import total from './PageTotal.vue';
 export default {
-	name: 'Page',
-	props: ['pageData', 'total'],
-	data() {
-		return {
-			pageSize: 30,
-			// 当前页码
-			currentPage: 1,
-			// input输入的页码
-			inputPage: 1,
-			pageSizeData: [],
-			startRecording: 1,
-			endRecoeding: 30
-		};
-	},
-	methods: {
-		// 获取每页多少条数据
-		handleSizeChange(val) {
-			// console.log(`每页 ${val} 条`);
-			this.pageSize = val;
-			this.getShowRecoeding();
-			let data = {
-				pageSize: this.pageSize
-			};
-			this.$emit('changePageSize', data);
-		},
-		// 获取当前选择了第几页
-		handleCurrentChange(val) {
-			// console.log(`当前页: ${val}`);
-			this.currentPage = val;
-			this.inputPage = val;
-			this.getShowRecoeding();
-			let data = {
-				currentPage: this.currentPage
-			};
-			this.$emit('changeCurrentPage', data);
-		},
-		// 设置下拉框（可选择的每页数据是多少条）
-		setPageSizeData(data) {
-			this.pageSizeData = [];
-			data.forEach(item => {
-				this.pageSizeData.push({ value: item });
-			});
-		},
-		// 获取输入框中的数值并进行处理
-		getInputValue() {
-			if (this.inputPage == '') {
-				this.inputPage = 1;
-			} else if (this.inputPage == 0) {
-				this.inputPage = 1;
-			} else if (this.inputPage > Math.ceil(this.$props.total / this.pageSize)) {
-				this.inputPage = 1;
-			}
-		},
-		// 获取当前显示的数据，如（1-30）
-		getShowRecoeding() {
-			this.startRecording = (this.currentPage - 1) * this.pageSize + 1;
-			this.endRecoeding = this.currentPage * this.pageSize;
-		},
-		// 点击跳转
-		jump() {
-			this.currentPage = this.inputPage;
+  name: 'Page',
+  components: {
+    sizes,
+    pager,
+    jump,
+    detail,
+    total
+  },
+  props: {
+    pageData: {
+      type: Array,
+      default: () => {
+        return [30, 40, 50, 100];
+      }
+    },
+    layout: {
+      type: String,
+      default: 'sizes,pager,jump,detail,total'
+    },
+    total: {
+      type: Number,
+      default: 100
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    }
+  },
+  data() {
+    return {
+      // 每页数据条数
+      pageSize: 30,
+      // 当前页码
+      currentPageNum: 1,
+      // input输入的页码
+      inputPage: 1,
+      // 处理后的组件名称
+      assembly: [],
+      // 共有多少页
+      pagesNum: 1,
+      // 从第几条开始显示
+      startRecording: 1,
+      // 显示到第几条
+      endRecoeding: 30
+    };
+  },
+  methods: {
+    // 获取每页多少条数据
+    handleSizeChange(data) {
+      this.pageSize = data;
 
-			this.getShowRecoeding();
-			let data = {
-				currentPage: this.currentPage
-			};
-			this.$emit('changeCurrentPage', data);
-		}
-	},
-	mounted() {
-		// 如果没有传入每页数据pageData,则使用默认
-		if (this.$props.pageData == undefined) {
-			this.setPageSizeData([30, 40, 50, 100]);
-		} else {
-			this.setPageSizeData(this.$props.pageData);
-		}
+      this.getShowRecoeding();
 
-		this.getShowRecoeding();
-	}
+      this.$emit('changePageSize', data);
+    },
+    // 获取当前选择了第几页
+    handleCurrentChange(data) {
+      this.currentPageNum = data;
+
+      this.getShowRecoeding();
+
+      this.$emit('changeCurrentPage', data);
+    },
+    // 计算共有多少页
+    getPagesNum() {
+      this.pagesNum = Math.ceil(this.$props.total / this.pageSize);
+    },
+    // 计算当前显示的是多少条到多少条
+    getShowRecoeding() {
+      if (this.currentPageNum == this.pagesNum) {
+        this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+        this.endRecoeding = this.$props.total;
+      } else {
+        this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+        this.endRecoeding = this.currentPageNum * this.pageSize;
+      }
+    }
+  },
+  mounted() {
+    // 处理组件名称（讲传过来的字符串转化成数组）
+    this.assembly = this.$props.layout.split(',');
+
+    this.getPagesNum();
+    this.getShowRecoeding();
+  }
 };
 </script>
 
 <style scoped lang="scss">
-.page-box {
-	width: 100%;
-	display: flex;
+.page_box {
+  display: flex;
 
-	.select-box {
-		width: 60px;
-	}
-
-	.pagination-box {
-		flex: 1;
-		display: flex;
-
-		.jump-box {
-			font-weight: 400;
-
-			span {
-				font-size: 14px;
-			}
-
-			.jump-input {
-				width: 60px;
-				margin: 0 5px;
-
-				.el-input--mini .el-input__inner {
-					text-align: center !important;
-				}
-			}
-
-			.jump-button {
-				margin-left: 5px;
-			}
-		}
-	}
-	
-	.page-right {
-		font-size: 14px;
-	}
+  .page-right {
+    font-size: 14px;
+  }
 }
 </style>
