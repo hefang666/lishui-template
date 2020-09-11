@@ -17,7 +17,7 @@
           <div class="table-box">
             <el-table
               ref="multipleTable"
-              :data="tableData"
+              :data="personList"
               :stripe="true"
               tooltip-effect="dark"
               height="400"
@@ -29,12 +29,22 @@
               <el-table-column prop="tel" label="联系方式"></el-table-column>
             </el-table>
           </div>
-          <page
-            :page-data="[30, 40, 50, 100]"
-            :total="400"
-            @changePageSize="changePageSize"
-            @changeCurrentPage="changeCurrentPage"
-          ></page>
+          <div class="page-box">
+            <page
+              :page-data="[30, 40, 50, 100]"
+              :total="400"
+              layout="sizes,pager,jump"
+              @changePageSize="changePageSize"
+              @changeCurrentPage="changeCurrentPage"
+            ></page>
+            <page
+              :page-data="[30, 40, 50, 100]"
+              :total="400"
+              layout="detail,total"
+              @changePageSize="changePageSize"
+              @changeCurrentPage="changeCurrentPage"
+            ></page>
+          </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -47,6 +57,8 @@
 
 <script>
 import Page from '@/components/page/Page.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('xunjianPublic');
 export default {
   name: 'ChoosePeople',
   props: ['dialogCharge'],
@@ -56,72 +68,14 @@ export default {
   data() {
     return {
       searchWords: '',
-      tableData: [
-        {
-          name: '测试人员1',
-          tel: '12345678910'
-        },
-        {
-          name: '测试人员2',
-          tel: ''
-        },
-        {
-          name: '测试人员3',
-          tel: ''
-        },
-        {
-          name: '测试人员4',
-          tel: ''
-        },
-        {
-          name: '测试人员5',
-          tel: ''
-        },
-        {
-          name: '测试人员6',
-          tel: ''
-        },
-        {
-          name: '测试人员7',
-          tel: ''
-        },
-        {
-          name: '测试人员8',
-          tel: ''
-        },
-        {
-          name: '测试人员9',
-          tel: ''
-        },
-        {
-          name: '测试人员10',
-          tel: ''
-        },
-        {
-          name: '测试人员11',
-          tel: ''
-        },
-        {
-          name: '测试人员12',
-          tel: ''
-        },
-        {
-          name: '测试人员13',
-          tel: ''
-        },
-        {
-          name: '测试人员14',
-          tel: ''
-        },
-        {
-          name: '测试人员15',
-          tel: ''
-        }
-      ],
-      checkedName: ''
+      personInfo: ''
     };
   },
+  computed: {
+    ...mapState(['personList'])
+  },
   methods: {
+    ...mapActions(['changePersonList']),
     closeChoosePeople() {
       let data = {
         dialogCharge: false
@@ -130,17 +84,16 @@ export default {
     },
     // 选中的行
     clickRow(val) {
-      console.log(val);
-      this.checkedName = val.name;
+      this.personInfo = val;
     },
     // 点击确定
     determine() {
-      if (this.checkedName == '') {
+      if (this.personInfo == '') {
         alert('请选择负责人！');
         return;
       } else {
         let data = {
-          name: this.checkedName,
+          personinfo: this.personInfo,
           dialogCharge: false
         };
 
@@ -186,6 +139,11 @@ export default {
       td {
       background-color: #f5f5f5;
     }
+  }
+
+  .page-box {
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>

@@ -32,15 +32,45 @@ const routes = [
   },
   {
     path: '/task',
-    component: () => import('@/views/taskManagement'),
+    component: () => import('@/views/taskManagement/index.vue'),
     name: 'task',
     meta: {title: '任务管理', icon: 'el-icon-user'}
+  },
+  {
+    path: '/event',
+    component: () => import('@/views/eventManagement/index.vue'),
+    name: 'event',
+    meta: {title: '事件管理', icon: 'el-icon-user'}
   },
   {
     path: '/plan',
     component: () => import('@/views/planManagement/index.vue'),
     name: 'plan',
     meta: {title: '计划管理', icon: 'el-icon-user'}
+  },
+  {
+    path: '/person',
+    component: () => import('@/views/personnelManagement/index.vue'),
+    name: 'plan',
+    meta: {title: '人员管理', icon: 'el-icon-user'}
+  },
+  {
+    path: '/workOrder',
+    component: () => import('@/views/workOrderManagement/index.vue'),
+    name: 'workOrder',
+    meta: {title: '工单管理', icon: 'el-icon-user'}
+  },
+  {
+    path: '/equipment',
+    component: () => import('@/views/inspectionEquipment/index.vue'),
+    name: 'equipment',
+    meta: {title: '巡检设备信息', icon: 'el-icon-user'}
+  },
+  {
+    path: '/report',
+    component: () => import('@/views/reportManagement/index.vue'),
+    name: 'report',
+    meta: {title: '报表管理', icon: 'el-icon-user'}
   }
 ];
 

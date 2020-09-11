@@ -1,7 +1,7 @@
 <template>
   <div class="search-box">
     <el-input
-      placeholder="请输入内容"
+      :placeholder="placeholder"
       :prefix-icon="icon"
       v-model="searchWords"
     ></el-input>
@@ -28,6 +28,10 @@ export default {
     isButton: {
       type: Boolean,
       default: true
+    },
+    placeholder: {
+      type: String,
+      default: '请输入内容'
     }
   },
   data() {

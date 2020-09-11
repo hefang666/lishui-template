@@ -329,7 +329,9 @@ export default {
       console.log(data);
     },
     // 查看按钮
-    handleSee() {},
+    handleSee() {
+      this.dialogEqui = true;
+    },
     // 选中的行
     clickRow(val) {
       console.log(val);
