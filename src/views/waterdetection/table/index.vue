@@ -91,8 +91,8 @@
 
     <!-- 报告详情弹框 -->
     <el-dialog title="报告详情" :visible.sync="dailydialogVisible" width="60%">
-      <div id="printTest">
-        <div v-if="types == 1 && infolist">
+      <div id="printTest" class="printTest">
+        <div v-if="types == 1 && infolist" class="box1">
           <h2 style="text-align:center">{{ reportData.title }}</h2>
           <table
             cellspacing="0"
@@ -222,10 +222,10 @@
                 </tr>
               </tbody>
             </table>
-            <p>
+            <p style="width:90%">
               {{ motnth_ReportData.formation }}
             </p>
-            <p>
+            <p style="width:90%">
               {{ motnth_ReportData.instruction }}
             </p>
           </div>
@@ -444,10 +444,10 @@ export default {
   /* text-align: right; */
 }
 /deep/ .el-dialog {
-  min-width: 1000px !important;
+  width: 800px !important;
 }
 table {
-  min-width: 950px;
+  width: 200mm;
 }
 /* #lineTd {
   background: #fff
@@ -455,27 +455,27 @@ table {
     no-repeat 100% center;
 } */
 td[class='first'] div {
-  /* content: ''; */
+  content: '';
   position: absolute;
   width: 1px;
-  height: 190px;
+  height: 156px;
   top: 1px;
   left: 0;
   background-color: black;
   display: block;
-  transform: rotate(-79deg);
+  transform: rotate(-76deg);
   transform-origin: top;
 }
 td[class='first'] .fbox2 {
-  /* content: ''; */
+  content: '';
   position: absolute;
   width: 1px;
-  height: 316px;
+  height: 254px;
   top: 1px;
   left: 0;
   background-color: black;
   display: block;
-  transform: rotate(-83deg);
+  transform: rotate(-82deg);
   transform-origin: top;
 }
 td {
@@ -488,6 +488,11 @@ td {
 /deep/ .el-dialog__body {
   padding-top: 0 !important;
 }
+/* .printTest{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} */
 .box1 {
   display: flex;
   flex-direction: column;
@@ -495,5 +500,8 @@ td {
 }
 .box2 {
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
