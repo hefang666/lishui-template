@@ -1,43 +1,48 @@
-import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
-import store from '@/store'
-import { getToken } from '@/utils/auth'
+import axios from 'axios';
+import {MessageBox,Message} from 'element-ui';
+import store from '@/store';
+import {getToken} from '@/utils/auth';
 
- //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
+//设置cross跨域 并设置访问权限 允许跨域携带cookie信息
 axios.defaults.withCredentials = true;
 // create an axios instance
+// const isDev = process.env.NODE_ENV === 'development';
+// // http://192.168.9.176:93/api/services/
+// const baseUrl = isDev ? 'http://192.168.9.176:93/api/' : '';
+
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  // baseURL: baseUrl,
+  baseURL: '/',
+  // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
-})
+  timeout: 5000 // request timeout7
+});
 
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      config.headers['X-Token'] = getToken();
     }
-    return config
+    return config;
   },
   error => {
     // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
+    console.log(error); // for debug
+    return Promise.reject(error);
   }
-)
+);
 
 // response interceptor
 service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
-  */
+   */
 
   /**
    * Determine the request status by custom code
@@ -45,10 +50,14 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
-    const res = response.data
-
+    const res = response.data;
+    // if(res.code == 200) {
+    //   return Promise.resolve(res)
+    // }
+    // console.log('res :>> ', res);
+    // return Promise.resolve(res);
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code == 20000) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -74,14 +83,16 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    // 获取异常提示信息
+    // console.log('----',error.response.data.error.message)
+    // console.log('err' + error); // for debug
     Message({
-      message: error.message,
+      message: error.response.data.error.message,
       type: 'error',
       duration: 5 * 1000
-    })
-    return Promise.reject(error)
+    });
+    return Promise.reject(error);
   }
-)
+);
 
-export default service
+export default service;

@@ -355,3 +355,11 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+
+export function handlechangedate(e) {
+  let y = e.getFullYear();
+  let m = (e.getMonth() + 1 + '').padStart(2, '0');
+  let d = (e.getDate() + '').padStart(2, '0');
+  return y + '-' + m + '-' + d;
+}

@@ -1,6 +1,6 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Home from "@/views/Home";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '@/views/Home';
 
 Vue.use(VueRouter);
 
@@ -24,171 +24,76 @@ Vue.use(VueRouter);
   }
  */
 const routes = [
+
+
   {
-    path: "/",
+    path: '/',
+    name: 'water',
     component: Home,
-    name: "home",
-    meta: { title: "首页", icon: "el-icon-user", affix: true }
-  },
-  {
-    path: "/about",
-    name: "About",
-    redirect: "/tr",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-    meta: { title: "关于我们", icon: "el-icon-heavy-rain" },
+    meta: {
+      title: '化验室检测数据',
+      icon: 'el-icon-ship',
+      noCache: true,
+      affix: true
+    },
     children: [
       {
-        path: "/bb",
-        name: "bb",
-        redirect: "/tr",
+        path: '/dailymanagement',
+        name: 'dailymanagement',
         component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "bb" },
-        children: [
-          {
-            path: "/tr",
-            name: "tr",
-            component: () =>
-              import(/* webpackChunkName: "about" */ "../views/About.vue"),
-            meta: { title: "tr" }
-          },
-          {
-            path: "pa",
-            name: "pa",
-            component: () =>
-              import(/* webpackChunkName: "about" */ "../views/About.vue"),
-            meta: { title: "pa" }
-          }
-        ]
-      },
-      {
-        path: "/dd",
-        name: "dd",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "dd" }
-      },
-      {
-        path: "/ee",
-        name: "ee",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "ee" }
-      },
-      {
-        path: "/hh",
-        name: "hh",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "hh" }
-      },
-      {
-        path: "/ii",
-        name: "ii",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "ii" }
-      },
-      {
-        path: "/gg",
-        name: "gg",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "gg" }
-      },
-      {
-        path: "/vv",
-        name: "vv",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "vv" }
-      },
-      {
-        path: "/mm",
-        name: "mm",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "mm" }
-      },
-      {
-        path: "/nn",
-        name: "nn",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "nn" }
-      },
-      {
-        path: "/zz",
-        name: "zz",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "zz" }
-      },
-      {
-        path: "/pp",
-        name: "pp",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "pp" }
-      },
-      {
-        path: "/oo",
-        name: "oo",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "oo" }
-      },
-      {
-        path: "/tt",
-        name: "tt",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "tt" }
-      },
-      {
-        path: "/ww",
-        name: "ww",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "ww" }
-      },
-      {
-        path: "/qq",
-        name: "qq",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "qq" }
-      },
-      {
-        path: "/ss",
-        name: "ss",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
-        meta: { title: "ss" }
-      },
-      {
-        path: "/cc",
-        name: "cc",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "../views/About.vue"),
+          import(
+            /* webpackChunkName: "about" */ '../views/waterdetection/DailyManagement.vue'
+          ),
         meta: {
-          title: "cc"
+          title: '每日简报管理'
+        }
+      },
+      {
+        path: '/dailyupload',
+        name: 'dailyupload',
+        component: () =>
+          import(
+            /* webpackChunkName: "about" */ '../views/waterdetection/DailyUpload.vue'
+          ),
+        meta: {
+          title: '每日简报上传'
+        }
+      },
+      {
+        path: '/mounthmanagement',
+        name: 'mounthmanagement',
+        component: () =>
+          import(
+            /* webpackChunkName: "about" */ '../views/waterdetection/MounthManagement.vue'
+          ),
+        meta: {
+          title: '水质检测月报管理'
+        }
+      },
+      {
+        path: '/mounthupload',
+        name: 'mounthupload',
+        component: () =>
+          import(
+            /* webpackChunkName: "about" */ '../views/waterdetection/MounthUpload.vue'
+          ),
+        meta: {
+          title: '水质检测月报上传'
         }
       }
     ]
-  },
-  {
-    path: "/contact",
-    name: "About",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
-    meta: { title: "联系我们", icon: "el-icon-heavy-rain" }
   }
+  // {
+  //   path: "/contact",
+  //   name: "About",
+  //   component: () =>
+  //     import(/* webpackChunkName: "about" */ "../views/About.vue"),
+  //   meta: { title: "联系我们", icon: "el-icon-heavy-rain" },
+  // },
 ];
 
 const router = new VueRouter({
   routes
 });
-export { routes };
+export {routes};
 export default router;
