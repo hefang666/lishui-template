@@ -6,7 +6,7 @@
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="map-box">
-          <map-route></map-route>
+          <map-route ref="maproute" mapid="route-check"></map-route>
         </div>
         <div class="content-right-box">
           <div class="right-box">
@@ -213,9 +213,13 @@ export default {
       console.log(data);
     },
     // 设备查看按钮
-    handleSeeEquipment() {},
+    handleSeeEquipment() {
+      this.$refs.maproute.ShowPointFunc('JS50478;蝶阀');
+    },
     // 管道查看按钮
-    handleSeeConduit() {},
+    handleSeeConduit() {
+      this.$refs.maproute.ShowLineFunc('JL16097;球墨铸铁');
+    },
     // 设备选中的行
     clickRowEqui(val) {
       console.log(val);
