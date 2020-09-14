@@ -91,7 +91,7 @@
 
     <!-- 报告详情弹框 -->
     <el-dialog title="报告详情" :visible.sync="dailydialogVisible" width="60%">
-      <div id="printTest" class="printTest">
+      <div id="printTest" class="printTest" ref="print">
         <div v-if="types == 1 && infolist" class="box1">
           <h2 style="text-align:center">{{ reportData.title }}</h2>
           <table
@@ -171,7 +171,7 @@
               </tbody>
             </table>
           </div>
-
+          <div style="page-break-after:always"></div>
           <div class="box2">
             <h2 style="text-align:center">
               {{ percentOfPass_ReportData.title }}
@@ -233,7 +233,8 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button type="success" v-print="'#printTest'">打 印</el-button>
+        <!-- v-print="'#printTest'" -->
+        <el-button type="success" v-print="'#printTest'" @click="isEdge?handleprint():''">打 印</el-button>
         <el-button @click="dailydialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -289,10 +290,31 @@ export default {
       // 弹框是否显示
       dailydialogVisible: false,
       //选中个数
-      choosearr: []
+      choosearr: [],
+      //判断是否是ie
+      isEdge:false
     };
   },
+  mounted () {
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    this.isEdge = userAgent.indexOf("Edge") > -1; //判断是否IE的Edge浏览器
+    console.log(this.isEdge)
+  },
   methods: {
+    handleprint(){
+      this.dayin()
+    },
+    dayin(){
+      // 获取当前页面要打印的内容 
+      // 这里的className（‘print’）是我给要打印的区域起的名字 
+      const print = document.getElementsByClassName('printTest')[0].innerHTML;
+      // 把当前页面替换成要打印的内容
+      document.body.innerHTML = print;
+      // 打印
+      window.print();
+      // 刷新页面
+      window.location.reload();
+    },
     //点击查询
     handless() {
       let newtimeValue = '';
@@ -444,10 +466,10 @@ export default {
   /* text-align: right; */
 }
 /deep/ .el-dialog {
-  width: 800px !important;
+  width: 850px !important;
 }
 table {
-  width: 200mm;
+  width: 170mm;
 }
 /* #lineTd {
   background: #fff
@@ -458,24 +480,24 @@ td[class='first'] div {
   content: '';
   position: absolute;
   width: 1px;
-  height: 156px;
+  height: 134px;
   top: 1px;
   left: 0;
   background-color: black;
   display: block;
-  transform: rotate(-76deg);
+  transform: rotate(-74deg);
   transform-origin: top;
 }
 td[class='first'] .fbox2 {
   content: '';
   position: absolute;
   width: 1px;
-  height: 254px;
+  height: 219px;
   top: 1px;
   left: 0;
   background-color: black;
   display: block;
-  transform: rotate(-82deg);
+  transform: rotate(-80deg);
   transform-origin: top;
 }
 td {
@@ -484,6 +506,7 @@ td {
   height: 40px;
   text-align: center;
   position: relative;
+  font-size: 13px;
 }
 /deep/ .el-dialog__body {
   padding-top: 0 !important;
