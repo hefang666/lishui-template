@@ -10,25 +10,13 @@
             <!--搜索-->
             <div class="search-box">
               <el-input
-                placeholder="请输入车牌/姓名"
+                placeholder="请输入车牌/用车人信息/电话"
                 prefix-icon="el-icon-search"
                 clearable
                 @clear="getList" 
-                v-model="form.numberOrName"
-                style="margin-right:20px;"
+                v-model="form.numberOrNameOrTel"
+                style="width:220px;margin-right:20px;"
               ></el-input>
-              <el-select 
-                v-model="form.carType" 
-                placeholder="请选择车辆类型">
-                <el-option 
-                label="标准民用车" 
-                value="0">
-                </el-option>
-                <el-option 
-                label="工程车辆" 
-                value="1">
-                </el-option>
-              </el-select>
               <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
             </div>
           </div>
@@ -51,18 +39,18 @@
             >
               <el-table-column type="selection" width="50"></el-table-column>
               <el-table-column
-                prop="number"
+                prop="carNumber"
                 label="车牌号码"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="ownerName"
-                label="车主姓名"
+                prop="userName"
+                label="用车人姓名"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="type"
-                label="车辆类型"
+                prop="userNumber"
+                label="用车人联系电话"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
@@ -71,13 +59,8 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="phoneNumber"
-                label="联系电话"
-                show-overflow-tooltip
-              ></el-table-column>
-              <el-table-column
-                prop="remark"
-                label="备注"
+                prop="reason"
+                label="用车事由"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column label="操作">
@@ -183,8 +166,8 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
-import EditTask from './carManageTask/editTask/EditTask';
-import { GetByOrgIdPage, GetById, DeleteCar } from '@/api/car';
+import EditTask from './useCarManageTask/editTask/EditTask';
+import { GetByOrgIdCarUseRecord, GetByIdCarUseRecord, DeleteCarUseRecord } from '@/api/car';
 
 export default {
   components: { 
@@ -196,9 +179,8 @@ export default {
     return {
       // 查询参数
       form: {
-        orgId: 0,
-        numberOrName: '',
-        carType: 0,
+        organizationId: 0,
+        numberOrNameOrTel: '',
         pageIndex: 1,
         maxResultCount: 30,
       },
@@ -228,7 +210,7 @@ export default {
     // 获取列表
     getList() {
       this.loading = true
-      GetByOrgIdPage(this.form).then(res => {
+      GetByOrgIdCarUseRecord(this.form).then(res => {
         console.log(res)
         if(res.success){
           this.tableData = res.result.items
@@ -261,7 +243,7 @@ export default {
       let param = {
         id: row.id
       }
-      GetById(param).then(res => {
+      GetByIdCarUseRecord(param).then(res => {
        this.detilForm = res.result
        this.loading = false
       })
@@ -284,7 +266,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteCar(data).then(res => {
+          DeleteCarUseRecord(data).then(res => {
             console.log(res)
             if (res.success) {
               _this.$message({

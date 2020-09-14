@@ -7,6 +7,7 @@
       <div class="task_management_pages button-box">
         <div class="header-box">
           <div class="header-left">
+            <!--搜索-->
             <div class="search-box">
               <el-input
                 placeholder="请输入访客点名称"
@@ -25,6 +26,7 @@
             </el-button-group>
           </div>
         </div>
+        <!--数据表格-->
         <div class="content-box">
           <div class="table-box">
             <el-table
@@ -131,6 +133,7 @@ export default {
         }
       })
     },
+    // 当选择项发生变化时的事件
     handleSelectionChange(val) {
       let list = []
       this.multipleSelection = val;

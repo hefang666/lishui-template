@@ -272,6 +272,13 @@ const routes = [{
                 meta: { title: "车辆管理" }
             },
             {
+                path: "UseCarManage",
+                name: "UseCarManage",
+                component: () =>
+                    import ( /* webpackChunkName: "about" */ "../views/car/UseCarManage.vue"),
+                meta: { title: "用车管理" }
+            },
+            {
                 path: "CarGps",
                 name: "CarGps",
                 component: () =>

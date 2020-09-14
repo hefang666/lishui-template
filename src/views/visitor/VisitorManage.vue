@@ -7,6 +7,7 @@
       <div class="task_management_pages button-box">
         <div class="header-box">
           <div class="header-left">
+            <!--搜索-->
             <div class="search-box">
               <el-input
                 placeholder="请输入访客姓名/电话"
@@ -35,6 +36,7 @@
             </el-button-group>
           </div>
         </div>
+        <!--数据表格-->
         <div class="content-box">
           <div class="table-box">
             <el-table
@@ -57,7 +59,7 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="idPhoto"
+                prop="idCardPhoto"
                 label="联系电话"
                 show-overflow-tooltip
               ></el-table-column>
@@ -104,43 +106,99 @@
             @changeCurrentPage="changeCurrentPage"
           ></page>
         </div>
-     
-      <!-- <el-dialog
-        :visible.sync="dialogVisible"
-        title="访客记录"
-        :close-on-click-modal="true"
-        :show-close="true"
-        style="width:50%;margin:0 auto;"
-        ><el-form
-          id="txt_box"
-          ref="detilForm"
-          :model="detilForm"
-          :inline="true"
-          :rules="detilFormRules"
-        >
-          <el-form-item label="姓名：" prop="visitorName">
-            <span class="info">{{ detilForm.visitorName }}</span>
-          </el-form-item>
-          <el-form-item label="证件号码：" prop="IdCardNumber">
-            <span class="info">{{ detilForm.IdCardNumber }}</span>
-          </el-form-item>
-          <el-form-item label="联系电话：" prop="IdCardPhoto">
-            <span class="info">{{ detilForm.IdCardPhoto }}</span>
-          </el-form-item>
-          <el-form-item label="来访地址：" prop="CheckAddress">
-            <span class="info">{{ detilForm.CheckAddress }}</span>
-          </el-form-item>
-          <el-form-item label="来访时间：" prop="VisitTime">
-            <span class="info">{{ detilForm.VisitTime }}</span>
-          </el-form-item>
-          <el-form-item label="离开时间：" prop="LeaveTime">
-            <span class="info">{{ detilForm.LeaveTime }}</span>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click.native="dialogVisible = false">取消</el-button>
-        </div>
-      </el-dialog> -->
+        <!--查看访客详情弹窗-->
+        <div class="addTask-box dialog-box button-box">
+          <el-dialog title="访客记录" :visible.sync="detilFormVisible">
+            <div class="content-box form-box">
+              <div class="content_box">
+                <div class="info-box">
+                  <el-form :model="detilForm" :rules="detilFormRules">
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="姓名：" prop="visitorName">
+                          <span>{{ detilForm.visitorName }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="证件类型：" prop="idCardType">
+                          <span>{{ detilForm.idCardType }}</span>
+                        </el-form-item>
+                      </div>
+                      <div class="list-items has-two-item">
+                        <el-form-item label="证件号码：" prop="idCardNumber">
+                          <span class="info">{{ detilForm.idCardNumber }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="联系电话：" prop="idCardPhoto">
+                          <span class="info">{{ detilForm.idCardPhoto }}</span>
+                        </el-form-item>
+                      </div>
+                      <div class="list-items has-two-item">
+                        <el-form-item label="车牌号：" prop="carNumber">
+                          <span class="info">{{ detilForm.carNumber }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>  
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="联系地址：" prop="contactAddress">
+                          <span>{{ detilForm.contactAddress }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>  
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="来访事由：" prop="reason">
+                          <span>{{ detilForm.reason }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>  
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="被访人：" prop="interviewees">
+                          <span class="info">{{ detilForm.interviewees }}</span>
+                        </el-form-item>
+                      </div>
+                      <div class="list-items has-two-item">
+                        <el-form-item label="同行人数：" prop="visitorCount">
+                          <span class="info">{{ detilForm.visitorCount }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="备注：" prop="remark">
+                          <span>{{ detilForm.remark }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>
+                    <div class="list-item">
+                      <div class="list-items has-two-item">
+                        <el-form-item label="来访时间：" prop="visitTime">
+                          <span class="info">{{ detilForm.visitTime }}</span>
+                        </el-form-item>
+                      </div>
+                      <div class="list-items has-two-item">
+                        <el-form-item label="离开时间：" prop="leaveTime">
+                          <span class="info">{{ detilForm.leaveTime }}</span>
+                        </el-form-item>
+                      </div>
+                    </div>
+                  </el-form>
+                </div>
+              </div>
+            </div>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click.native="detilFormVisible = false">取消</el-button>
+            </div>
+        </el-dialog>
+      </div>
+      <!--添加离开时间弹窗-->
       <div class="addTask-box dialog-box button-box">
         <el-dialog
           :visible.sync="dialogAddLeaveTimeVisible"
@@ -173,9 +231,6 @@
           </div>
         </el-dialog>
       </div>
-      
-      <!-- 查看详情弹窗 -->
-      <view-task :dialog-view="dialogView" @getViewData="getViewData"></view-task>
     </div>
     </div>
   </div>
@@ -184,11 +239,11 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
-import ViewTask from './visitorManageTask/viewTask/ViewTask';
+// import ViewTask from './visitorManageTask/viewTask/ViewTask';
 import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord } from '@/api/visitor';
 
 export default {
-  components: { cTree, Page, ViewTask },
+  components: { cTree, Page },
   data() {
     return {
       // 查询参数
@@ -209,7 +264,8 @@ export default {
       tableData: [],
       // 是否显示查看用户信息弹窗
       dialogView: false,
-      // detilForm: {}, // 详情数据
+      detilForm: {}, // 详情数据
+      detilFormVisible:false,
       detilFormRules: {},
       // 是否显示新增离开时间弹窗
       dialogAddLeaveTimeVisible:false,
@@ -243,7 +299,7 @@ export default {
         }
       })
     },
-    
+    // 当选择项发生变化时的事件
     handleSelectionChange(val) {
       let list = []
       this.multipleSelection = val;
@@ -253,38 +309,18 @@ export default {
       })
       this.ids = list
     },
-    // 获取从分页传过来的每页多少条数据
-		changePageSize(val) {
-      console.log(val);
-      this.form.maxResultCount = val
-      this.getList()
-		},
-		// 获取从分页传过来的当前页数
-		changeCurrentPage(val) {
-      console.log(val);
-      this.form.pageIndex = val
-      this.getList()
-    },
-    // 关闭查看弹窗
-    getViewData(data) {
-      this.dialogView = data.dialogView;
-    },
-    // 查看详情
+    // 查看访客记录详情
     handleCheckInfo(index, row) {
       console.log(index, row);
-      this.dialogView = true;
-      // console.log(index, row);
-      // let _this = this;
-      // _this.loading = true
-      // _this.detilForm = row;
-      // _this.dialogVisible = true;
+      this.detilFormVisible = true
+      this.detilForm = row
       let param = {
         id: row.id
       }
       GetById(param).then(res => {
        this.detilForm = res.result
        this.loading = false
-       this.getList()
+      //  this.getList()
       })
     },
     // 打开新增添加时间弹窗
@@ -345,6 +381,18 @@ export default {
         })
       }    
     },
+    // 获取从分页传过来的每页多少条数据
+		changePageSize(val) {
+      console.log(val);
+      this.form.maxResultCount = val
+      this.getList()
+		},
+		// 获取从分页传过来的当前页数
+		changeCurrentPage(val) {
+      console.log(val);
+      this.form.pageIndex = val
+      this.getList()
+    },
 
   }
 };
@@ -380,6 +428,9 @@ export default {
         display: flex;
         .search-box {
           // margin-left: 20px;
+          // /deep/.el-input__icon{
+          //   line-height: 23px !important;
+          // }
           display: flex;
           .search-button {
             margin-left: 5px;
@@ -411,6 +462,9 @@ export default {
         }
       }
     }
+  }
+  .info-box{
+    padding: 0 40px;
   }
 }
 </style>

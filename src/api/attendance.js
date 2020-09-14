@@ -8,3 +8,10 @@ export function GetPageList(params) {
         data: params
     })
 }
+export function UploadProfilePicture(params) {
+    return request({
+        url: '/api/UploadFiles/UploadProfilePicture', // 上传文件
+        method: 'POST',
+        data: params
+    })
+}

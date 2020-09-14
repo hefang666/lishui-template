@@ -18,49 +18,56 @@
             class="has-two-item" 
             label="姓名：" 
             label-width="120px" 
-            prop="VisitorName"
+            prop="visitorName"
            >
             <el-input 
-            type="taskName" 
-            v-model="ruleForm.VisitorName"
+            type="text" 
+            v-model="ruleForm.visitorName"
             ></el-input>
           </el-form-item>
-          <el-form-item label="证件类型：" prop="IdCardType">
-            <el-select v-model="ruleForm.IdCardType" placeholder="请选择证件类型">
+        </div>
+        <div class="list-item">
+          <el-form-item label="证件类型：" prop="idCardType">
+            <el-select v-model="ruleForm.idCardType" placeholder="请选择证件类型">
               <el-option label="身份证" value="0"></el-option>
               <el-option label="军官证" value="1"></el-option>
               <el-option label="护照" value="2"></el-option>
             </el-select>
           </el-form-item>
-        </div>
-          <el-form-item label="证件号码：" prop="IdCardNumber">
-            <el-input v-model="ruleForm.IdCardNumber"></el-input>
+          <el-form-item label="证件号码：" prop="idCardNumber">
+            <el-input type="text" v-model="ruleForm.idCardNumber"></el-input>
           </el-form-item>
-          <el-form-item label="电话号码：" prop="PhoneNumber">
-            <el-input v-model="ruleForm.PhoneNumber"></el-input>
+        </div>
+        <div class="list-item">
+          <el-form-item label="电话号码：" prop="phoneNumber">
+            <el-input type="text" v-model="ruleForm.phoneNumber"></el-input>
           </el-form-item>
           <el-form-item label="车牌号码：">
-            <el-input v-model="ruleForm.CarNumber"></el-input>
+            <el-input type="text" v-model="ruleForm.carNumber"></el-input>
           </el-form-item>
-          <div>
-            <el-form-item label="来访公司：">
-              <el-input
-                v-model="ruleForm.Company"
-                style="width:540px;"
-              ></el-input>
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item label="来访事由：">
-              <el-input
-                v-model="ruleForm.Reason"
-                style="width:540px;"
-              ></el-input>
-            </el-form-item>
-          </div>
-          <el-form-item label="被访人：" prop="Interviewees">
+        </div>
+        <div>
+          <el-form-item label="来访公司：">
+            <el-input
+              type="text"
+              v-model="ruleForm.company"
+              style="width:540px;"
+            ></el-input>
+          </el-form-item>
+        </div>
+        <div>
+          <el-form-item label="来访事由：">
+            <el-input
+              type="text" 
+              v-model="ruleForm.reason"
+              style="width:540px;"
+            ></el-input>
+          </el-form-item>
+        </div>
+        <div class="list-item">
+          <el-form-item label="被访人：" prop="interviewees">
             <el-select
-              v-model="ruleForm.Interviewees"
+              v-model="ruleForm.interviewees"
               placeholder="请选择被访人"
             >
               <el-option
@@ -71,14 +78,16 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="同行人数：" prop="VisitorCount">
+          <el-form-item label="同行人数：" prop="visitorCount">
             <el-input
-              v-model.number="ruleForm.VisitorCount"
+              type="text"
+              v-model.number="ruleForm.visitorCount"
               autocomplete="off"
             ></el-input>
           </el-form-item>
+        </div>
           <div>
-            <el-form-item label="证件照片：" prop="IdCardPhoto">
+            <el-form-item label="证件照片：" prop="idCardPhoto">
               <el-upload
                 class="avatar-uploader"
                 action="http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture"
@@ -99,9 +108,9 @@
             </el-form-item>
           </div>
           <div>
-            <el-form-item label="来访时间：" prop="VisitingTime">
+            <el-form-item label="来访时间：" prop="visitTime">
               <el-date-picker
-                v-model="ruleForm.VisitingTime"
+                v-model="ruleForm.visitTime"
                 type="datetime"
                 placeholder="请选择来访时间"
               >
@@ -141,44 +150,44 @@ export default {
     return {
       labelPosition: "left",
       ruleForm: {
-        VisitorName: "",
-        IdCardType: "",
-        IdCardNumber: "",
-        PhoneNumber: "",
-        CarNumber: "",
-        Company: "",
-        Reason: "",
-        Interviewees: "",
-        VisitorCount: "",
-        IdCardPhoto: "",
-        VisitingTime: "",
-        CheckStatus:0,
-        CheckAddress:"",
-        Resource:1,
-        Code:"123"
+        visitorName: "",
+        idCardType: "",
+        idCardNumber: "",
+        phoneNumber: "",
+        carNumber: "",
+        company: "",
+        reason: "",
+        interviewees: "",
+        visitorCount: "",
+        idCardPhoto: "",
+        visitTime: "",
+        checkStatus:0,
+        checkAddress:"",
+        resource:1,
+        code:"123"
 
       },
       rules: {
-        VisitorName: [
+        visitorName: [
           { required: true, message: "请输入姓名", trigger: "blur" },
           { min: 1, max: 20, message: "长度在20字符", trigger: "blur" }
         ],
-        IdCardType: [
-          { required: true, message: "请选择类型", trigger: "blur" }
+        idCardType: [
+          { required: true, message: "证件类型不能为空", trigger: "blur" }
         ],
-        IdCardNumber: [{ min: 1, max: 10, message: "长度在10字符", trigger: "blur" }],
-        PhoneNumber: [
+        idCardNumber: [{ min: 1, max: 10, message: "长度在10字符", trigger: "blur" }],
+        phoneNumber: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
           { validator: checkMobile, trigger: "blur" }
         ],
-        CarNumber: [
+        carNumber: [
           { required: true, message: "请输入车牌号码", trigger: "blur" }
         ],
-        Interviewees: [
+        interviewees: [
           { required: true, message: "请选择被访人", trigger: "blur" }
         ],
-        VisitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
-        VisitingTime: [
+        visitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
+        visitTime: [
           { required: true, message: "请输入来访时间", trigger: "blur" },
         ]
       },
@@ -227,6 +236,7 @@ export default {
           GetInsertRecord(this.ruleForm).then(res => {
             console.log(res)
             this.$message.success('创建成功！')
+            this.getList()
             }).catch(err => {
             console.log(err)
           })
