@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="修改车辆信息" :visible.sync="visible" :dialog-edit="dialogEdit">
+    <el-dialog title="修改车辆信息" :visible.sync="visible" :close-on-click-modal="false" :dialog-edit="dialogEdit">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>

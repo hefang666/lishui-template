@@ -255,5 +255,9 @@ export default {
     }
   }
 }
+/deep/.el-table th, 
+/deep/.el-table td{
+  text-align: center;
+}
 </style>
 

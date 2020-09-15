@@ -10,7 +10,6 @@
           inline
           :model="ruleForm"
           :rules="rules"
-          :label-position="labelPosition"
           label-width="110px"
         >
         <div class="list-item">
@@ -20,52 +19,93 @@
             label-width="120px" 
             prop="visitorName"
            >
+           <div class="list-item-content-box">
             <el-input 
             type="text" 
             v-model="ruleForm.visitorName"
             ></el-input>
+           </div>
           </el-form-item>
         </div>
         <div class="list-item">
-          <el-form-item label="证件类型：" prop="idCardType">
-            <el-select v-model="ruleForm.idCardType" placeholder="请选择证件类型">
-              <el-option label="身份证" value="0"></el-option>
-              <el-option label="军官证" value="1"></el-option>
-              <el-option label="护照" value="2"></el-option>
-            </el-select>
+          <el-form-item 
+          class="has-two-item" 
+          label="证件类型：" 
+          prop="idCardType" 
+          label-width="120px">
+            <div class="list-item-content-box">
+              <el-select v-model="ruleForm.idCardType" placeholder="请选择证件类型">
+                <el-option label="身份证" value="0"></el-option>
+                <el-option label="军官证" value="1"></el-option>
+                <el-option label="护照" value="2"></el-option>
+              </el-select>
+            </div>
           </el-form-item>
-          <el-form-item label="证件号码：" prop="idCardNumber">
-            <el-input type="text" v-model="ruleForm.idCardNumber"></el-input>
+          <el-form-item 
+            class="has-two-item" 
+            label-width="120px" 
+            label="证件号码：" 
+            prop="idCardNumber">
+            <div class="list-item-content-box">
+              <el-input type="text" v-model="ruleForm.idCardNumber"></el-input>
+            </div>
           </el-form-item>
+         
         </div>
         <div class="list-item">
-          <el-form-item label="电话号码：" prop="phoneNumber">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px" 
+          label="电话号码：" 
+          prop="phoneNumber">
+          <div class="list-item-content-box">
             <el-input type="text" v-model="ruleForm.phoneNumber"></el-input>
+          </div>
           </el-form-item>
-          <el-form-item label="车牌号码：">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px"
+          label="车牌号码：">
+          <div class="list-item-content-box">
             <el-input type="text" v-model="ruleForm.carNumber"></el-input>
+          </div>
           </el-form-item>
         </div>
-        <div>
-          <el-form-item label="来访公司：">
+        <div class="list-item">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px" 
+          label="来访公司：">
+          <div class="list-item-content-box">
             <el-input
               type="text"
               v-model="ruleForm.company"
-              style="width:540px;"
+              style="width:700px;"
             ></el-input>
-          </el-form-item>
-        </div>
-        <div>
-          <el-form-item label="来访事由：">
-            <el-input
-              type="text" 
-              v-model="ruleForm.reason"
-              style="width:540px;"
-            ></el-input>
+          </div>
           </el-form-item>
         </div>
         <div class="list-item">
-          <el-form-item label="被访人：" prop="interviewees">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px"
+          label="来访事由：">
+          <div class="list-item-content-box">
+            <el-input
+              type="text" 
+              v-model="ruleForm.reason"
+              style="width:700px;"
+            ></el-input>
+          </div>
+          </el-form-item>
+        </div>
+        <div class="list-item">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px"
+          label="被访人：" 
+          prop="interviewees">
+          <div class="list-item-content-box">
             <el-select
               v-model="ruleForm.interviewees"
               placeholder="请选择被访人"
@@ -77,17 +117,27 @@
                 :value="item.value"
               />
             </el-select>
+          </div>
           </el-form-item>
-          <el-form-item label="同行人数：" prop="visitorCount">
+          <el-form-item 
+          class="has-two-item" 
+          label-width="120px"
+          label="同行人数：" 
+          prop="visitorCount">
+          <div class="list-item-content-box">
             <el-input
               type="text"
               v-model.number="ruleForm.visitorCount"
               autocomplete="off"
             ></el-input>
+          </div>
           </el-form-item>
         </div>
-          <div>
-            <el-form-item label="证件照片：" prop="idCardPhoto">
+          <div class="list-item">
+            <el-form-item 
+            label-width="120px"
+            label="证件照片：" 
+            prop="idCardPhoto">
               <el-upload
                 class="avatar-uploader"
                 action="http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture"
@@ -107,20 +157,19 @@
               </el-upload>
             </el-form-item>
           </div>
-          <div>
+          <div class="list-item">
             <el-form-item label="来访时间：" prop="visitTime">
+              <div class="list-item-content-box">
               <el-date-picker
                 v-model="ruleForm.visitTime"
                 type="datetime"
                 placeholder="请选择来访时间"
-              >
-              </el-date-picker>
+              ></el-date-picker>
+              </div>
             </el-form-item>
           </div>
           <div class="footer-btn">
-            <el-button type="primary" @click="submitForm('ruleForm')"
-              >保存</el-button
-            >
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
             <el-button @click="goToLink">管理列表</el-button>
           </div>
         </el-form>
@@ -148,7 +197,7 @@ export default {
       callback(new Error('请输入合法的手机号'))
     }
     return {
-      labelPosition: "left",
+      // labelPosition: "left",
       ruleForm: {
         visitorName: "",
         idCardType: "",
@@ -314,6 +363,10 @@ export default {
   .footer-btn {
     margin: auto;
     text-align: center;
+  }
+  /deep/.el-button--primary{
+    background-color: #4b77be;
+    border-color: #4b77be;
   }
   //上传图片
   .org-img {

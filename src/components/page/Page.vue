@@ -53,10 +53,10 @@ export default {
 			// console.log(`每页 ${val} 条`);
 			this.pageSize = val;
 			this.getShowRecoeding();
-			let data = {
-				pageSize: this.pageSize
-			};
-			this.$emit('changePageSize', data);
+			// let data = {
+			// 	pageSize: this.pageSize
+			// };
+			this.$emit('changePageSize', val);
 		},
 		// 获取当前选择了第几页
 		handleCurrentChange(val) {
@@ -96,10 +96,10 @@ export default {
 			this.currentPage = this.inputPage;
 
 			this.getShowRecoeding();
-			let data = {
-				currentPage: this.currentPage
-			};
-			this.$emit('changeCurrentPage', data);
+			// let data = {
+			// 	currentPage: this.currentPage
+			// };
+			this.$emit('changeCurrentPage', this.inputPage);
 		}
 	},
 	mounted() {
@@ -121,7 +121,7 @@ export default {
 	display: flex;
 
 	.select-box {
-		width: 60px;
+		width: 70px;
 	}
 
 	.pagination-box {

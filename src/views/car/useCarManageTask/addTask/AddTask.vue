@@ -1,12 +1,12 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="修改用车信息" :visible.sync="visible" :dialog-edit="dialogEdit">
+    <el-dialog title="新增用车信息" :visible.sync="visible" :dialog-add="dialogAdd">
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeEdit">
+        <div class="cancel-box" @click="closeAdd">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          <el-form :model="editForm" :rules="rules" ref="editFormRef">
+          <el-form :model="addForm" :rules="addFormRules" ref="addFormRef">
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
@@ -16,7 +16,8 @@
                 >
                 <div class="list-item-content-box">
                    <el-select
-                    v-model="editForm.carId"
+                    v-model="addForm.carId"
+                    clearable
                     placeholder="请选择车辆"
                     >
                     <el-option
@@ -38,7 +39,8 @@
                 >
                 <div class="list-item-content-box">
                   <el-select 
-                    v-model="editForm.userId" 
+                    v-model="addForm.userId" 
+                    clearable
                     placeholder="请选择用车人">
                     <el-option 
                     label="张三" 
@@ -60,7 +62,7 @@
                 >
                 <div class="list-item-content-box">
                     <el-date-picker
-                    v-model="date_value"
+                    v-model="data_value"
                     type="datetimerange"
                     format="yyyy-MM-dd hh:mm"
                     value-format="yyyy-MM-dd hh:mm"
@@ -73,105 +75,116 @@
                 </div>
               </el-form-item>
             </div>
-            <el-form-item 
-              label="事由：" 
-              label-width="120px"
-            ><el-input
-              type="textarea"
-              :rows="3"
-              maxlength="200"
-              v-model="editForm.reason"
-              show-word-limit
-              autocomplete="off"
+            <el-form-item label="事由：" label-width="120px"
+              ><el-input
+                type="textarea"
+                :rows="3"
+                maxlength="200"
+                v-model="addForm.reason"
+                show-word-limit
+                autocomplete="off"
               ></el-input
             ></el-form-item>
-            
           </el-form>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
+        <el-button @click="closeAdd">取 消</el-button>
+        <el-button type="primary" @click="addSubmit">确 定</el-button>
       </div>
     </el-dialog>
-    </div>
+  </div>
 </template>
 
 <script>
-import { UpdateCarUseRecord } from '@/api/car'
+import { AddCarUseRecord, GetByOrgId } from '@/api/car'
 
 export default {
-  name: 'EditTask',
+  name: 'AddTask',
   props: {
-    dialogEdit: {
+    dialogAdd: {
       type: Boolean,
       default: false
-    },
-    editData: Object
+    }
   },
+  components: {},
   data() {
     return {
-      editForm: {
-        id: 0,
+      addForm: {
         carId: '',
         userId: '',
         beginTime: '',
         endTime: '',
         reason: ''
-       
       },
-      // 车辆列表数据
+      data_value:'',
+      // 车辆下拉列表数据
       carListData: [],
-      // 日期时间
-      date_value: '',
-      rules:{
+      addFormRules:{
         carId: [
           { required: true, message: "车辆不能为空", trigger: "blur" }
         ],
         userId: [
           { required: true, message: "用车人不能为空", trigger: "blur" }
-        ]
-        
+        ],
       },
-      visible: this.dialogEdit,
-      
+      visible: this.dialogAdd,
     };
   },
+  created(){
+    this.getCarList()
+  },
   watch: {
-    // 监听编辑的对象
-    editData(obj){
-      this.editForm = obj
-    },
-    // 监听编辑弹窗
-    dialogEdit() {
-      this.visible = this.dialogEdit;
+    dialogAdd() {
+      this.visible = this.dialogAdd
     }
   },
   methods: {
     // 获取用车时间
     changeDate() {
-      this.addForm.beginTime = this.date_value[0]
-      this.addForm.endTime = this.date_value[1]
+      this.addForm.beginTime = this.data_value[0]
+      this.addForm.endTime = this.data_value[1]
+    },
+    
+    // 获取车辆下拉列表
+    getCarList() {
+      var _this = this
+      let parms = {
+        orgId: this.orgId,
+        carType: this.carType
+      }
+      GetByOrgId(parms).then(res => {
+        res.result.forEach((e) => {
+          // console.log(e)
+          _this.carListData.push({
+            value: e.number,
+            id: e.id
+          })
+        })
+    //    console.log(_this.carListData)
+      })
     },
     // 点击取消或者右上角的×关闭新增弹窗
-    closeEdit() {
-      this.$refs.editFormRef.resetFields() 
-      this.$emit("update:dialogEdit", false);
+    closeAdd() {
+      this.$refs.addFormRef.resetFields() // 监听对话框关闭事件
+      this.$emit("update:dialogAdd", false);
     },
-    // 修改用车信息并提交
-    editSubmit() {
-      this.$refs.editFormRef.validate(async valid => {
+    // 新增信息并提交
+    addSubmit() {
+      this.$refs.addFormRef.validate(async valid => {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
-        UpdateCarUseRecord(this.editForm).then(res => {
+        AddCarUseRecord(this.addForm).then(res => {
           console.log(res)
-          if(res.success){
-              this.$emit("update:dialogEdit", false);
-              this.$message.success('修改成功！')
-              // this.$parent.getList()
-          }
+           if(res.success){
+              // this.dialogAdd = false
+              this.$emit("update:dialogAdd", false);
+              this.$message.success('添加成功！')
+              this.$parent.getList()
+           }
         })
       })
+    
     }
   }
 };
@@ -192,7 +205,9 @@ export default {
           width: 220px;
         }
       }
+      
     }
+    
   }
 }
 /deep/.form-box .el-input__icon,

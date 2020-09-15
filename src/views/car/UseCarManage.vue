@@ -15,13 +15,14 @@
                 clearable
                 @clear="getList" 
                 v-model="form.numberOrNameOrTel"
-                style="width:220px;margin-right:20px;"
+                style="width:220px;"
               ></el-input>
               <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
+              <el-button type="primary" plain @click="handleAdd">新增</el-button>
               <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
             </el-button-group>
           </div>
@@ -45,12 +46,12 @@
               ></el-table-column>
               <el-table-column
                 prop="userName"
-                label="用车人姓名"
+                label="登记姓名"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="userNumber"
-                label="用车人联系电话"
+                prop="type"
+                label="车辆类型"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
@@ -59,8 +60,13 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
+                prop="userNumber"
+                label="联系电话"
+                show-overflow-tooltip
+              ></el-table-column>
+              <el-table-column
                 prop="reason"
-                label="用车事由"
+                label="事由"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column label="操作">
@@ -90,63 +96,47 @@
             @changeCurrentPage="changeCurrentPage"
           ></page>
         </div>
-        <!--查看访客详情弹窗-->
+        <!--查看用车详情弹窗-->
         <div class="addTask-box dialog-box button-box">
-          <el-dialog title="车辆信息" :visible.sync="detilFormVisible">
+          <el-dialog title="用车信息" :visible.sync="detilFormVisible">
             <div class="content-box form-box">
               <div class="content_box">
                 <div class="info-box">
-                  <el-form :model="detilForm" :rules="detilFormRules">
+                  <el-form :model="detilForm">
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="车牌号码：" prop="number">
-                          <span>{{ detilForm.number }}</span>
+                        <el-form-item label="车辆：">
+                          <span>{{ detilForm.carNumber }}</span>
                         </el-form-item>
                       </div>
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="车主姓名：" prop="ownerName">
-                          <span>{{ detilForm.ownerName }}</span>
+                        <el-form-item label="用车人：">
+                          <span>{{ detilForm.userName }}</span>
                         </el-form-item>
                       </div>
                       <div class="list-items has-two-item">
-                        <el-form-item label="联系电话：" prop="phoneNumber">
-                          <span class="info">{{ detilForm.phoneNumber }}</span>
+                        <el-form-item label="联系电话：">
+                          <span class="info">{{ detilForm.userPhoneNumber }}</span>
                         </el-form-item>
                       </div>
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="车辆颜色：" prop="color">
-                          <span class="info">{{ detilForm.color }}</span>
-                        </el-form-item>
-                      </div>
-                      <div class="list-items has-two-item">
-                        <el-form-item label="车辆分类：" prop="type">
-                          <span class="info">{{ detilForm.type }}</span>
-                        </el-form-item>
-                      </div>
-                    </div>  
-                    <div class="list-item">
-                      <div class="list-items has-two-item">
-                        <el-form-item label="备注：" prop="remark">
-                          <span>{{ detilForm.remark }}</span>
+                        <el-form-item label="用车时间：">
+                          <span class="info">{{ detilForm.endTime }}</span>
                         </el-form-item>
                       </div>
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="登记时间：" prop="registrationTime">
-                          <span class="info">{{ detilForm.registrationTime }}</span>
-                        </el-form-item>
-                      </div>
-                      <div class="list-items has-two-item">
-                        <el-form-item label="IMEI：" prop="imei">
-                          <span class="info">{{ detilForm.imei }}</span>
+                        <el-form-item label="事由：">
+                          <span>{{ detilForm.reason }}</span>
                         </el-form-item>
                       </div>
                     </div>
+                    
                   </el-form>
                 </div>
               </div>
@@ -156,7 +146,9 @@
             </div>
         </el-dialog>
       </div>
-      <!-- 修改车辆弹窗 -->
+      <!-- 新增用车信息弹窗 -->
+      <add-task :dialogAdd.sync="dialogAdd"></add-task>
+      <!-- 修改用车信息弹窗 -->
       <edit-task :editData="editData" :dialogEdit.sync="dialogEdit"></edit-task>
     </div>
     </div>
@@ -166,6 +158,7 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
+import AddTask from './useCarManageTask/addTask/AddTask';
 import EditTask from './useCarManageTask/editTask/EditTask';
 import { GetByOrgIdCarUseRecord, GetByIdCarUseRecord, DeleteCarUseRecord } from '@/api/car';
 
@@ -173,6 +166,7 @@ export default {
   components: { 
     cTree, 
     Page,
+    AddTask,
     EditTask
   },
   data() {
@@ -189,16 +183,17 @@ export default {
       loading: false,
       // 列表数据
       tableData: [],
-      // 是否显示修改弹窗
+      // 是否显示新增弹窗
+      dialogAdd: false,
+      // 是否显示修改用车信息弹窗
       dialogEdit: false,
-      // 查询到的车辆信息对象
+      // 查询到的用车信息对象
       editData: {},
-      // 是否显示查看用户信息弹窗
+      // 是否显示查看用车详情弹窗
       dialogView: false,
-      // 详情数据
+      // 用车详情对象
       detilForm: {}, 
       detilFormVisible:false,
-      detilFormRules: {},
       // 批量删除id
       ids:[],
     };
@@ -229,13 +224,17 @@ export default {
       })
       this.ids = list
     },
-    // 显示修改车辆弹窗
+    // 显示新增弹窗
+    handleAdd() {
+      this.dialogAdd = true;
+    },
+    // 显示修改用车信息弹窗
     handleEdit(index, row){
       console.log(index, row)
       this.editData = row
       this.dialogEdit = true
     },
-    // 查看访客记录详情
+    // 查看用车详情
     handleCheckInfo(index, row) {
       console.log(index, row);
       this.detilFormVisible = true
@@ -366,5 +365,9 @@ export default {
   .info-box{
     padding: 0 40px;
   }
+}
+/deep/.el-table th, 
+/deep/.el-table td{
+  text-align: center;
 }
 </style>

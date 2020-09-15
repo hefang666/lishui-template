@@ -19,6 +19,7 @@
               ></el-input>
               <el-select 
                 v-model="form.carType" 
+                clearable
                 placeholder="请选择车辆类型">
                 <el-option 
                 label="标准民用车" 
@@ -107,13 +108,13 @@
             @changeCurrentPage="changeCurrentPage"
           ></page>
         </div>
-        <!--查看访客详情弹窗-->
+        <!--查看车辆详情弹窗-->
         <div class="addTask-box dialog-box button-box">
           <el-dialog title="车辆信息" :visible.sync="detilFormVisible">
             <div class="content-box form-box">
               <div class="content_box">
                 <div class="info-box">
-                  <el-form :model="detilForm" :rules="detilFormRules">
+                  <el-form :model="detilForm">
                     <div class="list-item">
                       <div class="list-items has-two-item">
                         <el-form-item label="车牌号码：" prop="number">
@@ -211,12 +212,11 @@ export default {
       dialogEdit: false,
       // 查询到的车辆信息对象
       editData: {},
-      // 是否显示查看用户信息弹窗
+      // 是否显示查看车辆信息弹窗
       dialogView: false,
-      // 详情数据
+      // 车辆详情对象
       detilForm: {}, 
       detilFormVisible:false,
-      detilFormRules: {},
       // 批量删除id
       ids:[],
     };
@@ -253,7 +253,7 @@ export default {
       this.editData = row
       this.dialogEdit = true
     },
-    // 查看访客记录详情
+    // 查看车辆信息详情
     handleCheckInfo(index, row) {
       console.log(index, row);
       this.detilFormVisible = true
@@ -262,8 +262,12 @@ export default {
         id: row.id
       }
       GetById(param).then(res => {
-       this.detilForm = res.result
-       this.loading = false
+        if(res.success){
+          this.detilForm = res.result
+          this.detilFormVisible = false
+        }
+      }).catch(err => {
+        console.log(err)
       })
     },
     
@@ -385,4 +389,9 @@ export default {
     padding: 0 40px;
   }
 }
+/deep/.el-table th, 
+/deep/.el-table td{
+  text-align: center;
+}
+
 </style>

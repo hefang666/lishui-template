@@ -65,7 +65,7 @@ export default {
     text-align: center;
     height: 40px;
     line-height: 40px;
-    font-size: 12px;
+    font-size: 14px;
     color: #4b77be;
     margin-top: 10px;
     border-top: 1px solid #ddd;

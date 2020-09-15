@@ -19,13 +19,13 @@
               ></el-input>
               <el-date-picker
                 v-model="visitTime"
-                type="daterange"
-                unlink-panels
-                value-format="yyyy-MM-dd"
-                format="yyyy-MM-dd"
-                range-separator="-"
+                type="datetimerange"
+                format="yyyy-MM-dd hh:mm"
+                value-format="yyyy-MM-dd hh:mm"
+                range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
+                @change="changeDate"
               />
               <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
             </div>
@@ -287,6 +287,11 @@ export default {
     this.getList();
   },
   methods: {
+    // 获取查询的访问时间
+    changeDate() {
+      this.form.visitTimeBegin = this.visitTime[0]
+      this.form.visitTimeEnd = this.visitTime[1]
+    },
     // 获取列表
     getList() {
       this.loading = true
@@ -466,5 +471,13 @@ export default {
   .info-box{
     padding: 0 40px;
   }
+}
+/deep/.search-box .el-input__icon,
+/deep/.el-date-editor .el-range-separator{
+  line-height: 22px !important;
+}
+/deep/.el-table th, 
+/deep/.el-table td{
+  text-align: center;
 }
 </style>

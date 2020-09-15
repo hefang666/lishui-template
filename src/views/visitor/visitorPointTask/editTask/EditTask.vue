@@ -25,14 +25,22 @@
               
             </div>
             
-            <el-form-item label="备注：" label-width="120px"
-              ><el-input
+            <el-form-item 
+            class="has-two-item"
+            label="备注：" 
+            label-width="120px"
+            >
+            <div class="list-item-content-box">
+              <el-input
                 type="textarea"
                 :rows="3"
+                maxlength="200"
                 v-model="editForm.remark"
+                show-word-limit
                 autocomplete="off"
-              ></el-input
-            ></el-form-item>
+              ></el-input>
+            </div>
+            </el-form-item>
           </el-form>
         </div>
       </div>

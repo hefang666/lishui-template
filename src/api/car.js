@@ -15,6 +15,13 @@ export function GetByOrgIdPage(params) {
         data: params
     })
 }
+export function GetByOrgId(params) {
+    return request({
+        url: '/api/services/Security/CarService/GetByOrgId', // 通过组织机构获取车辆列表(不分页)
+        method: 'POST',
+        data: params
+    })
+}
 export function UpdateCar(params) {
     return request({
         url: '/api/services/Security/CarService/UpdateCar', // 修改车辆信息
@@ -40,6 +47,13 @@ export function GetById(params) {
 export function GetByOrgIdCarUseRecord(params) {
     return request({
         url: '/api/services/Security/CarUseRecordService/GetByOrgId', // 根据组织机构获取用车列表
+        method: 'POST',
+        data: params
+    })
+}
+export function AddCarUseRecord(params) {
+    return request({
+        url: '/api/services/Security/CarUseRecordService/InsertUseRecord', // 新增用车信息
         method: 'POST',
         data: params
     })

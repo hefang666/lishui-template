@@ -10,7 +10,6 @@
           inline
           :model="ruleForm"
           :rules="rules"
-          :label-position="labelPosition"
           label-width="110px"
         >
         <div class="list-item">
@@ -20,10 +19,12 @@
             label-width="120px" 
             prop="number"
            >
-            <el-input 
-            type="text" 
-            v-model="ruleForm.number"
-            ></el-input>
+            <div class="list-item-content-box">
+              <el-input 
+              type="text" 
+              v-model="ruleForm.number"
+              ></el-input>
+            </div>
           </el-form-item>
         </div>
         <div class="list-item">
@@ -33,20 +34,24 @@
             label-width="120px" 
             prop="ownerName"
            >
+           <div class="list-item-content-box">
             <el-input 
             type="text" 
             v-model="ruleForm.ownerName"
             ></el-input>
+           </div>
           </el-form-item>
           <el-form-item
             class="has-two-item" 
             label="联系电话："
             label-width="120px" 
             prop="phoneNumber">
+            <div class="list-item-content-box">
             <el-input
             type="text" 
             v-model="ruleForm.phoneNumber"
             ></el-input>
+            </div>
           </el-form-item>
         </div>
         <div class="list-item">
@@ -55,16 +60,19 @@
             label="车辆颜色：" 
             label-width="120px" 
             >
+            <div class="list-item-content-box">
             <el-input 
             type="text" 
             v-model="ruleForm.color"
             ></el-input>
+            </div>
           </el-form-item>
           <el-form-item
             class="has-two-item" 
             label="车辆分类："
             label-width="120px"
             >
+            <div class="list-item-content-box">
             <el-select 
               v-model="ruleForm.type" 
               placeholder="请选择车辆类型">
@@ -77,33 +85,16 @@
               value="1">
               </el-option>
             </el-select>
+            </div>
           </el-form-item>
         </div> 
-        <!-- <div class="list-item">
-          <el-form-item
-            class="has-two-item" 
-            label="品牌分类："
-            label-width="120px"
-            >
-            <el-select 
-              v-model="ruleForm.brand" 
-              placeholder="请选择品牌分类">
-              <el-option 
-              label="宝马" 
-              value="0">
-              </el-option>
-              <el-option 
-              label="奔驰" 
-              value="1">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </div> -->
+        
         <div class="list-item">
           <el-form-item
             label="备注：" 
             label-width="120px"
             >
+            <div class="list-item-content-box">
             <el-input
               type="textarea"
               placeholder="请输入内容"
@@ -111,9 +102,10 @@
               maxlength="200"
               v-model="ruleForm.remark"
               show-word-limit
-              style="width:660px;"
+              style="width:700px;"
               >
             </el-input>
+            </div>
           </el-form-item>
         </div>
         <div class="list-item">
@@ -135,10 +127,12 @@
             label="IMEI：" 
             label-width="120px" 
             >
+            <div class="list-item-content-box">
             <el-input 
             type="text" 
             v-model="ruleForm.iemi"
             ></el-input>
+            </div>
           </el-form-item>
         </div>  
           
@@ -173,7 +167,7 @@ export default {
       callback(new Error('请输入合法的手机号'))
     }
     return {
-      labelPosition: "left",
+      // labelPosition: "left",
       ruleForm: {
         organizationId: 0,
         number: "",
@@ -274,6 +268,10 @@ export default {
   .footer-btn {
     margin: auto;
     text-align: center;
+  }
+  /deep/.el-button--primary{
+    background-color: #4b77be;
+    border-color: #4b77be;
   }
   //上传图片
   .org-img {
