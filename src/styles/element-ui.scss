@@ -82,3 +82,64 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+.pop-boxer {
+  position: absolute;
+  line-height: 1;
+  background-color: white;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+  &:before, &:after {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 57px;
+    margin-left: -11px;
+  }
+  &:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 57px;
+    margin-left: -10px;
+  }
+}
+
+.pop-container p {
+  margin: 20px 0;
+}
+
+.pop-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  color: #4b77be;
+  &:after {
+    content: "✖";
+  }
+  &:hover {
+    color: #23527c;
+  }
+  // .el-icon-close {
+  //   color: #4b77be;
+  //   font-weight: bold;
+  // }
+  // &:hover {
+  //   .el-icon-close {
+  //     color: #23527c;
+  //   }
+  // }
+}

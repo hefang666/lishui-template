@@ -1,16 +1,18 @@
 <template>
   <div class="daymange">
-    <el-row :gutter="20">
-      <el-col :span="4">
-        <el-input
-          placeholder="请输入关键字"
-          prefix-icon="el-icon-search"
-          v-model="search"
-          size="mini"
-        ></el-input>
-      </el-col>
-      <el-col :span="8">
-        <el-date-picker
+    <!-- <el-row :gutter="20"> -->
+    
+      <div class="daymangeallbox">
+        <div class="coldis">
+          <div>
+            <el-input
+              placeholder="请输入关键字"
+              prefix-icon="el-icon-search"
+              v-model="search"
+              size="mini"
+            ></el-input>
+          </div>
+          <el-date-picker
           v-model="timeValue"
           type="daterange"
           range-separator="至"
@@ -18,32 +20,35 @@
           end-placeholder="结束日期"
           size="mini"
         ></el-date-picker>
-      </el-col>
-      <el-col :span="2">
-        <el-button class="query" type="primary" size="mini" @click="handless"
+        <el-button class="search-button" type="primary" size="mini" @click="handless"
           >查询</el-button
         >
-      </el-col>
-      <el-col :span="10" class="dayCol">
-        <el-button plain size="mini" @click="handledaildele">删除</el-button>
-        <el-button class="info" plain size="mini" @click="handleinfo(1)"
-          >详情</el-button
-        >
-        <el-button type="primary" size="mini" @click="handlerefresh"
-          >刷新</el-button
-        >
-      </el-col>
-    </el-row>
-
-    <el-table
+      </div>
+      <div class="button-box" align="right">
+         <el-button-group>
+          <el-button type="primary" plain size="mini" @click="handledaildele">删除</el-button>
+          <el-button class="info" type="primary" plain size="mini" @click="handleinfo(1)"
+            >详情</el-button
+          >
+          <el-button type="primary" plain size="mini" @click="handlerefresh"
+            >刷新</el-button
+          >
+         </el-button-group>
+      </div>
+      </div>
+    <!-- </el-row> -->
+ <!--  -->
+   <div class="table-box">
+      <el-table
       :data="daylist"
       v-loading="loading"
-      height="450"
-      size="mini"
+      height="830"
+      stripe
       border
+      size="mini"
+      tooltip-effect="dark"
       ref="daymultipleTable"
       :header-cell-style="{background: '#4b77be', color: 'white'}"
-      :default-sort="{prop: 'reportDateText'}"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" align="center"></el-table-column>
@@ -61,7 +66,6 @@
         prop="reportDateText"
         label="上报时间"
         align="center"
-        sortable
       ></el-table-column>
       <el-table-column
         prop="reportType"
@@ -79,7 +83,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
+   </div>
+    <!-- <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
@@ -87,7 +92,15 @@
       :page-size="MaxResultCount"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-    ></el-pagination>
+    ></el-pagination> -->
+    <div class="page-box button-box">
+      <Page
+        :page-data="[30, 40, 50, 100]"
+        :total="total"
+        @changePageSize="changePageSize"
+        @changeCurrentPage="changeCurrentPage"
+      ></Page>
+    </div>
 
     <!-- 报告详情弹框 -->
     <el-dialog title="报告详情" :visible.sync="dailydialogVisible" width="60%">
@@ -241,7 +254,11 @@
   </div>
 </template>
 <script>
+import Page from '@/components/page/Page.vue';
 export default {
+  components: {
+    Page
+  },
   props: {
     daylist: {
       type: Array
@@ -384,12 +401,12 @@ export default {
       this.$parent.InitializeDaily(this.PageIndex, this.MaxResultCount);
     },
     // 每页
-    handleSizeChange(val) {
+    changePageSize(val) {
       this.MaxResultCount = val;
       this.$parent.InitializeDaily(this.PageIndex, this.MaxResultCount);
     },
     // 当前页面
-    handleCurrentChange(val) {
+    changeCurrentPage(val) {
       this.PageIndex = val;
       this.$parent.InitializeDaily(this.PageIndex, this.MaxResultCount);
     },
@@ -443,19 +460,22 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import '@/styles/element-ui-new.scss';
+@import '@/styles/public.scss';
+
 .daymange {
-  padding: 20px;
+  padding: 10px;
 }
 .query {
   margin-left: 20px;
 }
-.dayCol {
-  display: flex;
-  justify-content: flex-end;
-}
+// .dayCol {
+//   display: flex;
+//   justify-content: flex-end;
+// }
 .el-table {
-  margin-top: 15px;
+  margin-top: 10px;
   /* font-size: 12px; */
 }
 .info {
@@ -527,4 +547,39 @@ td {
   flex-direction: column;
   align-items: center;
 }
+.search-button {
+    height: 28px;
+    line-height: 28px;
+    padding: 0 20px;
+    vertical-align: top;
+    background: #4b77be;
+    border-color: #4b77be;
+    &:hover,
+    &:focus {
+      opacity: 0.9;
+    }
+  }
+  .daymange /deep/ .el-input__inner {
+		height: 28px;
+		line-height: 28px;
+		border: 1px solid #4b77be;
+	}
+  .coldis{
+    display: flex;
+  }
+  .daymangeallbox{
+    display: flex;
+    justify-content: space-between;
+  }
+  .coldis div:nth-of-type(1){
+    margin-right: 10px;
+  }
+  .coldis .el-button{
+    margin-left: 10px;
+  }
+  .page-box {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
 </style>

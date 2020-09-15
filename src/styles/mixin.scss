@@ -1,8 +1,68 @@
 @mixin clearfix {
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
+  .clearfix{
+    &:after {
+      visibility: hidden;
+      display: block;
+      font-size: 0;
+      content: " ";
+      clear: both;
+      height: 0;
+    }
+  }
+  .fl {
+    float: left;
+  }
+  .fr {
+    float: right;
+  }
+}
+
+@mixin textAlign {
+  .text-center {
+    text-align: center
+  }
+  .text-left {
+    text-align: left;
+  }
+  .text-right {
+    text-align: right;
+  }
+}
+
+@mixin padding($i, $p: $i * 5 ) {
+  .p-#{$p} {
+    padding: $p * 1px;
+  }
+  .p-l-#{$p} {
+    padding-left: $p * 1px;
+  }
+  .p-r-#{$p} {
+    padding-right: $p * 1px;
+  }
+  .p-t-#{$p} {
+    padding-top: $p * 1px;
+  }
+  .p-b-#{$p} {
+    padding-bottom: $p * 1px;
+  }
+  .m-#{$p} {
+    margin: $p * 1px;
+  }
+  .m-l-#{$p} {
+    margin-left: $p * 1px;
+  }
+  .m-r-#{$p} {
+    margin-right: $p * 1px;
+  }
+  .m-t-#{$p} {
+    margin-top: $p * 1px;
+  }
+  .m-b-#{$p} {
+    margin-bottom: $p * 1px;
+  }
+  $i: $i + 1;
+  @if $i <= 7 {
+    @include padding($i);
   }
 }
 
