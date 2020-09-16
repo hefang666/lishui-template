@@ -9,25 +9,6 @@
       @mouseenter="() => handleOverlayEnter(item)"
       @mouseleave="() => handleOverlayLeave(item)"
     >
-      <el-form
-        ref="infoForm"
-        :model="infoForm"
-        label-width="100px"
-        :inline="true"
-      >
-      <el-form-item label="车牌：" prop="">
-        <span class="info">88888</span> </el-form-item>
-        <el-form-item label="信号：" prop="">
-        <span class="info">强</span> </el-form-item>
-        <el-form-item label="车辆状态：" prop="">
-        <span class="info">正常行驶</span> </el-form-item>
-        <el-form-item label="车主：" prop="">
-        <span class="info">张三</span> </el-form-item>
-        <el-form-item label="当前：" prop="">
-        <span class="info">渝中区上清寺</span> </el-form-item>
-        <el-form-item label="速度：" prop="">
-        <span class="info">60km/h</span> </el-form-item>
-      </el-form>
     </div>
     <div
       v-for="(item, index) in memberList"
@@ -36,26 +17,58 @@
       style="min-width: 20px; cursor: pointer;"
       class="index-map-archor-img"
     >
-      <img
+      <!-- <img
         alt
         src="@/assets/logo.png"
         @mouseenter="() => handleAnchorEnter(item)"
         @mouseleave="() => handleAnchorLeave(item)"
-      />
+      /> -->
+      <el-popover
+        placement="top-start"
+        title=""
+        width="200"
+        trigger="click"
+        content="">
+        <!-- <img alt src="@/assets/logo.png" slot="reference"/> -->
+        <i class="el-icon-truck" slot="reference" style="font-size:56px;color:#4b77be;"></i>
+        <div class="info-box">
+          <div class="info-list">
+            <div>车牌：{{item.number}}</div>
+            <div>车辆状态：{{item.status}}</div>
+            <div>信号：{{item.signal}}</div>
+            <div>车主：{{item.name}}</div>
+            <div>当前位置：{{item.location}}</div>
+            <div>速度：{{item.speed}}</div>
+          </div>
+          <div class="btn-box">
+            <el-button type="primary" size="small" @click="handleLocus">轨迹</el-button>
+            <el-button type="primary" size="small">跟踪</el-button>
+          </div>
+        </div>
+       
+      </el-popover>
+       
     </div>
+    <!--轨迹弹窗-->
+    <locus-task :dialogLocus.sync="dialogLocus"></locus-task>
   </div>
 </template>
 
 <script>
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('home');
+const { mapState } = createNamespacedHelpers('home');
+import LocusTask from '../locusTask/LocusTask';
 export default {
+  components: { 
+    LocusTask
+  },
   data() {
     return {
       map: {},
       zoomMap: '12',
       isOverlayEnter: false,
       infoForm:{}, // 车辆详情数据
+      dialogLocus: false,
       position: []
     };
   },
@@ -89,6 +102,10 @@ export default {
   methods: {
     routePush(path) {
       this.$router.push(path);
+    },
+    // 打开轨迹弹窗
+    handleLocus() {
+      this.dialogLocus = true
     },
     // 向地图中增加人员位置
     addMember(data) {
@@ -158,4 +175,21 @@ export default {
 
 <style lang="scss">
 @import '~@/styles/style.scss';
+.info-box{
+  display: flex;
+  justify-content: space-between;
+  .info-list div{
+    font-size: 12px;
+  }
+  .btn-box{
+    flex: 1;
+    margin-top: 10px;
+    /deep/.el-button{
+      margin-left: 0;
+      margin-top: 10px;
+      background-color: #4b77be;
+      border: none;
+    }
+  }
+}
 </style>

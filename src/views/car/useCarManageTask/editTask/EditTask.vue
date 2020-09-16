@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="修改用车信息" :visible.sync="visible" :dialog-edit="dialogEdit">
+    <el-dialog title="修改用车信息" :close-on-click-modal="false" :visible.sync="visible" :dialog-edit="dialogEdit">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -12,11 +12,11 @@
                 class="has-two-item"
                 label="选择车辆："
                 label-width="120px"
-                prop="carId"
+                prop="carNumber"
                 >
                 <div class="list-item-content-box">
                    <el-select
-                    v-model="editForm.carId"
+                    v-model="editForm.carNumber"
                     placeholder="请选择车辆"
                     >
                     <el-option
@@ -34,11 +34,11 @@
                 class="has-two-item"
                 label="选择用车人："
                 label-width="120px"
-                prop="userId"
+                prop="userName"
                 >
                 <div class="list-item-content-box">
                   <el-select 
-                    v-model="editForm.userId" 
+                    v-model="editForm.userName" 
                     placeholder="请选择用车人">
                     <el-option 
                     label="张三" 
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { UpdateCarUseRecord } from '@/api/car'
+import { UpdateCarUseRecord, GetByOrgId } from '@/api/car'
 
 export default {
   name: 'EditTask',
@@ -114,7 +114,9 @@ export default {
       editForm: {
         id: 0,
         carId: '',
+        carNumber:'',
         userId: '',
+        userName: '',
         beginTime: '',
         endTime: '',
         reason: ''
@@ -124,11 +126,12 @@ export default {
       carListData: [],
       // 日期时间
       date_value: '',
+      // 车辆下拉列表数据
       rules:{
-        carId: [
+        carNumber: [
           { required: true, message: "车辆不能为空", trigger: "blur" }
         ],
-        userId: [
+        userName: [
           { required: true, message: "用车人不能为空", trigger: "blur" }
         ]
         
@@ -136,6 +139,9 @@ export default {
       visible: this.dialogEdit,
       
     };
+  },
+  created(){
+    this.getCarList()
   },
   watch: {
     // 监听编辑的对象
@@ -152,6 +158,23 @@ export default {
     changeDate() {
       this.addForm.beginTime = this.date_value[0]
       this.addForm.endTime = this.date_value[1]
+    },
+    // 获取车辆下拉列表
+    getCarList() {
+      var _this = this
+      let parms = {
+        orgId: this.orgId,
+        carType: this.carType
+      }
+      GetByOrgId(parms).then(res => {
+        res.result.forEach((e) => {
+          // console.log(e)
+          _this.carListData.push({
+            value: e.number,
+            id: e.id
+          })
+        })
+      })
     },
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {

@@ -60,7 +60,7 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="userNumber"
+                prop="userPhone"
                 label="联系电话"
                 show-overflow-tooltip
               ></el-table-column>
@@ -118,7 +118,7 @@
                       </div>
                       <div class="list-items has-two-item">
                         <el-form-item label="联系电话：">
-                          <span class="info">{{ detilForm.userPhoneNumber }}</span>
+                          <span class="info">{{ detilForm.userPhone }}</span>
                         </el-form-item>
                       </div>
                     </div>
@@ -173,7 +173,7 @@ export default {
     return {
       // 查询参数
       form: {
-        organizationId: 0,
+        organizationId: 1,
         numberOrNameOrTel: '',
         pageIndex: 1,
         maxResultCount: 30,

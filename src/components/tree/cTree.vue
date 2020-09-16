@@ -19,37 +19,24 @@ export default {
   data() {
     return {
       // 左侧列表
-      listData: [
-        // {
-        //   id: 1,
-        //   name: '李四',
-          
-        // },
-        // {
-        //   id: 2,
-        //   name: '张三',
-          
-        // }
-      ],
+      listData: [],
       currentIndex: 0
      
-    };
+    }
   },
   mounted() {
-    this.getList()
+    this.getLeftList()
   },
   methods: {
     // 获取访客登记点列表
-    getList(){
+    getLeftList(){
       let _this = this
       GetPointPower().then(res => {
         console.log(res)
         if(res.success){
-          setTimeout(() => {
           _this.listData = res.result
           // _this.page.totalCount =  res.result.totalCount
           _this.loading = false
-        }, 300)
         }
       })
     },
@@ -72,10 +59,11 @@ export default {
     border-bottom: 1px solid #ddd;
   }
   .list-box div{
-    height: 40px;
-    line-height: 40px;
+    height: 30px;
+    line-height: 30px;
     border-bottom: 1px solid #ddd;
     text-align: center;
+    cursor: pointer;
     font-size: 14px;
     &.active {
       background: #4b77be;

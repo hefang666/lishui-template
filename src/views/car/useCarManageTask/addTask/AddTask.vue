@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="新增用车信息" :visible.sync="visible" :dialog-add="dialogAdd">
+    <el-dialog title="新增用车信息" :close-on-click-modal="false" :visible.sync="visible" :dialog-add="dialogAdd">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeAdd">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -12,11 +12,11 @@
                 class="has-two-item"
                 label="选择车辆："
                 label-width="120px"
-                prop="carId"
+                prop="carNumber"
                 >
                 <div class="list-item-content-box">
                    <el-select
-                    v-model="addForm.carId"
+                    v-model="addForm.carNumber"
                     clearable
                     placeholder="请选择车辆"
                     >
@@ -35,11 +35,11 @@
                 class="has-two-item"
                 label="选择用车人："
                 label-width="120px"
-                prop="userId"
+                prop="userName"
                 >
                 <div class="list-item-content-box">
                   <el-select 
-                    v-model="addForm.userId" 
+                    v-model="addForm.userName" 
                     clearable
                     placeholder="请选择用车人">
                     <el-option 
@@ -51,6 +51,22 @@
                     value="1">
                     </el-option>
                   </el-select>
+                </div>
+              </el-form-item>
+            </div>
+            <div class="list-item">
+              <el-form-item
+                class="has-two-item"
+                label="电话号码："
+                label-width="120px"
+                prop="userPhone"
+                >
+                <div class="list-item-content-box">
+                  <el-input
+                    type="text"
+                    v-model="addForm.userPhone"
+                    autocomplete="off"
+                  ></el-input>
                 </div>
               </el-form-item>
             </div>
@@ -109,10 +125,24 @@ export default {
   },
   components: {},
   data() {
+    // 验证手机号规则
+    var checkMobile = (rule, value, callback) => {
+      // 验证手机号的正则表达式
+      const regMobile = /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
+      if (regMobile.test(value)) {
+        // 验证通过，合法的手机号
+        return callback()
+      }
+      // 验证不通过，不合法
+      callback(new Error('请输入合法的手机号'))
+    }
     return {
       addForm: {
-        carId: '',
-        userId: '',
+        carId: 1,
+        carNumber: '',
+        userId: 1,
+        userName:'',
+        userPhone:'',
         beginTime: '',
         endTime: '',
         reason: ''
@@ -121,11 +151,15 @@ export default {
       // 车辆下拉列表数据
       carListData: [],
       addFormRules:{
-        carId: [
+        carNumber: [
           { required: true, message: "车辆不能为空", trigger: "blur" }
         ],
-        userId: [
+        userName: [
           { required: true, message: "用车人不能为空", trigger: "blur" }
+        ],
+        userPhone: [
+          { required: true, message: "请输入联系电话", trigger: "blur" },
+          { validator: checkMobile, trigger: "blur" }
         ],
       },
       visible: this.dialogAdd,
