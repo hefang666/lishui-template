@@ -16,7 +16,6 @@
         <span>{{ data[labelname] }}</span>
       </span>
     </el-tree>
-    <button @click="getCheckedList">按钮</button>
   </div>
 </template>
 

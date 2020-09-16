@@ -1,5 +1,5 @@
 <template>
-  <div class="area-manage">
+  <div class="area-manage area-list-namage">
     <Search icon="" placeholder="请输入片区名称"></Search>
     <div class="area-tabs">
       <el-tabs v-model="activeName" class="snt-card-tabs" type="card">

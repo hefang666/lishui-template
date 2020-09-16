@@ -1,6 +1,6 @@
 <template>
   <div class="area-lists-box">
-    <div class="table-box">
+    <div class="table-box area-content-box">
       <el-table
         size="mini"
         ref="multipleTable"
@@ -11,7 +11,8 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column width="35" type="selection"></el-table-column>
+        <el-table-column width="35" type="selection">
+        </el-table-column>
         <el-table-column
           prop="routeName"
           label="片区名称"
