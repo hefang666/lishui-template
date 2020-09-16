@@ -133,13 +133,31 @@
   &:hover {
     color: #23527c;
   }
-  // .el-icon-close {
-  //   color: #4b77be;
-  //   font-weight: bold;
-  // }
-  // &:hover {
-  //   .el-icon-close {
-  //     color: #23527c;
-  //   }
-  // }
 }
+
+// 卡片 tab 样式
+.snt-card-tabs {
+  &.el-tabs--card {
+    & > .el-tabs__header {
+      .el-tabs__nav {
+        border: none;
+      }
+      .el-tabs__item {
+        border-radius: 5px 5px 0 0;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+        border-top: 1px solid transparent;
+        &.is-active {
+          border-top-color: #dfe4ed;
+          border-right-color: #dfe4ed;
+          border-left-color: #dfe4ed;
+        }
+      }
+    }
+  }
+  .el-tabs__item {
+    height: 25px;
+    line-height: 24px;
+  }
+}
+
