@@ -28,10 +28,7 @@
             min-width="120"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column
-            prop="number"
-            label="设备编号"
-          ></el-table-column>
+          <el-table-column prop="number" label="设备编号"></el-table-column>
           <el-table-column
             prop="cishu"
             label="今年巡检次数"
@@ -72,9 +69,7 @@
     </div>
 
     <!-- 查看 -->
-    <view-detail
-      :dialog-view="dialogView"
-      @closeView="closeView"></view-detail>
+    <view-detail :dialog-view="dialogView" @closeView="closeView"></view-detail>
   </div>
 </template>
 
@@ -85,7 +80,7 @@ import ViewDetail from './ViewDetail.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('equipment');
 export default {
-  name: 'equipment',
+  name: 'Equipment',
   components: {
     'snt-search': Search,
     Page,
@@ -107,13 +102,13 @@ export default {
 
       // 是否显示查看
       dialogView: false
-    }
+    };
   },
   methods: {
-     // 多选选择后拿到的数据
-     handleSelectionChange(val) {
+    // 多选选择后拿到的数据
+    handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      console.log(this.multipleSelection);
     },
 
     // 查看任务
@@ -136,7 +131,7 @@ export default {
       this.dialogView = data.dialogView;
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

@@ -1,28 +1,89 @@
+import {getPeopleList, getOrganizationData} from '@/api/other';
+// import { reject } from 'core-js/fn/promise';
+
 var state = {
-  personList: [
+  // 组织数据
+  organizationData: [
     {
-      id: 1,
-      name: '测试人员1',
-      mobile: '12345678910',
-      deptName: '仁寿供排水有限责任公司',
-      nowDayEndTime: null,
-      nowDayEndTimeString: '',
-      nowDayStartTime: null,
-      nowDayStartTimeString: '',
-      positionName: '仁寿供排水有限责任公司管理员角色'
+      id: 10294,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务',
+      orgType: 1,
+      parentId: 0
     },
     {
-      id: 2,
-      name: '测试人员1',
-      mobile: '12345678910',
-      deptName: '仁寿供排水有限责任公司',
-      nowDayEndTime: null,
-      nowDayEndTimeString: '',
-      nowDayStartTime: null,
-      nowDayStartTimeString: '',
-      positionName: '仁寿供排水有限责任公司管理员角色'
+      id: 10295,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务1',
+      orgType: 1,
+      parentId: 0
+    },
+    {
+      id: 10296,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务2',
+      orgType: 1,
+      parentId: 0
+    },
+    {
+      id: 10297,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务子集1层1',
+      orgType: 1,
+      parentId: 10294
+    },
+    {
+      id: 10298,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务子集2层1',
+      orgType: 1,
+      parentId: 10297
+    },
+    {
+      id: 10299,
+      orgCode: 'njls',
+      orgName: '溧水智慧水务1子集1层2',
+      orgType: 1,
+      parentId: 10295
     }
   ],
+  personList: [
+    {
+      dingding: '',
+      email: '',
+      id: 10398,
+      loginAccount: 'OK2',
+      logoUrl: null,
+      mobile: '12345678910',
+      nickName: 'ok2',
+      orgId: 10251,
+      orgName: '调度中心',
+      qq: '',
+      spell: 'ok2',
+      tel: '',
+      trueName: 'ok2',
+      wexin: ''
+    },
+    {
+      dingding: '',
+      email: '',
+      id: 10399,
+      loginAccount: 'test',
+      logoUrl: null,
+      mobile: '12345678910',
+      nickName: 'ABCD',
+      orgId: 10251,
+      orgName: '调度中心',
+      qq: '',
+      spell: 'ok2',
+      tel: '',
+      trueName: 'ok2',
+      wexin: ''
+    }
+  ],
+  personPageIndex: 1,
+  personMaxResultCount: 30,
+
   areaList: [
     {
       id: 53,
@@ -62,14 +123,51 @@ var state = {
 };
 
 var mutations = {
+  // 设置人员数据
   set_person_list: function(state, list) {
     state.personList = list;
+  },
+  // 设置组织数据
+  set_organizationData: function(state, data) {
+    state.organizationData = data;
   }
 };
 
 var actions = {
-  changePersonList({commit}, list) {
-    commit('set_person_list', list);
+  getPeopleList({commit, state}) {
+    var data = {
+      pageIndex: state.personPageIndex,
+      maxResultCount: state.personMaxResultCount
+    };
+    return new Promise((resolve, reject) => {
+      getPeopleList(data)
+        .then(response => {
+          console.log(response);
+          if (response.code) {
+            commit('set_person_list', response);
+            console.log(state.personList);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  getOrganizationData({commit, state}) {
+    return new Promise((resovle, reject) => {
+      getOrganizationData()
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_organizationData', response.result);
+            console.log(state.organizationData);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
   }
 };
 

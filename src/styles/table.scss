@@ -1,0 +1,427 @@
+// 稽察办表格样式
+.inspectorTable-box {
+  .inspectortable {
+    width: 100%;
+    border-color: #4b77be;
+
+    &>tr>td {
+      border: 1px solid #4477be;
+      box-sizing: border-box;
+    }
+    &>tr>td:first-child {
+      border-right: none;
+    }
+    .first-tr {
+      width: 100%;
+      .first-tr-item {
+        width: 50%;
+        .first-tr-item-left {
+          display: flex;
+          .left {
+            width: 30px;
+            text-align: center;
+            padding: 57px 5px;
+            vertical-align: middle;
+            background: #4b77be;
+            color: #ffffff;
+          }
+  
+          .right {
+            width: 100%;
+            padding: 10px;
+            height: 190px;
+            overflow-y: auto;
+          }
+        }
+  
+        .first-tr-item-right {
+          .event-table {
+            width: 100%;
+            tr {
+              td {
+                text-align: center;
+                width: 20%;
+                line-height: 27px;
+              }
+            }
+  
+            .table-header {
+              background: #4b77be;
+              color: #ffffff;
+            }
+  
+            .has-bg {
+              background: #f5f5f5;
+            }
+          }
+        }
+      }
+    }
+  
+    .second-tr {
+      .div-box {
+        width: 100%;
+        display: flex;
+      }
+    }
+  }
+
+  .second-table {
+    width: 100%;
+    border-color: #4b77be;
+
+    .tr-title {
+      width: 28px;
+      text-align: center;
+      padding: 57px 5px;
+      vertical-align: middle;
+      background: #4b77be;
+      color: #ffffff;
+    }
+
+    &>tr>td {
+      border: 1px solid #4477be;
+      box-sizing: border-box;
+    }
+    &>tr:first-child>td {
+      border-top: none;
+    }
+    &>tr>td:first-child {
+      border-right: none;
+    }
+
+    .table-box {
+      .event-table {
+        width: 100%;
+        tr {
+          td {
+            text-align: center;
+            width: 16.5%;
+            line-height: 27px;
+          }
+        }
+  
+        .table-header {
+          background: #4b77be;
+          color: #ffffff;
+        }
+      }
+      .table-body {
+        width: 100%;
+        
+        tr>td{
+          line-height: 27px;
+          width: 16.5%;
+          text-align: center;
+        }
+
+        div {
+          width: 100%;
+          // height: 100%;
+          overflow-y: auto;
+        }
+      }
+      .has-bg {
+        background: #f5f5f5;
+      }
+    }
+  }
+}
+
+
+
+// 生产科表格样式
+.productionTable-box {
+  .table-header {
+    width: 100%;
+    tr {
+      background: #4b77be;
+      color: #ffffff;
+
+      td {
+        line-height: 28px;
+        text-align: center;
+      }
+    }
+  }
+  .productiontable {
+    width: 100%;
+    border: 1px solid #4b77be;
+    box-sizing: border-box;
+    tr>td {
+      line-height: 27px;
+      width: 16.5%;
+      text-align: center;
+    }
+    .has-bg {
+      background: #f5f5f5;
+    }
+  }
+}
+
+
+
+// 维修组表格样式
+.maintenanceTeam-box {
+  .maintenanceTeam {
+    width: 100%;
+    border: 1px solid #4b77be;
+    box-sizing: border-box;
+    .header-tr {
+      background: #4b77be;
+      color: #ffffff;
+      td {
+        border-right: 1px solid #f5f5f5;
+        box-sizing: border-box;
+        text-align: center;
+      }
+      // td:last-child {
+      //   border-right: none;
+      // }
+      .header-title {
+        width: 120px;
+        .title-box {
+          display: flex;
+          position: relative;
+          div {
+            width: 50px;
+            text-align: center;
+            line-height: 25px;
+          }
+
+          .title-name {
+            margin-top: 40px;
+          }
+
+          .title-num {
+            margin-top: 20px;
+            width: 30px;
+          }
+
+          .title-caliber {
+          }
+
+          .first-border,
+          .second-border {
+            position: absolute;
+            background: #f5f5f5;
+            height: 1px;
+          }
+
+          .first-border {
+            width: 133px;
+            top: 46px;
+            left: -2px;
+            transform: rotate(15deg);
+          }
+          .second-border {
+            width: 98px;
+            top: 31px;
+            right: -11px;
+            transform: rotate(40deg);
+          }
+        }
+      }
+    }
+    tr {
+      line-height: 28px;
+      td {
+        text-align: center;
+        font-size: 12px;
+
+        .list-box {
+          .water-box {
+            width: 100%;
+            tr>td {
+              text-align: left;
+              padding: 0 15px;
+              border-left: none;
+            }
+            tr:nth-child(odd) {
+              background: #f5f5f5;
+            }
+            tr:nth-child(even) {
+              background: #ffffff;
+            }
+          }
+        }
+      }
+    }
+
+    tr:nth-child(even) {
+      background: #f5f5f5;
+    }
+  }
+}
+
+
+
+// 维护组表格样式
+.maintenanceGroup-table-box {
+  margin: 0;
+  .maintenanceGroup {
+    width: 100%;
+    box-sizing: border-box;
+    .header-tr {
+      background: #4b77be;
+      color: #ffffff;
+      td {
+        border-top: 1px solid #f5f5f5;
+        border-right: 1px solid #f5f5f5;
+        background: #4b77be;
+        box-sizing: border-box;
+        text-align: center;
+      }
+      td:last-child {
+        border-right: none;
+      }
+      .header-title {
+        width: 110px;
+        border-left: 1px solid #4b77be;
+        box-sizing: border-box;
+        .title-box {
+          display: flex;
+          position: relative;
+          div {
+            width: 40px;
+            text-align: center;
+            line-height: 25px;
+          }
+
+          .title-name {
+            margin-top: 40px;
+          }
+
+          .title-num {
+            margin-top: 20px;
+            width: 30px;
+          }
+
+          .title-caliber {
+          }
+
+          .first-border,
+          .second-border {
+            position: absolute;
+            background: #f5f5f5;
+            height: 1px;
+          }
+
+          .first-border {
+            width: 115px;
+            top: 46px;
+            left: -2px;
+            transform: rotate(18deg);
+          }
+          .second-border {
+            width: 84px;
+            top: 32px;
+            right: -14px;
+            transform: rotate(48deg);
+          }
+        }
+      }
+    }
+    
+    .item-tr {
+      line-height: 28px;
+      td {
+        text-align: center;
+        font-size: 12px;
+
+        .list-box {
+          background: #ffffff;
+          .water-box {
+            width: 100%;
+            .water-item {
+              border-left: transparent;
+              &>td {
+                text-align: left;
+                padding: 0 15px;
+                border-left: transparent;
+                border-right: transparent;
+              }
+              &>td:last-child {
+                border-right: 1px solid #4b77be;
+              }
+            }
+            
+            .water-item:nth-child(odd) {
+              background: #f5f5f5;
+            }
+            .water-item:nth-child(even) {
+              background: #ffffff;
+            }
+          }
+        }
+      }
+      &>td:first-child {
+        border-left: 1px solid #4b77be;
+        box-sizing: border-box;
+      }
+      &>td:last-child {
+        border-right: 1px solid #4b77be;
+        box-sizing: border-box;
+      }
+    }
+    .item-other>td:last-child {
+      border-right: transparent;
+    }
+    .item-tr:nth-child(even) {
+      background: #f5f5f5;
+    }
+
+    .bottom-tr {
+      background: #ffffff;
+      line-height: 28px;
+      >td {
+        border-top: 1px solid #4b77be;
+        border-bottom: 1px solid #4b77be;
+        box-sizing: border-box;
+        padding-left: 60px;
+      }
+      &>td:first-child {
+        border-left: 1px solid #4b77be;
+      }
+      &>td:last-child {
+        border-right: 1px solid #4b77be;
+      }
+    }
+  }
+}
+
+
+
+
+// 公共表格样式
+.table-title {
+  text-align: center;
+  font-size: 16px;
+  margin: 15px 0;
+}
+
+.department-box {
+  line-height: 30px;
+}
+
+.table-content-box {
+  max-height: 520px;
+  overflow: auto;
+}
+.bottom-box {
+  width: 100%;
+  line-height: 28px;
+  >tr>td {
+    border-top: 1px solid #4b77be;
+    border-bottom: 1px solid #4b77be;
+    box-sizing: border-box;
+    width: 30%;
+    padding-left: 60px;
+  }
+  tr>td:first-child {
+    border-left: 1px solid #4b77be;
+  }
+  tr>td:last-child {
+    border-right: 1px solid #4b77be;
+  }
+}

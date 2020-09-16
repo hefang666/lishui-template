@@ -367,3 +367,34 @@ export function isStringEmpty(obj) {
     return false;
   }
 }
+
+/**
+ * 将扁平化数组转化为树形结构
+ * @param {Array} data
+ */
+export function filterArray(data) {
+  var result = [];
+  var obj = {};
+  for (var i = 0; i < data.length; i++) {
+    var key = data[i];
+    //以id为索引存储元素
+    obj[key['id']] = key;
+  }
+  for (var j in obj) {
+    //当前元素
+    var current = obj[j];
+    //当前元素的父元素
+    var currentParent = obj[current['parentId']];
+    //如果当前元素存在父元素
+    if (currentParent) {
+      //如果当前元素的父元素没有children键
+      if (!currentParent['items']) {
+        currentParent['items'] = [];
+      }
+      currentParent['items'].push(current);
+    } else {
+      result.push(current);
+    }
+  }
+  return result;
+}

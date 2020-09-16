@@ -6,12 +6,12 @@
           <el-button
             type="primary"
             plain
-            v-for="(item,index) in statusList"
+            v-for="(item, index) in statusList"
             :key="index"
             :class="{'item-active': index == currentIndex}"
             @click="searchConditional(index)"
           >
-            {{item}}
+            {{ item }}
           </el-button>
         </el-button-group>
         <snt-search :placeholder="'请输入任务名称'" />
@@ -92,12 +92,20 @@
         ></page>
       </div>
     </div>
+
+    <!-- 查看弹窗 -->
+    <view-table
+      :dialog-show="dialogShow"
+      :table-name="tableName"
+      :component-name="componentName"
+      @closeTable="closeTable"></view-table>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page.vue';
 import Search from '@/components/search';
+import ViewTable from './viewTable.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('reportManagement');
 export default {
@@ -107,12 +115,16 @@ export default {
       // 按状态筛选的状态内容
       statusList: ['全部', '稽查', '生产科', '管线所', '维护组'],
       currentIndex: 0,
-      multipleSelection: []
-    }
+      multipleSelection: [],
+      dialogShow: true,
+      tableName: '测试数据',
+      componentName: 'MaintenanceGroup'
+    };
   },
   components: {
     Page,
-    'snt-search': Search
+    'snt-search': Search,
+    ViewTable
   },
   computed: {
     ...mapState(['reportList'])
@@ -125,7 +137,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      console.log(this.multipleSelection);
     },
     download() {},
     handleSee() {},
@@ -137,9 +149,17 @@ export default {
     changeCurrentPage(data) {
       console.log(data);
       this.currentPage = data;
+    },
+
+    // 关闭查看弹窗
+    closeTable(data) {
+      this.dialogShow = data;
     }
+  },
+  mounted() {
+    console.log(this.componentName);
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

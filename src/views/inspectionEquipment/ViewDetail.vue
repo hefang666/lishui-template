@@ -105,10 +105,7 @@
                       prop="taskStatusString"
                       label="任务状态"
                     ></el-table-column>
-                    <el-table-column
-                      width="100"
-                      align="center"
-                      label="操作">
+                    <el-table-column width="100" align="center" label="操作">
                       <template slot-scope="scope">
                         <el-button
                           type="text"
@@ -172,10 +169,7 @@
                       prop="taskStatusString"
                       label="任务状态"
                     ></el-table-column>
-                    <el-table-column
-                      width="100"
-                      align="center"
-                      label="操作">
+                    <el-table-column width="100" align="center" label="操作">
                       <template slot-scope="scope">
                         <el-button
                           type="text"
@@ -206,12 +200,14 @@
     <!-- 查看任务弹窗 -->
     <view-task-detail
       :dialog-view-detail="dialogViewDetail"
-      @closeViewDetail="closeViewDetail"></view-task-detail>
+      @closeViewDetail="closeViewDetail"
+    ></view-task-detail>
 
     <!-- 查看事件弹窗 -->
     <view-event-detail
       :dialog-event-view="dialogEventView"
-      @closeViewEvent="closeViewEvent"></view-event-detail>
+      @closeViewEvent="closeViewEvent"
+    ></view-event-detail>
   </div>
 </template>
 
@@ -222,7 +218,7 @@ import ViewEventDetail from './ViewEventDetail.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('equipment');
 export default {
-  name: 'viewDetail',
+  name: 'Viewdetail',
   props: ['dialogView'],
   components: {
     Page,
@@ -275,7 +271,7 @@ export default {
 
       // 是否显示查看任务弹窗
       dialogViewDetail: false,
-      
+
       // 是否显示查看事件弹窗
       dialogEventView: false
     };
