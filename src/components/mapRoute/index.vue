@@ -5,15 +5,15 @@
       <a ref="closer" @click="closeOverlay" class="pop-closer">
         <!-- <i class="el-icon-close"></i> -->
       </a>
-      <div v-if="featureType== 'point'" class="pop-container">
-        <p>设备名称：{{currentFeature.values_.PointName}}</p>
-        <p>坐标:{{currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1]}}</p>
-        <p>地址:{{currentFeature.values_.Location}}</p>
+      <div v-if="featureType == 'point'" class="pop-container">
+        <p>设备名称：{{ currentFeature.values_.PointName }}</p>
+        <p>坐标:{{ currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1] }}</p>
+        <p>地址:{{ currentFeature.values_.Location }}</p>
       </div>
       <div v-if="featureType== 'line'" class="pop-container">
-        <p>设备名称：{{currentFeature.values_.Material}}</p>
-        <p>坐标:{{currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1]}}</p>
-        <p>地址:{{currentFeature.values_.Location}}</p>
+        <p>设备名称：{{ currentFeature.values_.Material }}</p>
+        <p>坐标:{{ currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1] }}</p>
+        <p>地址:{{ currentFeature.values_.Location }}</p>
       </div>
     </div>
   </div>
@@ -108,7 +108,7 @@ export default {
       this.showRouteMsgInMap(this.mapdata);
     });
   },
-  methods: {    
+  methods: {  
     // 初始化图层
     init() {
       this.drawAreaLayer();
@@ -138,7 +138,7 @@ export default {
         routeArea,
         devDtos,
         pipDtos
-      } = mapdata
+      } = mapdata;
       let _this = this;
 
       // 绘制起点
@@ -205,7 +205,7 @@ export default {
         this.map.getView().fit([xmin, ymin, xmax, ymax]);
       }
 
-       // 绘制设备图层
+      // 绘制设备图层
       var loadLayersArray = new Array();
       for (let index = 0; index < devDtos.length; index++) {
         let element = devDtos[index];
@@ -228,7 +228,7 @@ export default {
         }
       }
       // 选中要素
-      var interval = setInterval(function () {
+      var interval = setInterval(function() {
         var selectArrays = _this.featureSelect.getFeatures().getArray();
         loadLayersArray = _this.checkSelectFeatures(selectArrays, loadLayersArray);
         if (loadLayersArray.length <= 0) {
@@ -288,13 +288,13 @@ export default {
     },
 
     // 绘制必经区域路径图层
-    drawFromLayer () {
+    drawFromLayer() {
       // 画必经点图层参数
       var drawFromStyle = new window.ol.style.Style({ // 区域样式
         image: new window.ol.style.Icon({
           size: [32, 48],
           anchor: [0.5, 0.6],
-          src: location,
+          src: location
         })
       });
       var drawFromSoure = new window.ol.source.Vector({}); // 区域数据源
@@ -308,14 +308,14 @@ export default {
     },
 
     // 模拟导航路线参数
-    drawNavRouteLayer () {
-      var _this = this
+    drawNavRouteLayer() {
+      var _this = this;
       var drawNavRouteSource = new window.ol.source.Vector({}); // 区域数据源
       this.drawNavRouteSource = drawNavRouteSource;
       var drawNavRouteLayer = new window.ol.layer.Vector({ // 区域图层
         source: drawNavRouteSource,
         updateWhileInteracting: true,
-        style: function (feature) {
+        style: function(feature) {
           return _this.getNavRouteStyle(feature);
         }
       });
@@ -334,26 +334,28 @@ export default {
           })
         })
       ];
-      geometry.forEachSegment(function (start, end) {
+      geometry.forEachSegment(function(start, end) {
         var dx = end[0] - start[0];
         var dy = end[1] - start[1];
         var rotation = Math.atan2(dy, dx);
         // arrows
-        styles.push(new window.ol.style.Style({
-          geometry: new window.ol.geom.Point(end),
-          image: new window.ol.style.Icon({
-            src: arrow,
-            anchor: [0.75, 0.5],
-            rotateWithView: true,
-            rotation: -rotation
+        styles.push(
+          new window.ol.style.Style({
+            geometry: new window.ol.geom.Point(end),
+            image: new window.ol.style.Icon({
+              src: arrow,
+              anchor: [0.75, 0.5],
+              rotateWithView: true,
+              rotation: -rotation
+            })
           })
-        }));
+        );
       });
       return styles;
     },
 
     // 绘制区域图层
-    drawAreaLayer () {
+    drawAreaLayer() {
       // 画区域图层参数
       var drawAreaStyle = new window.ol.style.Style({ // 区域样式
         fill: new window.ol.style.Fill({
@@ -412,10 +414,9 @@ export default {
               vectorSource.addFeatures(
                 vectorSource.getFormat().readFeatures(ajax.responseText));
             }
-          }
+          };
         }
       });
-      console.log(layername)
       var layer = new window.ol.layer.Vector({
         source: vectorSource,
         title: layername,
@@ -469,7 +470,7 @@ export default {
         style: new window.ol.style.Style({
           stroke: new window.ol.style.Stroke({
             color: color,
-            width: 2,
+            width: 2
           })
         })
       });
@@ -509,18 +510,18 @@ export default {
     // 判断选中的设备
     checkSelectFeatures(selectArrays, loadLayersArray) {
       for (var index = 0; index < selectArrays.length; index++) {
-          var feature = selectArrays[index];
-          if (feature.id_.indexOf('Point') >= 0) {
-            let i = loadLayersArray.indexOf(feature.values_.PointName);
-            if (i > -1) {
-                loadLayersArray.splice(i, 1);
-            }
-          } else if (feature.id_.indexOf('Line') >= 0) {
-            let i = loadLayersArray.indexOf(feature.values_.Material);
-            if (i > -1) {
+        var feature = selectArrays[index];
+        if (feature.id_.indexOf('Point') >= 0) {
+          let i = loadLayersArray.indexOf(feature.values_.PointName);
+          if (i > -1) {
               loadLayersArray.splice(i, 1);
-            }
           }
+        } else if (feature.id_.indexOf('Line') >= 0) {
+          let i = loadLayersArray.indexOf(feature.values_.Material);
+          if (i > -1) {
+            loadLayersArray.splice(i, 1);
+          }
+        }
       }
       return loadLayersArray;
     },
@@ -550,7 +551,7 @@ export default {
             }
           }
         }
-      } 
+      }
     },
 
     // 生成设备列表
@@ -579,47 +580,54 @@ export default {
     //设备点及管线、设备及管道数据
     pointLineFunc() {
       // pathObj
-      let point = this.pathObj.selectedPointsArray;//设备点数组
-      let line = this.pathObj.selectedLinesArray;//管线数组
-      let pointNum = point.length;//设备点个数
-      let longSun = 0;//管线总长
-      let pointArray = [];//列表点数组
-      let lineArray = [];//列表线数组
+      let point = this.pathObj.selectedPointsArray; //设备点数组
+      let line = this.pathObj.selectedLinesArray; //管线数组
+      let pointNum = point.length; //设备点个数
+      let longSun = 0; //管线总长
+      let pointArray = []; //列表点数组
+      let lineArray = []; //列表线数组
 
       for (let i = 0; i < line.length; i++) {
         let long = line[i].values_.length * 100000;
         longSun += long;
-        let x = (line[i].values_.geometry.flatCoordinates[0] + line[i].values_.geometry.flatCoordinates[2]) / 2;
-        let y = (line[i].values_.geometry.flatCoordinates[1] + line[i].values_.geometry.flatCoordinates[3]) / 2;
+        let x =
+        (line[i].values_.geometry.flatCoordinates[0] +
+        line[i].values_.geometry.flatCoordinates[2]) / 2;
+        let y =
+        (line[i].values_.geometry.flatCoordinates[1] +
+        line[i].values_.geometry.flatCoordinates[3]) / 2;
         let obj = {
-          'deviceType': 1,
+          deviceType: 1,
           //设备编号
-          'deviceCode': line[i].values_.LineNumber,
+          deviceCode: line[i].values_.LineNumber,
           //点名称
-          'deviceName': line[i].values_.Material,
+          deviceName: line[i].values_.Material,
           //点坐标
-          'devicePoint': x + ',' + y,
+          devicePoint: x + ',' + y,
           //地址
-          'address': line[i].values_.Location,
+          address: line[i].values_.Location
         };
         lineArray.push(obj);
       }
 
       for (let i = 0; i < point.length; i++) {
         let obj = {
-          'deviceType': 0,
+          deviceType: 0,
           //设备编号
-          'deviceCode': point[i].values_.PointNumbe,
+          deviceCode: point[i].values_.PointNumbe,
           //线名称
-          'deviceName': point[i].values_.PointName,
+          deviceName: point[i].values_.PointName,
           //点坐标
-          'devicePoint': point[i].values_.geometry.flatCoordinates[0] + ',' + point[i].values_.geometry.flatCoordinates[1],
+          devicePoint:
+          point[i].values_.geometry.flatCoordinates[0] +
+          ',' +
+          point[i].values_.geometry.flatCoordinates[1],
           //地址
-          'address': point[i].values_.Location,
+          address: point[i].values_.Location
         };
         pointArray.push(obj);
       }
-      console.log(pointNum, longSun)
+      console.log(pointNum, longSun);
       // document.querySelector('#pointNum').text(pointNum);
       // document.querySelector('#lineLong').text(longSun.toFixed(2));
       this.pathObj.pointArray = pointArray;
@@ -628,8 +636,6 @@ export default {
       // this.equipmentPointFunc(pathObj.pointArray);
       // this.lineFunc(pathObj.lineArray);
     },
-
-
 
     // 获取地图中所有的GIS图层
     getMapShowGisLayers() {
@@ -658,7 +664,7 @@ export default {
           let element = data[index];
           let layer = element.deviceCode;
           if (layer == mapno) {
-              return true;
+            return true;
           }
         }
       }
@@ -667,7 +673,7 @@ export default {
 
     // 从这里开始展示从父组件查看当前管道以及设备信息的事件
 
-    mapOverlay () {
+    mapOverlay() {
       let container = this.$refs.popup;
       let overlay = new window.ol.Overlay({
         element: container,
@@ -681,7 +687,7 @@ export default {
       this.map.addOverlay(overlay);
     },
 
-    closeOverlay () {
+    closeOverlay() {
       this.overlay.setPosition(undefined);
       this.$refs.closer.blur();
       return false;
@@ -713,7 +719,7 @@ export default {
       console.log(state);
       // 首先判断地图中是否有该图层
       let layerNow,
-      _this = this;
+        _this = this;
       let layerList = _this.map.getLayers().getArray();
       for (let i = 0; i < layerList.length; i++) {
         let url = layerList[i].values_.title;
@@ -743,7 +749,7 @@ export default {
               coordinatel.push((coordinate[0] + coordinate[2]) / 2);
               coordinatel.push((coordinate[1] + coordinate[3]) / 2);
               _this.$nextTick(() => {
-                _this.overlay.setPosition(coordinatel)
+                _this.overlay.setPosition(coordinatel);
               });
             }
           }

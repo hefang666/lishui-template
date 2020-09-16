@@ -37,6 +37,12 @@ const routes = [
     meta: {title: '任务管理', icon: 'el-icon-user'}
   },
   {
+    path: '/area',
+    component: () => import('@/views/areaManagement/index.vue'),
+    name: 'area',
+    meta: {title: '片区管理', icon: 'el-icon-user'}
+  },
+  {
     path: '/event',
     component: () => import('@/views/eventManagement/index.vue'),
     name: 'event',

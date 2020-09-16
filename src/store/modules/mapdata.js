@@ -1,7 +1,7 @@
-import * as mapdata from '../data.js';
+import {routeLists} from '../data.js';
 
 var state = {
-  mapdata: mapdata.default.result
+  mapdata: routeLists.result
 };
 
 export default {
