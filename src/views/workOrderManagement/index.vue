@@ -261,8 +261,8 @@ export default {
     searchConditional(index) {
       this.currentIndex = index;
     },
-     // 点击切换条件筛选div的显示状态
-     showScreen() {
+    // 点击切换条件筛选div的显示状态
+    showScreen() {
       this.isScreen = !this.isScreen;
       if (this.isScreen) {
         this.screen = '收起';

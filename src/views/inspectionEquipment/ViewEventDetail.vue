@@ -127,7 +127,7 @@ export default {
     closeViewEvent() {
       let data = false;
       this.$emit('closeViewEvent', data);
-    },
+    }
   }
 };
 </script>

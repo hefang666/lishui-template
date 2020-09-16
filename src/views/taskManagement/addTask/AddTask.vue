@@ -50,6 +50,7 @@
                 <div class="list-item-content-box">
                   <el-date-picker
                     v-model="addForm.estimatedStartTime"
+                    format="yyyy-MM-dd HH:mm"
                     type="datetime"
                     placeholder="预计任务开始时间"
                   ></el-date-picker>
@@ -64,6 +65,7 @@
                   <el-date-picker
                     v-model="addForm.estimatedEndTime"
                     type="datetime"
+                    format="yyyy-MM-dd HH:mm"
                     placeholder="预计任务结束时间"
                   ></el-date-picker>
                 </div>
@@ -125,6 +127,7 @@
 
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'multiple'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
@@ -158,7 +161,7 @@ export default {
         remarks: ''
       },
       // 负责人弹窗状态
-      dialogCharge: false,
+      dialogCharge: true,
       // 巡检片区弹窗状态
       dialogArea: false
     };

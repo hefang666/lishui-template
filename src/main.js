@@ -7,6 +7,9 @@ import "./styles/element-variables.scss";
 import "@/styles/index.scss";
 Vue.use(Element);
 
+import Print from "vue-print-nb";
+Vue.use(Print);
+
 Vue.config.productionTip = false;
 
 new Vue({
