@@ -6,6 +6,12 @@
       @nodeClick="nodeClick"
       title="管点图层"
     />
+    <LayerTree
+      :treedata="treeData"
+      :showcheckbox="showcheckbox"
+      @nodeClick="nodeClick"
+      title="管线图层"
+    />
   </div>
 </template>
 
