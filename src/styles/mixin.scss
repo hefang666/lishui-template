@@ -33,31 +33,31 @@
   .p-#{$p} {
     padding: $p * 1px;
   }
-  .p-l-#{$p} {
+  .pl-#{$p} {
     padding-left: $p * 1px;
   }
-  .p-r-#{$p} {
+  .pr-#{$p} {
     padding-right: $p * 1px;
   }
-  .p-t-#{$p} {
+  .pt-#{$p} {
     padding-top: $p * 1px;
   }
-  .p-b-#{$p} {
+  .pb-#{$p} {
     padding-bottom: $p * 1px;
   }
   .m-#{$p} {
     margin: $p * 1px;
   }
-  .m-l-#{$p} {
+  .ml-#{$p} {
     margin-left: $p * 1px;
   }
-  .m-r-#{$p} {
+  .mr-#{$p} {
     margin-right: $p * 1px;
   }
-  .m-t-#{$p} {
+  .mt-#{$p} {             
     margin-top: $p * 1px;
   }
-  .m-b-#{$p} {
+  .mb-#{$p} {
     margin-bottom: $p * 1px;
   }
   $i: $i + 1;

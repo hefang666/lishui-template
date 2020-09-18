@@ -20,6 +20,7 @@
       <el-table-column label-class-name="handle" width="80" label="操作">
         <template>
           <a>查看</a>
+          <a class="ml-5">移除</a>
         </template>
       </el-table-column>
     </el-table>

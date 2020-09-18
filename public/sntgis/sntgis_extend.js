@@ -292,7 +292,7 @@ SNTGIS.NetWork.getFeaturesByCoords = function (layer, coords, callback) {
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200) {
                 try {
-                    callback($.parseJSON(ajax.responseText).features)
+                    callback(JSON.parse(ajax.responseText).features)
                 } catch (error) {
                     console.log(error)
                 }
@@ -302,7 +302,7 @@ SNTGIS.NetWork.getFeaturesByCoords = function (layer, coords, callback) {
 }
 
 //根据geojson的url信息获取范围内的管网信息
-SNTGIS.NetWork.getFeaturesByCoords = function (url, coords, layerName,workSpaceName) {
+SNTGIS.NetWork.getFeaturesByCoordsList = function (url, coords, layerName,workSpaceName) {
     var xml = getInsectsOGCXMLFromParams(SNTGIS.workSpace, workSpaceName, layerName, coords);
     var ajax = new XMLHttpRequest();
     var ajax = new XMLHttpRequest();

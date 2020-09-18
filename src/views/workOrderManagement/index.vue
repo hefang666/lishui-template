@@ -6,12 +6,12 @@
           <el-button
             type="primary"
             plain
-            v-for="(item,index) in statusList"
+            v-for="(item, index) in statusList"
             :key="index"
             :class="{'item-active': index == currentIndex}"
             @click="searchConditional(index)"
           >
-            {{item}}
+            {{ item }}
           </el-button>
         </el-button-group>
         <el-button
@@ -19,7 +19,7 @@
           type="primary"
           plain
           @click="showScreen"
-        >{{screen}}</el-button>
+          >{{ screen }}</el-button>
       </div>
       <div class="header-right">
         <el-button-group>
@@ -56,7 +56,7 @@
               @change="selectType"
             >
               <el-option
-                v-for="(item,index) in orderTypeData"
+                v-for="(item, index) in orderTypeData"
                 :key="index"
                 :label="item.label"
                 :value="item.value"></el-option>
