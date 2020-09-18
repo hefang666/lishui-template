@@ -24,6 +24,7 @@
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="addTask">新增</el-button>
+          <el-button type="primary" plain>重启</el-button>
           <el-button type="primary" plain>删除</el-button>
           <el-button type="primary" plain>暂停</el-button>
           <el-button type="primary" plain>导出</el-button>
@@ -100,7 +101,7 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="planTime"
+            prop="planStartTime"
             min-width="110"
             label="预计开始时间"
             show-overflow-tooltip
@@ -123,7 +124,7 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="status"
+            prop="statusStr"
             label="任务状态"
             show-overflow-tooltip
           ></el-table-column>
@@ -132,8 +133,8 @@
               <div class="operate-box">
                 <el-button
                   type="text"
-                  class="operate-button operate-button-active"
-                  disabled="disabled"
+                  :class="['operate-button', scope.row['status'] != 3 ? 'operate-button-active' : '']"
+                  :disabled="scope.row['status'] != 3 ? disabledTrue : disabledFalse"
                   @click="handleClose(scope.$index, scope.row)"
                   >关闭</el-button
                 >
@@ -145,7 +146,8 @@
                 >
                 <el-button
                   type="text"
-                  class="operate-button"
+                  :class="['operate-button', (scope.row['status'] == 1 || scope.row['status'] == 3) ? '' : 'operate-button-active']"
+                  :disabled="(scope.row['status'] == 1 || scope.row['status'] == 3) ? disabledFalse : disabledTrue"
                   @click="handleEdit(scope.$index, scope.row)"
                   >修改</el-button
                 >
@@ -163,7 +165,7 @@
       <div class="page-box">
         <page
           :page-data="[30, 40, 50, 100]"
-          :total="400"
+          :total="listTotalCount"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
         ></page>
@@ -195,12 +197,15 @@ export default {
     EditTask
   },
   computed: {
-    ...mapState(['taskList'])
+    ...mapState(['taskList', 'listTotalCount'])
   },
   data() {
     return {
       // 显示内容（筛选/收起）
       screen: '筛选',
+
+      disabledTrue: true,
+      disabledFalse: false,
 
       // 是否显示筛选框
       isScreen: false,
@@ -336,14 +341,15 @@ export default {
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(cur) {
-      console.log(cur);
       this.currentPage = cur;
       this.pageInfo.currentPage = cur;
       this.getTaskList(this.pageInfo);
+      console.log(this.listTotalCount)
     }
   },
   mounted() {
-    // this.getTaskList(this.pageInfo);
+    this.getTaskList(this.pageInfo);
+    console.log(this.listTotalCount);
   }
 };
 </script>

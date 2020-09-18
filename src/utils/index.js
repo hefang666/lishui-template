@@ -3,16 +3,16 @@
  */
 
 /**
- * Parse the time to string
+ * Parse the time to string时间日期格式转换
  * @param {(Object|string|number)} time
  * @param {string} cFormat
  * @returns {string | null}
  */
 export function parseTime(time, cFormat) {
   if (arguments.length === 0 || !time) {
-    return null
+    return null;
   }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}';
   let date;
   if (typeof time === 'object') {
     date = time;
@@ -21,7 +21,8 @@ export function parseTime(time, cFormat) {
       if (/^[0-9]+$/.test(time)) {
         // support "1548221490638"
         time = parseInt(time);
-      } else {
+      } else if (!time.includes('T')) {
+        // 判断传入进来的时间字符串是否包含 T 字符，这是时间格式，可以直接使用new Date转换，不需要操作字符串，例：1.2020-01-13T16:00:00  2.2020-01-13T16:00:00.000Z
         // support safari
         // https://stackoverflow.com/questions/4310953/invalid-date-in-safari
         time = time.replace(new RegExp(/-/gm), '/');
@@ -43,9 +44,11 @@ export function parseTime(time, cFormat) {
     a: date.getDay()
   };
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
-    const value = formatObj[key]
+    const value = formatObj[key];
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value];
+    }
     return value.toString().padStart(2, '0');
   });
   return time_str;
@@ -388,13 +391,58 @@ export function filterArray(data) {
     //如果当前元素存在父元素
     if (currentParent) {
       //如果当前元素的父元素没有children键
-      if (!currentParent['items']) {
-        currentParent['items'] = [];
+      if (!currentParent['roleItems']) {
+        currentParent['roleItems'] = [];
       }
-      currentParent['items'].push(current);
+      currentParent['roleItems'].push(current);
     } else {
       result.push(current);
     }
   }
   return result;
 }
+
+/**
+ * 处理数据（添加树显示的同意label名，添加icon）
+ * @param {Array} data
+ */
+export function addIcon(data) {
+  data.forEach(item => {
+    // 添加icon
+    if (item.orgType == 1) {
+      item.icon = 'icon-gongsi';
+    } else if (item.orgType == 2) {
+      item.icon = 'icon-zuzhi';
+    } else {
+      item.icon = 'icon-yonghu';
+    }
+
+    if (item['orgName']) {
+      item.roleName = item.orgName;
+    }
+
+    if (item['roleItems']) {
+      addIcon(item.roleItems);
+    }
+  });
+  return data;
+}
+
+/**
+ * 树状数据节点处理（给父节点添加属性disabled）
+ * @param {Array} data
+ */
+export function processingNodes(data) {
+  data.forEach(item => {
+    if (item['roleItems']) {
+      item.disabled = true;
+      processingNodes(item.roleItems);
+    }
+  });
+  return data;
+}
+
+/**
+ * 时间转换
+ * @param {}
+ */

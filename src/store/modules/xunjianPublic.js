@@ -1,8 +1,9 @@
-import {getPeopleList, getOrganizationData} from '@/api/other';
-// import { reject } from 'core-js/fn/promise';
+import {getPeopleList, getOrganizationData, getRoleData} from '@/api/other';
+import {filterArray, addIcon, processingNodes} from '@/utils/index';
+// import { reject, resolve } from 'core-js/fn/promise';
 
 var state = {
-  // 组织数据
+  // 组织树数据
   organizationData: [
     {
       id: 10294,
@@ -10,80 +11,46 @@ var state = {
       orgName: '溧水智慧水务',
       orgType: 1,
       parentId: 0
-    },
-    {
-      id: 10295,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务1',
-      orgType: 1,
-      parentId: 0
-    },
-    {
-      id: 10296,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务2',
-      orgType: 1,
-      parentId: 0
-    },
-    {
-      id: 10297,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务子集1层1',
-      orgType: 1,
-      parentId: 10294
-    },
-    {
-      id: 10298,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务子集2层1',
-      orgType: 1,
-      parentId: 10297
-    },
-    {
-      id: 10299,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务1子集1层2',
-      orgType: 1,
-      parentId: 10295
     }
   ],
-  personList: [
-    {
-      dingding: '',
-      email: '',
-      id: 10398,
-      loginAccount: 'OK2',
-      logoUrl: null,
-      mobile: '12345678910',
-      nickName: 'ok2',
-      orgId: 10251,
-      orgName: '调度中心',
-      qq: '',
-      spell: 'ok2',
-      tel: '',
-      trueName: 'ok2',
-      wexin: ''
-    },
-    {
-      dingding: '',
-      email: '',
-      id: 10399,
-      loginAccount: 'test',
-      logoUrl: null,
-      mobile: '12345678910',
-      nickName: 'ABCD',
-      orgId: 10251,
-      orgName: '调度中心',
-      qq: '',
-      spell: 'ok2',
-      tel: '',
-      trueName: 'ok2',
-      wexin: ''
-    }
+  // 按人员选择数据
+  pinData: [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z'
   ],
-  personPageIndex: 1,
-  personMaxResultCount: 30,
+  // 角色树数据
+  roleData: [],
+  // 人员详情列表
+  personList: [],
+  persontotalCount: 1, // 人员总数据条数
+  persontotalPages: 1, // 人员总页数
 
+  // message提示消息
+  messageText: '',
   areaList: [
     {
       id: 53,
@@ -130,22 +97,35 @@ var mutations = {
   // 设置组织数据
   set_organizationData: function(state, data) {
     state.organizationData = data;
+  },
+  // 设置选择人员搜索到的数据
+  set_personPage: function(state, data) {
+    state.persontotalCount = data.totalCount;
+    state.persontotalPages = data.totalPages;
+  },
+  // 设置角色树数据
+  set_roleData: function(state, data) {
+    state.roleData = data;
+    console.log(state.roleData);
+  },
+  // 设置提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
   }
 };
 
 var actions = {
-  getPeopleList({commit, state}) {
-    var data = {
-      pageIndex: state.personPageIndex,
-      maxResultCount: state.personMaxResultCount
-    };
+  getPeopleList({commit}, data) {
     return new Promise((resolve, reject) => {
       getPeopleList(data)
         .then(response => {
           console.log(response);
-          if (response.code) {
-            commit('set_person_list', response);
-            console.log(state.personList);
+          if (response.success) {
+            commit('set_person_list', response.result.items);
+            commit('set_personPage', {
+              totalCount: response.result.totalCount,
+              totalPages: response.result.totalPages
+            });
             resolve(response);
           }
         })
@@ -154,14 +134,65 @@ var actions = {
         });
     });
   },
-  getOrganizationData({commit, state}) {
-    return new Promise((resovle, reject) => {
+  getOrganizationData({commit}) {
+    return new Promise((resolve, reject) => {
       getOrganizationData()
         .then(response => {
           console.log(response);
           if (response.success) {
-            commit('set_organizationData', response.result);
-            console.log(state.organizationData);
+            var orgData = filterArray(response.result);
+            orgData = addIcon(orgData);
+            commit('set_organizationData', orgData);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  getRoleData({commit}) {
+    return new Promise((resolve, reject) => {
+      getRoleData()
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            for (var i = 0; i < response.result.length; i++) {
+              response.result[i].roleName = response.result[i].orgName;
+            }
+            var data = [
+              {
+                id: 10249,
+                orgName: '仁寿供排水有限责任公司',
+                orgType: 1,
+                orgTypeToString: null,
+                parentId: 0,
+                roleItems: [
+                  {
+                    roleId: 163151,
+                    roleName: '仁寿供排水有限责任公司管理员角色'
+                  }
+                ]
+              },
+              {
+                id: 10251,
+                orgName: '调度中心',
+                orgType: 2,
+                orgTypeToString: null,
+                parentId: 10249,
+                roleItems: [
+                  {
+                    roleId: 163159,
+                    roleName: '121'
+                  }
+                ]
+              }
+            ];
+            var roles = filterArray(data);
+            roles = processingNodes(roles);
+            roles = addIcon(roles);
+            commit('set_roleData', roles);
+            resolve(response);
           }
         })
         .catch(error => {

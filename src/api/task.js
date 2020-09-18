@@ -7,3 +7,12 @@ export function getTaskList(data) {
     data
   });
 }
+
+export function addTask(data) {
+  console.log(data)
+  return request({
+    url: 'InspectionTaskService/InsertTask',
+    method: 'post',
+    data
+  });
+}

@@ -1,4 +1,5 @@
-import {getTaskList} from '@/api/task';
+import {getTaskList, addTask} from '@/api/task';
+import {parseTime} from '@/utils/index.js';
 var state = {
   taskList: [
     {
@@ -23,7 +24,8 @@ var state = {
   taskStatus: '',
   searchText: '',
   currentPage: 1,
-  maxResultCount: 30, // 每条页数
+  listTotalCount: 1, // 数据总数
+  messageText: '', // 提示信息
   editModalVisble: false,
   addModalVisible: false,
   checkModalVisible: false,
@@ -49,13 +51,22 @@ var mutations = {
     state.taskName = data.taskName;
     state.startTime = data.startTime;
     state.endTime = data.endTime;
+  },
+  // 更新列表总条数
+  set_listTotal: function(state, data) {
+    console.log(data);
+    state.listTotalCount = data;
+    console.log(state.listTotalCount);
+  },
+  // 更新提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
+    console.log(state.messageText);
   }
 };
 
 var actions = {
   getTaskList({commit, state}, param) {
-    console.log(param);
-    console.log(state.taskStatus);
     var data = '';
     if (state.taskStatus == 0) {
       data = {
@@ -72,10 +83,27 @@ var actions = {
     return new Promise((resolve, reject) => {
       getTaskList(data)
         .then(response => {
-          if (response.code) {
-            commit('set_task_list', response);
-            console.log(state.taskList);
+          console.log(response);
+          if (response.success) {
+            response.result.items.forEach(item => {
+              console.log(item);
+              item.planStartTime = parseTime(
+                item.planStartTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+              item.planEndTime = parseTime(
+                item.planEndTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+              if (item.endTime != null) {
+                item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+              }
+            });
+            commit('set_task_list', response.result.items);
+            commit('set_listTotal', response.result.totalCount);
             resolve(response);
+          } else {
+            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -90,7 +118,7 @@ var actions = {
       startTime: param.startTime,
       endTime: param.endTime,
       name: param.taskName
-    }
+    };
     return new Promise((resolve, reject) => {
       getTaskList(data)
         .then(response => {
@@ -98,6 +126,24 @@ var actions = {
             commit('set_task_list', response);
             console.log(state.taskList);
             resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  addTask({commit}, data) {
+    console.log(data);
+    return new Promise((resolve, reject) => {
+      addTask(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_message', '新增任务成功！');
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
