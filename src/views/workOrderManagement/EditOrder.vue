@@ -16,16 +16,17 @@
                 >
                   <div class="list-item-content-box">
                     <el-select
-                    v-model="orderType"
-                    placeholder="请选择工单类型"
-                    @change="selectType"
-                  >
-                    <el-option
-                      v-for="(item,index) in orderTypeData"
-                      :key="index"
-                      :label="item.label"
-                      :value="item.value"></el-option>
-                  </el-select>
+                      v-model="orderType"
+                      placeholder="请选择工单类型"
+                      @change="selectType"
+                    >
+                      <el-option
+                        v-for="(item, index) in orderTypeData"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
+                    </el-select>
                   </div>
                 </el-form-item>
                 <el-form-item
@@ -196,7 +197,7 @@ import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('workOrderManagement');
 export default {
-  name: 'editOrder',
+  name: 'EditOrder',
   props: ['dialogEdit'],
   components: {
     ChoosePeople,
@@ -241,7 +242,7 @@ export default {
     choosePerson() {
       this.dialogCharge = true;
     },
-    
+
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
       console.log(data);
@@ -272,7 +273,7 @@ export default {
 .addTask-box {
   .dialog_box {
     /deep/ .el-dialog__body {
-      padding:0;
+      padding: 0;
       height: 480px;
       overflow-y: auto;
     }

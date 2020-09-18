@@ -80,7 +80,7 @@
                     placeholder="请选择任务类别"
                     v-model="taskType"
                   >
-                    <el-option label="临时任务" value="0"></el-option>
+                    <el-option label="临时任务" value="1"></el-option>
                   </el-select>
                 </div>
               </el-form-item>
@@ -244,12 +244,12 @@ export default {
       //   person: this.inCharge
       // }
       let param = {
-        name: '测试的第五个巡检任务',
+        name: '测试的第六个巡检任务',
         personId: 3,
-        startTime: '2020-09-11 12:00',
-        endTime: '2020-09-12 18:00',
+        startTime: '2020-09-12 12:00',
+        endTime: '2020-09-13 18:00',
         areaId: 12,
-        type: 0,
+        type: 1,
         person: '王五',
         remark: '这是我建的第五个测试任务（测试时间格式）'
       }

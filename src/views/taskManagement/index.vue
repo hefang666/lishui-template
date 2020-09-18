@@ -24,9 +24,15 @@
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="addTask">新增</el-button>
-          <el-button type="primary" plain>重启</el-button>
+          <el-button type="primary" plain @click="onlyOne">重启</el-button>
           <el-button type="primary" plain>删除</el-button>
           <el-button type="primary" plain>暂停</el-button>
+
+          <el-button type="primary" plain>关闭</el-button>
+          <el-button type="primary" plain>完成</el-button>
+          <el-button type="primary" plain>修改</el-button>
+          <el-button type="primary" plain>查看</el-button>
+
           <el-button type="primary" plain>导出</el-button>
         </el-button-group>
       </div>
@@ -86,7 +92,7 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="type"
+            prop="typeStr"
             label="任务类别"
             width="120"
           ></el-table-column>
@@ -154,7 +160,7 @@
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="handleSee(scope.$index, scope.row)"
+                  @click="handleSee(scope.row)"
                   >查看</el-button
                 >
               </div>
@@ -251,11 +257,18 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['getTaskList', 'searchTask']),
+    ...mapActions(['getTaskList', 'searchTask', 'GetTaskDetails']),
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
       console.log(this.multipleSelection)
+    },
+
+    // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
+    onlyOne() {
+      if (this.multipleSelection.length == 0) {
+        
+      }
     },
 
     // 关闭任务
@@ -264,9 +277,13 @@ export default {
     },
 
     // 查看任务
-    handleSee(index, row) {
-      console.log(index, row);
-      this.dialogView = true;
+    handleSee(row) {
+      let param = {
+        id: row.id
+      }
+      console.log(param);
+      this.GetTaskDetails(param);
+      // this.dialogView = true;
     },
 
     // 完成任务

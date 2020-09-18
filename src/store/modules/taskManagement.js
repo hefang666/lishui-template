@@ -1,4 +1,4 @@
-import {getTaskList, addTask} from '@/api/task';
+import {getTaskList, addTask, GetTaskDetails} from '@/api/task';
 import {parseTime} from '@/utils/index.js';
 var state = {
   taskList: [
@@ -66,6 +66,7 @@ var mutations = {
 };
 
 var actions = {
+  // 获取数据
   getTaskList({commit, state}, param) {
     var data = '';
     if (state.taskStatus == 0) {
@@ -111,6 +112,7 @@ var actions = {
         });
     });
   },
+  // 搜索
   searchTask({commit}, param) {
     var data = {
       pageIndex: param.pageIndex,
@@ -133,14 +135,33 @@ var actions = {
         });
     });
   },
+  // 新建
   addTask({commit}, data) {
-    console.log(data);
     return new Promise((resolve, reject) => {
       addTask(data)
         .then(response => {
           console.log(response);
           if (response.success) {
             commit('set_message', '新增任务成功！');
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 查看、修改
+  GetTaskDetails({commit}, data) {
+    console.log(data);
+    return new Promise((resolve, reject) => {
+      GetTaskDetails(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            // commit('set_message', '新增任务成功！');
             resolve(response);
           } else {
             commit('set_message', response.error.message);

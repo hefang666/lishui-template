@@ -63,7 +63,7 @@ export default {
     closeView() {
       let data = false;
       this.$emit('closeView', data);
-    },
+    }
   }
 };
 </script>

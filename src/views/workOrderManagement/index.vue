@@ -19,7 +19,8 @@
           type="primary"
           plain
           @click="showScreen"
-          >{{ screen }}</el-button>
+          >{{ screen }}
+        </el-button>
       </div>
       <div class="header-right">
         <el-button-group>
@@ -59,7 +60,9 @@
                 v-for="(item, index) in orderTypeData"
                 :key="index"
                 :label="item.label"
-                :value="item.value"></el-option>
+                :value="item.value"
+              >
+              </el-option>
             </el-select>
           </div>
         </div>
@@ -174,24 +177,22 @@
     ></choose-people>
 
     <!-- 新增 -->
-    <add-order
-      :dialog-add="dialogAdd"
-      @closeAdd="closeAdd"></add-order>
+    <add-order :dialog-add="dialogAdd" @closeAdd="closeAdd"></add-order>
 
     <!-- 修改 -->
-    <edit-order
-      :dialog-edit="dialogEdit"
+    <edit-order :dialog-edit="dialogEdit"
       @closeEdit="closeEdit"></edit-order>
     <!-- 提示弹窗 -->
     <tips
-    :dialog-tips="dialogTips"
-    :msg="'请确认操作'"
-    @closeTips="closeTips"></tips>
+      :dialog-tips="dialogTips"
+      :msg="'请确认操作'"
+      @closeTips="closeTips"></tips>
 
     <!-- 查看 -->
     <order-detail
       :dialog-view="dialogView"
-      @closeView="closeView"></order-detail>
+      @closeView="closeView">
+    </order-detail>
   </div>
 </template>
 
@@ -251,7 +252,7 @@ export default {
 
       // 是否显示新增
       dialogAdd: true
-    }
+    };
   },
   computed: {
     ...mapState(['orderTypeData', 'orderList'])
@@ -267,7 +268,7 @@ export default {
       if (this.isScreen) {
         this.screen = '收起';
       } else {
-        this.screen = "筛选";
+        this.screen = '筛选';
       }
     },
     // 点击选择负责人按钮
@@ -293,7 +294,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      console.log(this.multipleSelection);
     },
 
     // 获取从分页传过来的每页多少条数据
@@ -307,12 +308,12 @@ export default {
 
     // 关闭任务
     handleClose(index, row) {
-      this.dialogTips = true
+      this.dialogTips = true;
       console.log(index, row);
     },
 
     // 转工单
-    handleEdit (index,row) {
+    handleEdit(index, row) {
       this.dialogEdit = true;
       console.log(index, row);
     },
@@ -344,7 +345,7 @@ export default {
       this.dialogAdd = data.dialogAdd;
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

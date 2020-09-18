@@ -1,12 +1,12 @@
 import axios from 'axios';
 import {Message} from 'element-ui';
-import {api} from '@/api/api';
+// import {api} from '@/api/api';
 
 //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
 axios.defaults.withCredentials = true;
 // create an axios instance
 const service = axios.create({
-  baseURL: api + 'api/services/Inspection/', // url = base url + request url
+  // baseURL: api + 'api/services/Inspection/', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 });
@@ -24,6 +24,7 @@ service.interceptors.request.use(
     // }
     config.headers['Authorization'] ="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY6KeS6ImyIiwi6K6_5a6i54K5566h55CG6KeS6ImyIl0sImh0dHA6Ly93d3cuYXNwbmV0Ym9pbGVycGxhdGUuY29tL2lkZW50aXR5L2NsYWltcy90ZW5hbnRJZCI6IjEwMTU5IiwiVXNlck5hbWUiOiJOSkxTIiwiT3JnSWQiOiIxMDI5NCIsIlRydWVOYW1lIjoi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY55So5oi3IiwiQXZhdGVyIjoiIiwiT3JnTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoSIsIlRlbmFudE5hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnRDb25uZWN0U3RyaW5nIjoiIiwiUm9sZXMiOiIxNjMxODIsMTYzMTg0Iiwic3ViIjoiMTAyOTQiLCJqdGkiOiI0MDJjZDE5MS00MzMxLTQwMzUtYjQwMi1lOTZkM2E3NTZkZTIiLCJpYXQiOjE2MDAzOTMzMzcsIm5iZiI6MTYwMDM5MzMzNywiZXhwIjoxNjAwNDM2NTM3LCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.a0hsgS3xLGNjTzKIaff-MA6acxpGbLVqn3dPaqMCAjQ";
 
+    console.log(config);
     return config;
   },
   error => {
