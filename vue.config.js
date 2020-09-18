@@ -11,7 +11,7 @@ module.exports = {
     open: true,
     proxy: {
       '/api': {
-        target: 'http://192.168.9.44:9090/api/services/Inspection/PlanService/',
+        target: 'http://192.168.9.44:9090/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

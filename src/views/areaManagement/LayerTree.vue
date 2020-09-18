@@ -10,6 +10,7 @@
       :expand-on-click-node="expandClickStatus"
       :check-on-click-node="checkClickStatus"
       @node-click="nodeClick"
+      @check-change="checkChange"
     >
       <span slot-scope="{data}">
         <span v-if="data.icon" class="el-icon-delete-solid"></span>
@@ -69,6 +70,12 @@ export default {
         node,
         comp
       });
+    },
+    checkChange () {
+      let checkedList = this.$refs.tree.getCheckedNodes();
+      console.log(checkedList)
+      this.$emit('checkedChange', checkedList)
+
     }
   }
 };

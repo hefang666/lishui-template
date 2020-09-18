@@ -24,14 +24,14 @@
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="addTask">新增</el-button>
-          <el-button type="primary" plain @click="onlyOne">重启</el-button>
-          <el-button type="primary" plain>删除</el-button>
-          <el-button type="primary" plain>暂停</el-button>
+          <el-button type="primary" plain @click="restart">重启</el-button>
+          <el-button type="primary" plain @click="del">删除</el-button>
+          <el-button type="primary" plain @click="suspend">暂停</el-button>
 
-          <el-button type="primary" plain>关闭</el-button>
-          <el-button type="primary" plain>完成</el-button>
-          <el-button type="primary" plain>修改</el-button>
-          <el-button type="primary" plain>查看</el-button>
+          <el-button type="primary" plain @click="close">关闭</el-button>
+          <el-button type="primary" plain @click="complete">完成</el-button>
+          <el-button type="primary" plain @click="modify">修改</el-button>
+          <el-button type="primary" plain @click="See">查看</el-button>
 
           <el-button type="primary" plain>导出</el-button>
         </el-button-group>
@@ -134,7 +134,7 @@
             label="任务状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="操作" width="180">
+          <!-- <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
@@ -165,7 +165,7 @@
                 >
               </div>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </div>
       <div class="page-box">
@@ -178,6 +178,11 @@
       </div>
     </div>
 
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"></message>
     <!-- 新增任务弹框 -->
     <add-task :dialog-add="dialogAdd" @getAddData="getAddData"></add-task>
     <!-- 查看任务弹窗 -->
@@ -192,6 +197,7 @@ import AddTask from './addTask/AddTask.vue';
 import Page from '@/components/page/Page.vue';
 import ViewTask from './viewTask/ViewTask.vue';
 import EditTask from './editTask/EditTask.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
 export default {
@@ -200,7 +206,8 @@ export default {
     AddTask,
     Page,
     ViewTask,
-    EditTask
+    EditTask,
+    Message
   },
   computed: {
     ...mapState(['taskList', 'listTotalCount'])
@@ -253,7 +260,13 @@ export default {
       startTime: '',
 
       // 预计结束时间
-      endTime: ''
+      endTime: '',
+
+      // 是否显示消息提示弹窗
+      dialogMessage: false,
+
+      // 提示消息
+      messageText: ''
     };
   },
   methods: {
@@ -267,28 +280,117 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        
+        console.log('请选择要操作数据');
+        this.messageText = '请选择要操作数据';
+        this.dialogMessage = true;
+        return false
+      }else if (this.multipleSelection.length > 1) {
+        this.messageText = '只能选择一行数据';
+        this.dialogMessage = true;
+        console.log('只能选择一行数据');
+        return false
+      }else {
+        return true
+      }
+    },
+
+    // 重启任务
+    restart() {
+      console.log(this.onlyOne());
+      // 返回为真时进行下一步
+      if (this.onlyOne()) {
+        // let id = this.multipleSelection[0].id;
+        if (this.multipleSelection[0].status == 3) {
+          // 状态为3可暂停，其他状态无法重启
+          // 重启操作
+        }else {
+          this.messageText = '该状态不能重启';
+          this.dialogMessage = true;
+        }
+      };
+    },
+
+    // 删除任务
+    del() {
+      if(this.multipleSelection.length == 0) {
+        this.messageText = '请选择要操作数据';
+        this.dialogMessage = true;
+      }else {
+        this.multipleSelection.forEach(item => {
+          if (item.status == 5 || item.status == 6) {
+            // 执行删除操作
+            
+          }else {
+            this.messageText = '只允许删除已关闭和已完成的任务';
+            this.dialogMessage = true;
+          }
+        })
+      }
+    },
+
+    // 暂停任务
+    suspend() {
+      if (this.onlyOne()) {
+        if(this.multipleSelection[0].status != 2) {
+          this.messageText = '该状态不能暂停';
+          this.dialogMessage = true;
+        }else {
+          // 执行暂停操作
+        }
       }
     },
 
     // 关闭任务
-    handleClose(index, row) {
-      console.log(index, row);
-    },
-
-    // 查看任务
-    handleSee(row) {
-      let param = {
-        id: row.id
+    close() {
+      if(this.onlyOne()) {
+        if (this.multipleSelection[0].statusList != 3) {
+          // 关闭任务只能对已暂停状态的任务进行
+          this.messageText = '该状态不能关闭';
+          this.dialogMessage = true;
+        }else {
+          // 执行关闭操作
+        }
       }
-      console.log(param);
-      this.GetTaskDetails(param);
-      // this.dialogView = true;
     },
 
     // 完成任务
-    handleComplete(index, row) {
-      console.log(index, row);
+    complete() {
+      if (this.onlyOne()) {
+        if (this.multipleSelection[0].status == 2 || this.multipleSelection[0].status == 4) {
+          // 执行完成操作
+        }else {
+          this.messageText = '该状态不能完成';
+          this.dialogMessage = true;
+        }
+      }
+    },
+    
+    // 修改任务
+    modify() {
+      if (this.onlyOne()) {
+        if (this.multipleSelection[0].status == 1 || this.multipleSelection[0].status == 3) {
+          // 执行修改操作
+          this.dialogEdit = true;
+        }else {
+          this.messageText = '该状态不能修改';
+          this.dialogMessage = true;
+        }
+      }
+    },
+
+    // 查看任务
+    See() {
+      if (this.onlyOne()) {
+        let param = {
+          Id: this.multipleSelection[0].id
+        }
+        this.GetTaskDetails(param);
+      }
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
     },
 
     // 点击切换条件筛选div的显示状态
@@ -299,12 +401,6 @@ export default {
       } else {
         this.screen = "筛选";
       }
-    },
-
-    // 修改任务
-    handleEdit(index, row) {
-      console.log(index, row);
-      this.dialogEdit = true;
     },
 
     // 按状态筛选则并为input添加样式
@@ -323,6 +419,7 @@ export default {
         this.$message('请选择结束日期');
         return
       } else {
+        console.log(this.startTime)
         let data = {
           currentPage: this.currentPage,
           maxResultCount: this.pageSize,
@@ -330,6 +427,7 @@ export default {
           startTime: this.startTime,
           endTime: this.endTime
         }
+        console.log(data);
         this.searchTask(data);
       }
     },

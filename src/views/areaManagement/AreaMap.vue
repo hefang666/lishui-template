@@ -12,6 +12,8 @@
 <script>
 import {mapwms, workSpace} from '@/api/api';
 import {isStringEmpty} from '@/utils';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('area');
 export default {
   data() {
     return {
@@ -33,6 +35,9 @@ export default {
       // 选中区域、管线、管点图层
       featureSelect: {}
     };
+  },
+  computed: {
+    ...mapState(['areaList', 'checkedPoint', 'checkedLine'])
   },
   mounted() {
     this.initMap();
@@ -274,15 +279,28 @@ export default {
       if(_this.drawMapAreaSource.getFeatures().length > 0) {
         // 获取选中的图层边界点
         let areaExtent = _this.areaObj.area.split(';').join(' ');
-        console.log(areaExtent)
         areaExtent = areaExtent.substring(0, areaExtent.length-1)
-        console.log(areaExtent)
         window.SNTGIS.workSpace = workSpace;
 
         // 获取区域与管线图层相交的所有元素
         window.SNTGIS.NetWork.getFeaturesByCoords(_this.lineLayer, areaExtent, function(data){
-          console.log(data)
+          _this.getSelectLineList(data)
         })
+      }
+    },
+
+    // 获取选中区域内所有的管线列表信息
+    getSelectLineList(allLineList) {
+      let _this = this;
+      let selectLine = [];
+      for(let i = 0; i<allLineList.length; i++) {
+        let checkedLine = _this.checkedLine;
+        for(let j =0; j<checkedLine.length; j++) {
+          if(allLineList[i].prototype == checkedLine[j].name) {
+            console.log(1)
+            console.log(selectLine)
+          }
+        }
       }
     },
 

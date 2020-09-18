@@ -6,7 +6,7 @@
         <el-tab-pane label="片区管理" name="area">
           <Area/>
         </el-tab-pane>
-        <el-tab-pane label="图层管理" name="layer">
+        <el-tab-pane class="layer-pane" label="图层管理" name="layer">
           <Layer />
         </el-tab-pane>
       </el-tabs>

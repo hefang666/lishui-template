@@ -1,4 +1,9 @@
-import {getTaskList, addTask, GetTaskDetails} from '@/api/task';
+import {
+  getTaskList,
+  addTask,
+  GetTaskDetails,
+  UpdateTaskStatus
+} from '@/api/task';
 import {parseTime} from '@/utils/index.js';
 var state = {
   taskList: [
@@ -162,6 +167,24 @@ var actions = {
           console.log(response);
           if (response.success) {
             // commit('set_message', '新增任务成功！');
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 修改任务状态
+  UpdateTaskStatus({commit}, data) {
+    console.log(commit);
+    return new Promise((resolve, reject) => {
+      UpdateTaskStatus(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
             resolve(response);
           } else {
             commit('set_message', response.error.message);

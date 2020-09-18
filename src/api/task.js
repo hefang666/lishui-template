@@ -28,3 +28,12 @@ export function GetTaskDetails(data) {
     data
   });
 }
+
+// 修改任务状态
+export function UpdateTaskStatus(data) {
+  return request({
+    url: api + 'InspectionTaskService/UpdateTaskStatus',
+    method: 'post',
+    data
+  });
+}
