@@ -6,106 +6,126 @@
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          <el-form>
+          <div>
+            <div class="list-item has-two-item">
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>任务名称：</span>
+                </div>
+                <div class="content">
+                  <div class="list-item-content-box">
+                    <el-input
+                      type="taskName"
+                      v-model="taskName"
+                      autocomplete="off"
+                    ></el-input>
+                  </div>
+                </div>
+              </div>
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>负责人：</span>
+                </div>
+                <div class="content">
+                  <el-button
+                    class="choose-active"
+                    type="primary"
+                    plain
+                    v-if="inCharge != ''"
+                    v-model="inCharge"
+                    >{{ editForm.inCharge }}</el-button
+                  >
+                  <el-button type="primary" plain @click="choosePerson"
+                    >选择人员</el-button
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="list-item has-two-item">
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>预计开始时间：</span>
+                </div>
+                <div class="content">
+                  <div class="list-item-content-box">
+                    <el-date-picker
+                      v-model="estimatedStartTime"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm"
+                      placeholder="预计任务开始时间"
+                    ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>预计结束时间：</span>
+                </div>
+                <div class="content">
+                  <div class="list-item-content-box">
+                    <el-date-picker
+                      v-model="estimatedEndTime"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm"
+                      placeholder="预计任务结束时间"
+                    ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list-item has-two-item">
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>任务类别：</span>
+                </div>
+                <div class="content">
+                  <div class="list-item-content-box">
+                    <el-select
+                      v-model="taskType"
+                      placeholder="请选择任务类别"
+                    >
+                      <el-option label="普通任务" value="puTong"></el-option>
+                      <el-option label="临时任务" value="liShi"></el-option>
+                    </el-select>
+                  </div>
+                </div>
+              </div>
+              <div class="items-box">
+                <div class="title">
+                  <span class="tips">*</span>
+                  <span>巡检片区：</span>
+                </div>
+                <div class="content">
+                  <div class="list-item-content-box">
+                    <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
+                    <el-button type="primary" plain @click="chooseArea"
+                      >选择片区</el-button
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="list-item">
-              <el-form-item
-                class="has-two-item"
-                label="任务名称："
-                label-width="120px"
-              >
-                <div class="list-item-content-box">
+              <div class="items-box">
+                <div class="title">
+                  <span>备注：</span>
+                </div>
+                <div class="conten">
                   <el-input
-                    type="taskName"
-                    v-model="taskName"
+                    type="textarea"
+                    :rows="3"
+                    v-model="remarks"
                     autocomplete="off"
-                  ></el-input>
+                  ></el-input >
                 </div>
-              </el-form-item>
-              <el-form-item
-                class="has-two-item"
-                label="任务负责人："
-                label-width="120px"
-              >
-                <el-button
-                  class="choose-active"
-                  type="primary"
-                  plain
-                  v-if="inCharge != ''"
-                  v-model="inCharge"
-                  >{{ inCharge }}</el-button
-                >
-                <el-button type="primary" plain @click="choosePerson"
-                  >选择人员</el-button
-                >
-              </el-form-item>
+              </div>
             </div>
-            <div class="list-item">
-              <el-form-item
-                class="has-two-item"
-                label="开始时间："
-                label-width="120px"
-              >
-                <div class="list-item-content-box">
-                  <el-date-picker
-                    v-model="estimatedStartTime"
-                    format="yyyy-MM-dd HH:mm"
-                    type="datetime"
-                    placeholder="预计任务开始时间"
-                  ></el-date-picker>
-                </div>
-              </el-form-item>
-              <el-form-item
-                class="has-two-item"
-                label="预计结束时间："
-                label-width="120px"
-              >
-                <div class="list-item-content-box">
-                  <el-date-picker
-                    v-model="estimatedEndTime"
-                    type="datetime"
-                    format="yyyy-MM-dd HH:mm"
-                    placeholder="预计任务结束时间"
-                  ></el-date-picker>
-                </div>
-              </el-form-item>
-            </div>
-            <div class="list-item">
-              <el-form-item
-                class="has-two-item"
-                label="任务类别："
-                label-width="120px"
-              >
-                <div class="list-item-content-box select_box">
-                  <el-select
-                    placeholder="请选择任务类别"
-                    v-model="taskType"
-                  >
-                    <el-option label="临时任务" value="1"></el-option>
-                  </el-select>
-                </div>
-              </el-form-item>
-              <el-form-item
-                class="has-two-item"
-                label="巡检片区："
-                label-width="120px"
-              >
-                <div class="list-item-content-box">
-                  <!-- <el-input type="inspectionArea" v-model="addForm.inspectionArea" autocomplete="off"></el-input> -->
-                  <el-button type="primary" plain @click="chooseArea"
-                    >选择片区</el-button
-                  >
-                </div>
-              </el-form-item>
-            </div>
-            <el-form-item label="备注：" label-width="120px"
-              ><el-input
-                type="textarea"
-                :rows="3"
-                v-model="remarks"
-                autocomplete="off"
-              ></el-input
-            ></el-form-item>
-          </el-form>
+          </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -284,20 +304,40 @@ export default {
     .list-item {
       display: flex;
       justify-content: space-between;
+      margin-top: 20px;
 
-      .has-two-item {
+      .items-box {
+        flex: 1;
+        display: flex;
+        .title {
+          width: 120px;
+          text-align: right;
+          line-height: 28px;
+          .tips {
+            color: red;
+          }
+        }
+        .content {
+          line-height: 28px;
+        }
+        .conten {
+          width: 79%;
+        }
+      }
+    }
+    .has-two-item {
+      .items-box {
         width: 46%;
+      }
+      .choose-active {
+        color: #ffffff;
+        background: #4b77be;
+        border: none;
+        cursor: auto;
+      }
 
-        .choose-active {
-          color: #ffffff;
-          background: #4b77be;
-          border: none;
-          cursor: auto;
-        }
-
-        .list-item-content-box {
-          width: 220px;
-        }
+      .list-item-content-box {
+        width: 220px;
       }
     }
   }

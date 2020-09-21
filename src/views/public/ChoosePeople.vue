@@ -253,6 +253,7 @@ export default {
         return;
       } else {
         let data = {
+          type: this.selectType,
           personinfo: this.selectedData,
           dialogCharge: false
         };

@@ -7,33 +7,36 @@
             <i class="el-dialog__close el-icon el-icon-close"></i>
           </div>
           <div class="content_box select_box">
-            <el-form :model="addForm">
-              <div class="list-item">
-                <el-form-item
-                  class="has-two-item"
-                  label="工单类型："
-                  label-width="120px"
-                >
-                  <div class="list-item-content-box">
-                    <el-select
-                    v-model="exceptionType"
-                    placeholder="请选择异常类型"
-                    @change="selectType"
-                  >
-                    <el-option
-                      v-for="(item,index) in exceptionTypeData"
-                      :key="index"
-                      :label="item.label"
-                      :value="item.value"></el-option>
-                  </el-select>
+            <div>
+              <div class="list-item has-two-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>工单类型：</span>
                   </div>
-                </el-form-item>
-                <el-form-item
-                  class="has-two-item"
-                  label="负责人："
-                  label-width="120px"
-                >
-                  <el-button
+                  <div class="content">
+                    <div class="list-item-content-box">
+                      <el-select
+                      v-model="orderType"
+                      placeholder="请选择异常类型"
+                      @change="selectType"
+                    >
+                      <el-option
+                        v-for="(item,index) in orderTypeData"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </div>
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>负责人：</span>
+                  </div>
+                  <div class="content">
+                    <el-button
                     class="choose-active"
                     type="primary"
                     plain
@@ -44,96 +47,125 @@
                   <el-button type="primary" plain @click="choosePerson"
                     >选择人员</el-button
                   >
-                </el-form-item>
+                  </div>
+                </div>
               </div>
-              <el-form-item label="工单内容：" label-width="120px"
-                ><el-input
-                  type="textarea"
-                  :rows="3"
-                  v-model="addForm.remarks"
-                  autocomplete="off"
-                ></el-input
-              ></el-form-item>
-              <el-form-item label="附件上传：" label-width="120px">
-                <upload ref="upload" @showPreview="showPreview"></upload>
-              </el-form-item>
-            </el-form>
-            <div class="list-box">
               <div class="list-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span>备注：</span>
+                  </div>
+                  <div class="conten">
+                    <el-input
+                      type="textarea"
+                      :rows="3"
+                      v-model="addForm.remarks"
+                      autocomplete="off"
+                    ></el-input >
+                  </div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span>附件上传：</span>
+                  </div>
+                  <div class="conten">
+                    <upload ref="upload" @showPreview="showPreview"></upload>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="list-box">
+              <div class="list-item has-two-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">设备名称：</div>
                   <div class="item-content">
-                    <span>********巡检任务</span>
+                    <span>{{ eventDetails.deviceName }}</span>
                   </div>
                 </div>
                 <div class="list-items has-two-item">
                   <div class="item-title">设备编号：</div>
                   <div class="item-content">
-                    <span>张三</span>
+                    <span>{{ eventDetails.deviceCode }}</span>
                   </div>
                 </div>
               </div>
-              <div class="list-item">
+              <div class="list-item has-two-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">设备点坐标：</div>
                   <div class="item-content">
-                    <span>进行中</span>
+                    <span>{{ eventDetails.devicePoint }}</span>
                   </div>
                 </div>
                 <div class="list-items has-two-item">
                   <div class="item-title">地址：</div>
                   <div class="item-content">
-                    <span>张三、李四</span>
+                    <span>{{ eventDetails.address }}</span>
                   </div>
                 </div>
               </div>
-              <div class="list-item">
+              <div class="list-item has-two-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">设备点状态：</div>
                   <div class="item-content">
-                    <span>临时任务</span>
+                    <span>{{ eventDetails.deviceStatusStr }}</span>
                   </div>
                 </div>
                 <div class="list-items has-two-item">
                   <div class="item-title">异常类型：</div>
                   <div class="item-content">
-                    <span>2019-01-01 18:00</span>
+                    <span>{{ eventDetails.errorType }}</span>
                   </div>
                 </div>
               </div>
-              <div class="list-item">
+              <div class="list-item has-two-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">事件类型：</div>
                   <div class="item-content">
-                    <span>2019-01-01 18:00</span>
+                    <span>{{ eventDetails.typeStr }}</span>
                   </div>
                 </div>
                 <div class="list-items has-two-item">
                   <div class="item-title">事件提交时间：</div>
                   <div class="item-content">
-                    <span>2019-01-01 18:00</span>
+                    <span>2019-01-01 9:00</span>
                   </div>
                 </div>
               </div>
-              <div class="list-item">
+              <div class="list-item has-two-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">报告人：</div>
                   <div class="item-content">
-                    <span>3小时20分</span>
+                    <span>{{ eventDetails.createUser }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">联系方式：</div>
+                  <div class="item-content">
+                    <span>{{ eventDetails.phone }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="list-item has-two-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">事件状态：</div>
+                  <div class="item-content">
+                    <span>转工单</span>
                   </div>
                 </div>
                 <div class="list-items has-two-item">
                   <div class="item-title">提交工单时间：</div>
                   <div class="item-content">
-                    <span>*****路线</span>
+                    <span>2019-01-01 9:00</span>
                   </div>
                 </div>
               </div>
-              <div class="list-item">
+              <div class="list-item has-two-item">
                 <div class="list-items">
                   <div class="item-title">预估损失水量：</div>
                   <div class="item-content">
-                    <span>这里是备注内容备注内容备注内容</span>
+                    <span>{{ eventDetails.predictWaterLoss }}</span>
                   </div>
                 </div>
               </div>
@@ -141,7 +173,7 @@
                 <div class="list-items">
                   <div class="item-title">巡检内容：</div>
                   <div class="item-content">
-                    <span>这里是备注内容备注内容备注内容</span>
+                    <span>{{ eventDetails.content }}</span>
                   </div>
                 </div>
               </div>
@@ -150,8 +182,11 @@
                   <div class="item-title">附件：</div>
                   <div class="item-content">
                     <div class="enclosure-box">
-                      <div class="enclosure-item">
-                        <div class="enclosure-title">附件名字</div>
+                      <div
+                        v-for="(item, index) in eventDetails.resourcelist"
+                        :key="index"
+                        class="enclosure-item">
+                        <div class="enclosure-title">{{ item.fileName }}</div>
                         <div class="enclosure-download">下载</div>
                         <div class="enclosure-preview">预览</div>
                       </div>
@@ -199,7 +234,7 @@ export default {
     Preview
   },
   computed: {
-    ...mapState(['exceptionTypeData'])
+    ...mapState(['orderTypeData', 'eventDetails'])
   },
   data() {
     return {
@@ -215,8 +250,8 @@ export default {
       // 负责人弹窗状态
       dialogCharge: false,
 
-      selectType: 0,
-      exceptionType: 0,
+      orderType: 1,
+      // exceptionType: 0,
       // 是否显示预览弹窗
       dialogPreview: false
     };
@@ -254,6 +289,10 @@ export default {
     // 关闭预览弹窗
     closePreview(data) {
       this.dialogPreview = data;
+    },
+    // 选择工单类型
+    selectType(val) {
+      console.log(val);
     }
   }
 };
@@ -275,20 +314,40 @@ export default {
     .list-item {
       display: flex;
       justify-content: space-between;
+      margin-top: 20px;
 
-      .has-two-item {
+      .items-box {
+        flex: 1;
+        display: flex;
+        .title {
+          width: 120px;
+          text-align: right;
+          line-height: 28px;
+          .tips {
+            color: red;
+          }
+        }
+        .content {
+          line-height: 28px;
+        }
+        .conten {
+          width: 79%;
+        }
+      }
+    }
+    .has-two-item {
+      .items-box {
         width: 46%;
+      }
+      .choose-active {
+        color: #ffffff;
+        background: #4b77be;
+        border: none;
+        cursor: auto;
+      }
 
-        .choose-active {
-          color: #ffffff;
-          background: #4b77be;
-          border: none;
-          cursor: auto;
-        }
-
-        .list-item-content-box {
-          width: 220px;
-        }
+      .list-item-content-box {
+        width: 220px;
       }
     }
 
@@ -298,8 +357,6 @@ export default {
       .list-item {
         display: flex;
         justify-content: space-between;
-        height: 40px;
-        line-height: 40px;
 
         .list-items {
           display: flex;

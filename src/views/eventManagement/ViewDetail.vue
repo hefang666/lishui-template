@@ -10,13 +10,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备名称：</div>
               <div class="item-content">
-                <span>********巡检任务</span>
+                <span>{{ eventDetails.deviceName }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备编号：</div>
               <div class="item-content">
-                <span>张三</span>
+                <span>{{ eventDetails.deviceCode }}</span>
               </div>
             </div>
           </div>
@@ -24,13 +24,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备坐标：</div>
               <div class="item-content">
-                <span>进行中</span>
+                <span>{{ eventDetails.devicePoint }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">地址：</div>
               <div class="item-content">
-                <span>张三、李四</span>
+                <span>{{ eventDetails.address }}</span>
               </div>
             </div>
           </div>
@@ -38,13 +38,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备点状态：</div>
               <div class="item-content">
-                <span>临时任务</span>
+                <span>{{ eventDetails.deviceStatusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">异常类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ eventDetails.errorType }}</span>
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
             <div class="list-items has-two-item">
               <div class="item-title">事件类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ eventDetails.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
@@ -66,7 +66,7 @@
             <div class="list-items has-two-item">
               <div class="item-title">报告人：</div>
               <div class="item-content">
-                <span>3小时20分</span>
+                <span>{{ eventDetails.creationName }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
@@ -80,7 +80,7 @@
             <div class="list-items">
               <div class="item-title">预估损失水量：</div>
               <div class="item-content">
-                <span>这里是备注内容备注内容备注内容</span>
+                <span>{{ eventDetails.predictWaterLoss }}</span>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@
             <div class="list-items">
               <div class="item-title">巡检内容：</div>
               <div class="item-content">
-                <span>这里是备注内容备注内容备注内容</span>
+                <span>{{ eventDetails.content }}</span>
               </div>
             </div>
           </div>
@@ -97,8 +97,11 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div class="enclosure-item">
-                    <div class="enclosure-title">附件名字</div>
+                  <div
+                    v-for="(item, index) in eventDetails.resourcelist"
+                    :key="index"
+                    class="enclosure-item">
+                    <div class="enclosure-title">{{ item.fileName }}</div>
                     <div class="enclosure-download">下载</div>
                     <div class="enclosure-preview">预览</div>
                   </div>
@@ -116,11 +119,16 @@
 </template>
 
 <script>
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('eventManagement');
 export default {
   name: 'ViewDetail',
   props: ['dialogView'],
   data() {
     return {};
+  },
+  computed: {
+    ...mapState(['eventDetails'])
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗

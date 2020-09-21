@@ -6,12 +6,12 @@
           <el-button
             type="primary"
             plain
-            v-for="(item,index) in statusList"
+            v-for="(item, index) in statusList"
             :key="index"
             :class="{'item-active': index == currentState}"
             @click="searchConditional(index)"
           >
-            {{item}}
+            {{ item }}
           </el-button>
         </el-button-group>
         <el-button
@@ -19,7 +19,7 @@
           type="primary"
           plain
           @click="showScreen"
-        >{{screen}}</el-button>
+        >{{ screen }}</el-button>
       </div>
       <div class="header-right">
         <el-button-group>
@@ -182,7 +182,18 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
-      @closeMessage="closeMessage"></message>
+      @closeMessage="closeMessage"
+    ></message>
+
+    <!-- 操作提示弹窗 -->
+    <operate
+      :dialog-operate="dialogOperate"
+      :operate-type="operateType"
+      :message="messageT"
+      @closeOperate="closeOperate"
+      @determine="determine"
+    ></operate>
+
     <!-- 新增任务弹框 -->
     <add-task :dialog-add="dialogAdd" @getAddData="getAddData"></add-task>
     <!-- 查看任务弹窗 -->
@@ -198,6 +209,7 @@ import Page from '@/components/page/Page.vue';
 import ViewTask from './viewTask/ViewTask.vue';
 import EditTask from './editTask/EditTask.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
+import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
 export default {
@@ -207,7 +219,8 @@ export default {
     Page,
     ViewTask,
     EditTask,
-    Message
+    Message,
+    Operate
   },
   computed: {
     ...mapState(['taskList', 'listTotalCount'])
@@ -230,7 +243,7 @@ export default {
       currentPage: 1,
 
       // 传入store的page的信息
-      pageInfo : {
+      pageInfo: {
         currentPage: 1,
         maxResultCount: 30
       },
@@ -249,9 +262,17 @@ export default {
 
       // 当前活动状态
       currentState: 0,
-      
+
       // 按状态筛选的状态内容
-      statusList: ['全部', '待接收', '进行中', '已暂停', '已超期', '已关闭', '已完成'],
+      statusList: [
+        '全部',
+        '待接收',
+        '进行中',
+        '已暂停',
+        '已超期',
+        '已关闭',
+        '已完成'
+      ],
 
       // 筛选时输入框的输入的任务名称
       taskName: '',
@@ -266,15 +287,24 @@ export default {
       dialogMessage: false,
 
       // 提示消息
-      messageText: ''
+      messageText: '',
+
+      // 是否显示操作提示弹窗
+      dialogOperate: false,
+
+      // 操作类型
+      operateType: '',
+
+      // 操作提示文字
+      messageT: '请确认操作'
     };
   },
   methods: {
-    ...mapActions(['getTaskList', 'searchTask', 'GetTaskDetails']),
+    ...mapActions(['getTaskList', 'searchTask', 'GetTaskDetails', 'deleteTask','UpdateTaskStatus']),
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      console.log(this.multipleSelection);
     },
 
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
@@ -283,14 +313,14 @@ export default {
         console.log('请选择要操作数据');
         this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
-        return false
-      }else if (this.multipleSelection.length > 1) {
+        return false;
+      } else if (this.multipleSelection.length > 1) {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
         console.log('只能选择一行数据');
         return false
-      }else {
-        return true
+      } else {
+        return true;
       }
     },
 
@@ -302,53 +332,72 @@ export default {
         // let id = this.multipleSelection[0].id;
         if (this.multipleSelection[0].status == 3) {
           // 状态为3可暂停，其他状态无法重启
-          // 重启操作
-        }else {
+          // 操作弹窗
+          this.messageT = '请确认操作';
+          this.operateType = 'restart';
+          this.dialogOperate = true;
+        } else {
           this.messageText = '该状态不能重启';
           this.dialogMessage = true;
         }
-      };
+      }
     },
 
     // 删除任务
     del() {
-      if(this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
-      }else {
+      } else {
+        // 判断选中的项里是否包含有不符合条件的列
+        let flag = false;
         this.multipleSelection.forEach(item => {
-          if (item.status == 5 || item.status == 6) {
+          if (item.status == 3 || item.status == 5) {
             // 执行删除操作
-            
-          }else {
-            this.messageText = '只允许删除已关闭和已完成的任务';
+            flag = true;
+          } else {
+            flag = false;
+            this.messageText = '只允许删除已暂停和已关闭的任务';
             this.dialogMessage = true;
           }
-        })
+        });
+        // 选择的列中全部符合删除要求执行删除操作
+        if (flag) {
+          // 操作提示框
+          this.messageT = '确定删除吗？';
+          this.operateType = 'del';
+          this.dialogOperate = true;
+        }
       }
     },
 
     // 暂停任务
     suspend() {
       if (this.onlyOne()) {
-        if(this.multipleSelection[0].status != 2) {
+        if (this.multipleSelection[0].status != 2) {
           this.messageText = '该状态不能暂停';
           this.dialogMessage = true;
-        }else {
-          // 执行暂停操作
+        } else {
+          // 操作弹窗
+          this.messageT = '请确认操作';
+          this.operateType = 'suspend';
+          this.dialogOperate = true;
         }
       }
     },
 
     // 关闭任务
     close() {
-      if(this.onlyOne()) {
+      if (this.onlyOne()) {
         if (this.multipleSelection[0].statusList != 3) {
           // 关闭任务只能对已暂停状态的任务进行
           this.messageText = '该状态不能关闭';
           this.dialogMessage = true;
-        }else {
-          // 执行关闭操作
+        } else {
+          // 操作弹窗
+          this.messageT = '请确认操作';
+          this.operateType = 'close';
+          this.dialogOperate = true;
         }
       }
     },
@@ -357,8 +406,11 @@ export default {
     complete() {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status == 2 || this.multipleSelection[0].status == 4) {
-          // 执行完成操作
-        }else {
+          // 操作弹窗
+          this.messageT = '请确认操作';
+          this.operateType = 'complete';
+          this.dialogOperate = true;
+        } else {
           this.messageText = '该状态不能完成';
           this.dialogMessage = true;
         }
@@ -370,8 +422,13 @@ export default {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status == 1 || this.multipleSelection[0].status == 3) {
           // 执行修改操作
+          // 获取当前选中行的详细信息
+          let param = {
+            Id: this.multipleSelection[0].id
+          };
+          this.GetTaskDetails(param);
           this.dialogEdit = true;
-        }else {
+        } else {
           this.messageText = '该状态不能修改';
           this.dialogMessage = true;
         }
@@ -381,10 +438,12 @@ export default {
     // 查看任务
     See() {
       if (this.onlyOne()) {
+        // 获取任务详情
         let param = {
           Id: this.multipleSelection[0].id
-        }
+        };
         this.GetTaskDetails(param);
+        this.dialogView = true;
       }
     },
 
@@ -399,7 +458,7 @@ export default {
       if (this.isScreen) {
         this.screen = '收起';
       } else {
-        this.screen = "筛选";
+        this.screen = '筛选';
       }
     },
 
@@ -409,7 +468,7 @@ export default {
       this.$store.commit('taskManagement/update_taskStatus', index);
       this.getTaskList(this.pageInfo);
     },
-    
+
     // 筛选
     search() {
       if (this.startTime == '') {
@@ -417,16 +476,16 @@ export default {
         return;
       } else if (this.endTime == '') {
         this.$message('请选择结束日期');
-        return
+        return;
       } else {
-        console.log(this.startTime)
+        console.log(this.startTime);
         let data = {
           currentPage: this.currentPage,
           maxResultCount: this.pageSize,
           taskName: this.taskName,
           startTime: this.startTime,
           endTime: this.endTime
-        }
+        };
         console.log(data);
         this.searchTask(data);
       }
@@ -459,7 +518,47 @@ export default {
       this.currentPage = cur;
       this.pageInfo.currentPage = cur;
       this.getTaskList(this.pageInfo);
-      console.log(this.listTotalCount)
+      console.log(this.listTotalCount);
+    },
+
+    // 关闭操作提示弹窗
+    closeOperate(data) {
+      this.dialogOperate = data;
+    },
+
+    // 操作弹窗点击了确定
+    determine(data) {
+      this.dialogOperate = data.flag;
+      let param;
+      if (data.type == 'restart') {
+        // 重启
+        param.id = this.multipleSelection[0].id;
+        param.operate = 5;
+        this.UpdateTaskStatus(param);
+      } else if (data.type == 'del') {
+        // 删除
+        this.multipleSelection.forEach(item => {
+          let param = {
+            id: item.id
+          };
+          this.deleteTask(param);
+        });
+      } else if (data.type == 'suspend') {
+        // 暂停
+        param.id = this.multipleSelection[0].id;
+        param.operate = 1;
+        this.UpdateTaskStatus(param);
+      } else if (data.type == 'close') {
+        // 关闭
+        param.id = this.multipleSelection[0].id;
+        param.operate = 4;
+        this.UpdateTaskStatus(param);
+      } else if (data.type == 'complete') {
+        // 完成
+        param.id = this.multipleSelection[0].id;
+        param.operate = 2;
+        this.UpdateTaskStatus(param);
+      }
     }
   },
   mounted() {
@@ -528,7 +627,7 @@ export default {
       margin-top: 10px;
     }
   }
-  
+
   .content-box {
     margin-top: 10px;
 

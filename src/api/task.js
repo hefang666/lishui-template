@@ -37,3 +37,39 @@ export function UpdateTaskStatus(data) {
     data
   });
 }
+
+// 删除任务
+export function deleteTask(data) {
+  return request({
+    url: api + 'InspectionTaskService/DeleteTaskById',
+    method: 'post',
+    data
+  });
+}
+
+// 获取设备点巡检信息列表
+export function GetInspectionPointList(data) {
+  return request({
+    url: api + 'InspectionTaskService/GetInspectionPointList',
+    method: 'post',
+    data
+  });
+}
+
+// 获取设备点巡检信息详情
+export function GetPointDetails(data) {
+  return request({
+    url: api + 'InspectionTaskService/GetPointDetails',
+    method: 'post',
+    data
+  });
+}
+
+// 获取片区信息
+export function GetAreaByTaskId(data) {
+  return request({
+    url: api + 'InspectionTaskService/GetAreaByTaskId',
+    method: 'post',
+    data
+  });
+}

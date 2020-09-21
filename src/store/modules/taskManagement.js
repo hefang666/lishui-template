@@ -2,7 +2,11 @@ import {
   getTaskList,
   addTask,
   GetTaskDetails,
-  UpdateTaskStatus
+  UpdateTaskStatus,
+  deleteTask,
+  GetInspectionPointList,
+  GetPointDetails,
+  GetAreaByTaskId
 } from '@/api/task';
 import {parseTime} from '@/utils/index.js';
 var state = {
@@ -34,9 +38,14 @@ var state = {
   editModalVisble: false,
   addModalVisible: false,
   checkModalVisible: false,
-  // 当前状态
-  currentState: '',
-  // 筛选时输入框的输入的任务名称
+  // 任务详情内容
+  taskDetail: '',
+  // 设备点巡检信息列表
+  inspectionPointList: [],
+  // 设备点详情
+  pointDetails: '',
+  // 任务详情中的巡检路线信息
+  areaDetail: ''
 };
 
 var mutations = {
@@ -67,6 +76,26 @@ var mutations = {
   set_message: function(state, data) {
     state.messageText = data;
     console.log(state.messageText);
+  },
+  // 设置任务详情信息
+  set_taskDetail: function(state, data) {
+    state.taskDetail = data;
+    console.log(state.taskDetail);
+  },
+  // 设置设备点巡检信息列表
+  set_inspectionPointList: function(state, data) {
+    state.inspectionPointList = data;
+    console.log(state.inspectionPointList);
+  },
+  // 设置设备点详情
+  set_pointDetails: function(state, data) {
+    state.pointDetails = data;
+    console.log(state.pointDetails);
+  },
+  // 设置任务详情中的片区信息
+  set_areaDetail: function(state, data) {
+    state.areaDetail = data;
+    console.log(state.areaDetail);
   }
 };
 
@@ -92,7 +121,6 @@ var actions = {
           console.log(response);
           if (response.success) {
             response.result.items.forEach(item => {
-              console.log(item);
               item.planStartTime = parseTime(
                 item.planStartTime,
                 '{y}-{m}-{d} {h}:{i}'
@@ -166,7 +194,15 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
-            // commit('set_message', '新增任务成功！');
+            response.result.planStartTime = parseTime(
+              response.result.planStartTime,
+              '{y}-{m}-{d} {h}:{i}'
+            );
+            response.result.planEndTime = parseTime(
+              response.result.planEndTime,
+              '{y}-{m}-{d} {h}:{i}'
+            );
+            commit('set_taskDetail', response.result);
             resolve(response);
           } else {
             commit('set_message', response.error.message);
@@ -179,12 +215,82 @@ var actions = {
   },
   // 修改任务状态
   UpdateTaskStatus({commit}, data) {
-    console.log(commit);
     return new Promise((resolve, reject) => {
       UpdateTaskStatus(data)
         .then(response => {
           console.log(response);
           if (response.success) {
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 删除任务
+  deleteTask({commit}, data) {
+    return new Promise((resolve, reject) => {
+      deleteTask(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 设备点巡检信息列表
+  GetInspectionPointList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetInspectionPointList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_inspectionPointList', response.result.items);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 设备点巡检信息详情
+  GetPointDetails({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetPointDetails(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_pointDetails', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 任务详情中的片区信息
+  GetAreaByTaskId({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetAreaByTaskId(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_areaDetail', response.result);
             resolve(response);
           } else {
             commit('set_message', response.error.message);
