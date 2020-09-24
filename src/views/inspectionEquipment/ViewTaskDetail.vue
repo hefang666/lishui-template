@@ -13,13 +13,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">任务名称：</div>
                     <div class="item-content">
-                      <span>********巡检任务</span>
+                      <span>{{ taskDetail.name }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">任务负责人：</div>
                     <div class="item-content">
-                      <span>张三</span>
+                      <span>{{ taskDetail.person }}</span>
                     </div>
                   </div>
                 </div>
@@ -27,13 +27,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">任务状态：</div>
                     <div class="item-content">
-                      <span>进行中</span>
+                      <span>{{ taskDetail.statusStr }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">参与人：</div>
                     <div class="item-content">
-                      <span>张三、李四</span>
+                      <span>{{ taskDetail.participants }}</span>
                     </div>
                   </div>
                 </div>
@@ -41,13 +41,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">任务类别：</div>
                     <div class="item-content">
-                      <span>临时任务</span>
+                      <span>{{ taskDetail.typeStr }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">预计结束时间：</div>
                     <div class="item-content">
-                      <span>2019-01-01 18:00</span>
+                      <span>{{ taskDetail.planEndTime }}</span>
                     </div>
                   </div>
                 </div>
@@ -55,13 +55,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">实际结束时间：</div>
                     <div class="item-content">
-                      <span>2019-01-01 18:00</span>
+                      <span>{{ taskDetail.endTime }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">开始时间：</div>
                     <div class="item-content">
-                      <span>2019-01-01 18:00</span>
+                      <span>{{ taskDetail.startTime }}</span>
                     </div>
                   </div>
                 </div>
@@ -69,13 +69,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">暂停时间：</div>
                     <div class="item-content">
-                      <span>3小时20分</span>
+                      <span>{{ taskDetail.pauseTime }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">巡检片区：</div>
                     <div class="item-content">
-                      <span>*****路线</span>
+                      <span>{{ taskDetail.areaName }}</span>
                       <el-button @click="viewRoute" class="view-button"
                         >查看路线</el-button
                       >
@@ -86,7 +86,7 @@
                   <div class="list-items">
                     <div class="item-title">备注：</div>
                     <div class="item-content">
-                      <span>这里是备注内容备注内容备注内容</span>
+                      <span>{{ taskDetail.remark }}</span>
                     </div>
                   </div>
                 </div>
@@ -96,33 +96,31 @@
               <div class="equipmentInfo-box">
                 <div class="table-box">
                   <el-table
-                    ref="multipleTable"
-                    :data="tableData"
+                    :data="inspectionPointList"
                     :stripe="true"
                     tooltip-effect="dark"
                     height="400"
                     style="width: 100%"
                     :highlight-current-row="true"
-                    @row-click="clickRow"
                   >
                     <el-table-column
                       align="center"
-                      prop="equipmentName"
+                      prop="name"
                       label="设备名称"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="equipmentNumber"
+                      prop="code"
                       label="设备编号"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="equipmentPoints"
+                      prop="statusStr"
                       label="设备点情况"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="inspectionStatus"
+                      prop="inspectionStatusStr"
                       label="巡检状态"
                     ></el-table-column>
                     <el-table-column align="center" label="操作">
@@ -130,7 +128,7 @@
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="handleSee(scope.$index, scope.row)"
+                          @click="handleSee(scope.row)"
                           >查看</el-button
                         >
                       </template>
@@ -252,6 +250,8 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
 export default {
   name: 'viewTask',
   props: ['dialogViewDetail'],
@@ -259,6 +259,9 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute
+  },
+  computed: {
+    ...mapState(['taskDetail', 'inspectionPointList'])
   },
   data() {
     return {
@@ -299,10 +302,17 @@ export default {
       dialogEqui: false,
 
       // 是否显示查看路线弹窗
-      dialogRoute: false
+      dialogRoute: false,
+
+      // 当前页数
+      currentPage: 1,
+
+      // 当前每页数量
+      pageSize: 30
     };
   },
   methods: {
+    ...mapActions(['GetInspectionPointList', 'GetInspectionPointList', 'GetPointDetails']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeViewDetail() {
       let data = {
@@ -317,8 +327,20 @@ export default {
     },
 
     // tabs切换时的点击事件
-    handleClick(tab, event) {
-      console.log(tab, event);
+    handleClick(tab) {
+      console.log(tab);
+      if (tab.name == 'equipmentInfo') {
+        this.getData();
+      }
+    },
+    // 获取数据
+    getData() {
+      let param = {
+        Id: this.taskDetail.id,
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize
+      }
+      this.GetInspectionPointList(param);
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -329,7 +351,18 @@ export default {
       console.log(data);
     },
     // 查看按钮
-    handleSee() {},
+    handleSee(row) {
+      console.log(row);
+      let param = {
+        deviceId: row.id,
+        taskId: this.taskDetail.id,
+        inspectionStatus: row.inspectionStatus,
+        status: row.status
+      }
+      console.log(param);
+      this.GetPointDetails(param);
+      this.dialogEqui = true;
+    },
     // 选中的行
     clickRow(val) {
       console.log(val);

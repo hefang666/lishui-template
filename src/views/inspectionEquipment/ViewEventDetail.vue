@@ -10,13 +10,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备名称：</div>
               <div class="item-content">
-                <span>阀门</span>
+                <span>{{ eventDetails.deviceName }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备编号：</div>
               <div class="item-content">
-                <span>张三</span>
+                <span>{{ eventDetails.deviceCode }}</span>
               </div>
             </div>
           </div>
@@ -24,13 +24,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备坐标：</div>
               <div class="item-content">
-                <span>进行中</span>
+                <span>{{ eventDetails.devicePoint }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">地址：</div>
               <div class="item-content">
-                <span>张三、李四</span>
+                <span>{{ eventDetails.address }}</span>
               </div>
             </div>
           </div>
@@ -38,13 +38,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备点状态：</div>
               <div class="item-content">
-                <span>临时任务</span>
+                <span>{{ eventDetails.deviceStatusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">异常类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ eventDetails.errorType }}</span>
               </div>
             </div>
           </div>
@@ -52,13 +52,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">事件类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ eventDetails.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">事件提交时间：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ eventDetails.creationTime }}</span>
               </div>
             </div>
           </div>
@@ -66,21 +66,21 @@
             <div class="list-items has-two-item">
               <div class="item-title">报告人：</div>
               <div class="item-content">
-                <span>3小时20分</span>
+                <span>{{ eventDetails.creationName }}</span>
               </div>
             </div>
-            <div class="list-items has-two-item">
+            <!-- <div class="list-items has-two-item">
               <div class="item-title">提交工单时间：</div>
               <div class="item-content">
-                <span>*****路线</span>
+                <span>{{ eventDetails }}</span>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="list-item">
             <div class="list-items">
               <div class="item-title">预估损失水量：</div>
               <div class="item-content">
-                <span>这里是备注内容备注内容备注内容</span>
+                <span>{{ eventDetails.predictWaterLoss }}</span>
               </div>
             </div>
           </div>
@@ -88,7 +88,9 @@
             <div class="list-items">
               <div class="item-title">巡检内容：</div>
               <div class="item-content">
-                <span>这里是备注内容备注内容备注内容</span>
+                <div class="content-script">
+                  {{ eventDetails.content }}
+                </div>
               </div>
             </div>
           </div>
@@ -97,10 +99,18 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div class="enclosure-item">
-                    <div class="enclosure-title">附件名字</div>
-                    <div class="enclosure-download">下载</div>
-                    <div class="enclosure-preview">预览</div>
+                  <div class="image-box">
+                    <div
+                      v-for="(item, index) in eventDetails.resourcelist"
+                      :key="index"
+                      @click="openPre(item)"
+                      class="img-box"
+                    >
+                    <el-image
+                      style="width: 100%; height: 100%"
+                      :src="httpUrl + item.url"
+                      fit="cover"></el-image>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -112,21 +122,53 @@
         <el-button @click="closeViewEvent">取 消</el-button>
       </div>
     </el-dialog>
+
+    <pre-view
+      :dialog-preview="dialogPreview"
+      :file-data="fileData"
+      @closePreview="closePreview"
+    ></pre-view>
   </div>
 </template>
 
 <script>
+import preView from '@/components/upLoad/Preview.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState: eventState} = createNamespacedHelpers('eventManagement');
+const {mapState: uploadState} = createNamespacedHelpers('upload');
 export default {
   name: 'ViewEventDetail',
   props: ['dialogEventView'],
   data() {
-    return {};
+    return {
+      // 是否显示预览弹窗
+      dialogPreview: false,
+      // 要预览的图片信息
+      fileData: ''
+    };
+  },
+  components: {
+    preView
+  },
+  computed: {
+    ...eventState(['eventDetails']),
+    ...uploadState(['httpUrl'])
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
     closeViewEvent() {
       let data = false;
       this.$emit('closeViewEvent', data);
+    },
+    // 关闭预览弹窗
+    closePreview(data) {
+      this.dialogPreview = data;
+    },
+
+    // 打开预览弹窗
+    openPre(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
     }
   }
 };
@@ -144,7 +186,6 @@ export default {
       .list-item {
         display: flex;
         justify-content: space-between;
-        height: 40px;
         line-height: 40px;
 
         .list-items {
@@ -163,8 +204,11 @@ export default {
           }
 
           .item-content {
-            span {
+            flex: 1;
+            .content-script {
               color: #999999;
+              line-height: 28px;
+              padding-top: 6px;
             }
 
             .view-button {
@@ -179,7 +223,20 @@ export default {
               color: #ffffff;
             }
             .enclosure-box {
-              .enclosure-item {
+              display: flex;
+              .image-box {
+                clear: both;
+                .img-box {
+                  width: 90px;
+                  height: 90px;
+                  background: red;
+                  margin-right: 20px;
+                  margin-top: 10px;
+                  float: left;
+                }
+              }
+              
+              /* .enclosure-item {
                 display: flex;
 
                 .enclosure-title,
@@ -187,7 +244,7 @@ export default {
                 .enclosure-preview {
                   padding: 0 10px;
                 }
-              }
+              } */
             }
           }
         }
@@ -196,6 +253,10 @@ export default {
         }
       }
     }
+  }
+  /deep/ .el-dialog__body {
+    height: 480px;
+    overflow: auto;
   }
 }
 </style>

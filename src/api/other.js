@@ -24,12 +24,3 @@ export function getRoleData() {
     method: 'get'
   });
 }
-
-// 下载（图片）
-export function DownloadFile(data) {
-  return request({
-    url: 'UploadFiles/DownloadFile',
-    method: 'get',
-    params: data
-  });
-}

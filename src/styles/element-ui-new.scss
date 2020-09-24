@@ -142,12 +142,19 @@
 	}
 	/deep/ .el-table th {
 		background-color: #4b77be;
+		padding: 1px 5px;
+	}
+	/deep/ .el-table .cell {
+		line-height: 24px;
 	}
 	/deep/ .el-table thead {
 		color: #FFFFFF;
 	}
-	/deep/ .el-table th, .el-table td {
-		padding: 5px;
+	/deep/ .el-table td {
+		padding: 3px 5px;
+	}
+	/deep/ .el-table--border td {
+		border-right: 1px solid transparent;
 	}
 	/deep/ .el-table-column--selection .cell {
 		padding-left: 10px;

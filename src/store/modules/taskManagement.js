@@ -39,7 +39,29 @@ var state = {
   addModalVisible: false,
   checkModalVisible: false,
   // 任务详情内容
-  taskDetail: '',
+  taskDetail: {
+    areaId: '',
+    areaName: '',
+    closeReason: null,
+    endTime: null,
+    id: '',
+    name: '',
+    participantIds: [],
+    participants: [],
+    pauseTime: null,
+    person: '',
+    personId: '',
+    planEndTime: '',
+    planStartTime: '',
+    remark: '',
+    resourcelist: [],
+    startTime: null,
+    status: '',
+    statusStr: '',
+    stopReason: null,
+    type: '',
+    typeStr: ''
+  },
   // 设备点巡检信息列表
   inspectionPointList: [],
   // 设备点详情

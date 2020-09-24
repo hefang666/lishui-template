@@ -81,6 +81,7 @@
           :stripe="true"
           tooltip-effect="dark"
           height="830"
+          border
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
@@ -630,11 +631,6 @@ export default {
 
   .content-box {
     margin-top: 10px;
-
-    .table-box {
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
 
     .page-box {
       margin-top: 10px;
