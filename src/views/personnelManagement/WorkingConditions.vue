@@ -1,6 +1,6 @@
 <template>
   <div class="workingConditions-box dialog-box button-box">
-    <el-dialog title="任务详情" :visible.sync="dialogWorking">
+    <el-dialog title="任务详情" :visible.sync="dialogWorking" :before-close="closeWorking">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeWorking">
           <i class="el-dialog__close el-icon el-icon-close"></i>

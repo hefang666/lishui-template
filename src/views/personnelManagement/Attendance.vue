@@ -1,18 +1,25 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
-    <el-dialog title="工作情况" :visible.sync="dialogAttend">
+    <el-dialog
+      title="出勤查看"
+      :visible.sync="dialogAttend"
+      :before-close="closeAttend"
+    >
       <div class="content-box">
         <div class="cancel-box" @click="closeAttend">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
           <div class="search-box">
-            <el-input
-              placeholder="请输入内容"
-              prefix-icon="el-icon-search"
+            <el-date-picker
               v-model="searchWords"
-            ></el-input>
-            <el-button class="search-button" type="primary">查询</el-button>
+              type="date"
+              placeholder="选择日期"
+            >
+            </el-date-picker>
+            <el-button class="search-button" type="primary" @click="attenquery"
+              >查询</el-button
+            >
           </div>
           <div class="table-box">
             <el-table
@@ -25,28 +32,30 @@
               :highlight-current-row="true"
               @row-click="clickRow"
             >
-              <el-table-column prop="date" label="日期"></el-table-column>
+              <el-table-column prop="oneDay" label="日期"></el-table-column>
               <el-table-column
                 prop="onlineTime"
-                label="上线时间"></el-table-column>
+                label="上线时间"
+              ></el-table-column>
               <el-table-column
                 prop="offlineTime"
-                label="下线时间"></el-table-column>
-                <el-table-column align="center" width="70" label="操作">
-                  <template slot-scope="scope">
-                    <el-button
-                      type="text"
-                      class="operate-button"
-                      @click="handleSee(scope.$index, scope.row)"
-                      >查看</el-button
-                    >
-                  </template>
-                </el-table-column>
+                label="下线时间"
+              ></el-table-column>
+              <el-table-column align="center" width="70" label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    class="operate-button"
+                    @click="handleSee(scope.$index, scope.row)"
+                    >查看</el-button
+                  >
+                </template>
+              </el-table-column>
             </el-table>
           </div>
           <page
             :page-data="[30, 40, 50, 100]"
-            :total="400"
+            :total="total"
             @changePageSize="changePageSize"
             @changeCurrentPage="changeCurrentPage"
           ></page>
@@ -63,29 +72,29 @@
 import Page from '@/components/page/Page.vue';
 export default {
   name: 'Attendance',
-  props: ['dialogAttend'],
+  props: ['dialogAttend', 'tableData','total'],
   components: {
     Page
   },
   data() {
     return {
       searchWords: '',
-      tableData: [
-        {
-          date: '测试人员1',
-          onlineTime: '12345678910',
-          offlineTime: '100389478'
-        }
-      ],
       checkedName: ''
     };
   },
   methods: {
+    //查询
+    attenquery() {
+      let dates = this.searchWords;
+      let y = dates.getFullYear();
+      let m = (dates.getMonth() + 1 + '').padStart(2, '0');
+      let d = (dates.getDate() + '').padStart(2, '0');
+      this.searchWords = y + '-' + m + '-' + d;
+      console.log('object :>> ', this.searchWords);
+      this.$emit('attenquery',this.searchWords)
+    },
     closeAttend() {
-      let data = {
-        dialogAttend: false
-      };
-      this.$emit('getAttendData', data);
+      this.$emit('getAttendData');
     },
     // 选中的行
     clickRow(val) {
