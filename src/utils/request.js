@@ -23,10 +23,10 @@ service.interceptors.request.use(
     //   // please modify it according to the actual situation
     //   config.headers['X-Token'] = 'hjkj';
     // }
-
     config.headers['Authorization'] ="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY6KeS6ImyIiwi6K6_5a6i54K5566h55CG6KeS6ImyIl0sImh0dHA6Ly93d3cuYXNwbmV0Ym9pbGVycGxhdGUuY29tL2lkZW50aXR5L2NsYWltcy90ZW5hbnRJZCI6IjEwMTU5IiwiVXNlck5hbWUiOiJOSkxTIiwiT3JnSWQiOiIxMDI5NCIsIlRydWVOYW1lIjoi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY55So5oi3IiwiQXZhdGVyIjoiIiwiT3JnTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoSIsIlRlbmFudE5hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnRDb25uZWN0U3RyaW5nIjoiIiwiUm9sZXMiOiIxNjMxODIsMTYzMTg0Iiwic3ViIjoiMTAyOTQiLCJqdGkiOiJlOGFhNmMxZC1hZGRhLTRhNWEtYTAxZS02ZjQ2MTAxMWUxYTIiLCJpYXQiOjE2MDA5MTIxMjQsIm5iZiI6MTYwMDkxMjEyNCwiZXhwIjoxNjAwOTU1MzI0LCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.GnTEJIGxsi7QY9nB0UnFg-o_uuIiZwfqRmRV6AA2B0I";
 
-    console.log(config);
+
+    // console.log(config);
     return config;
   },
   error => {
@@ -53,9 +53,9 @@ service.interceptors.response.use(
     // if the custom code is not 20000, it is judged as an error.
     if (!res.success) {
       Message({
-        message: res.error.message || 'Error',
+        message: res.message || 'Error',
         type: 'error',
-        duration: 3 * 1000
+        duration: 5 * 1000
       });
     }
     return res;
@@ -64,7 +64,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 3 * 1000
+      duration: 5 * 1000
     });
     return Promise.reject(error);
   }
