@@ -70,9 +70,17 @@
               </div>
             </div>
             <div class="list-items has-two-item">
-              <div class="item-title">提交工单时间：</div>
+              <div class="item-title">联系方式：</div>
               <div class="item-content">
-                <span>*****路线</span>
+                <span>{{ eventDetails.phone }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">事件状态：</div>
+              <div class="item-content">
+                <span>{{ eventDetails.statusStr }}</span>
               </div>
             </div>
           </div>

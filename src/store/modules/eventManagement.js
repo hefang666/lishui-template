@@ -1,7 +1,4 @@
-import {
-  GetEventList,
-  GetEventDetails
-} from '@/api/event';
+import {GetEventList, GetEventDetails, UpdateEventById} from '@/api/event';
 import {parseTime} from '@/utils/index.js';
 
 var state = {
@@ -20,6 +17,7 @@ var state = {
       typeStr: '漏损事件'
     }
   ],
+  // 异常类型
   exceptionTypeData: [
     {
       value: 0,
@@ -78,7 +76,11 @@ var state = {
     }
   ],
   // 事件详情
-  eventDetails: ''
+  eventDetails: '',
+  // 提示消息
+  messageText: '',
+  // 事件总数
+  eventListTotal: 1
 };
 
 var mutations = {
@@ -89,6 +91,13 @@ var mutations = {
   // 设置事件详情
   set_eventDetails: function(state, data) {
     state.eventDetails = data;
+  },
+  // 设置提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
+  },
+  set_eventListTotal: function(state, data) {
+    state.eventListTotal = data;
   }
 };
 
@@ -122,7 +131,7 @@ var actions = {
               );
             });
             commit('set_eventList', response.result.items);
-            // commit('set_listTotal', response.result.totalCount);
+            commit('set_eventListTotal', response.result.totalCount);
             resolve(response);
           } else {
             commit('set_message', response.error.message);
@@ -140,6 +149,25 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
+            commit('set_eventDetails', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 改变事件状态
+  UpdateEvent({commit}, data) {
+    return new Promise((resolve, reject) => {
+      UpdateEventById(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_message', '操作成功！');
             resolve(response);
           } else {
             commit('set_message', response.error.message);

@@ -10,13 +10,41 @@
             <div class="list-items has-two-item">
               <div class="item-title">工单类型：</div>
               <div class="item-content">
-                <span>********巡检任务</span>
+                <span>{{ orderDetails.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">负责人：</div>
               <div class="item-content">
-                <span>张三</span>
+                <span>{{ orderDetails.person }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">工单状态：</div>
+              <div class="item-content">
+                <span>{{ orderDetails.typeStr }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">工单提交时间：</div>
+              <div class="item-content">
+                <span>{{ orderDetails.person }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">完成时间：</div>
+              <div class="item-content">
+                <span>{{ orderDetails.typeStr }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">预计完成时间：</div>
+              <div class="item-content">
+                <span>{{ orderDetails.person }}</span>
               </div>
             </div>
           </div>
@@ -24,7 +52,7 @@
             <div class="list-items">
               <div class="item-title">工单内容：</div>
               <div class="item-content">
-                <span>这里是备注内容备注内容备注内容</span>
+                <span>{{ orderDetails.content }}</span>
               </div>
             </div>
           </div>
@@ -42,6 +70,112 @@
               </div>
             </div>
           </div>
+          <div class="workOrder-back-box">
+            <!-- 查漏、查漏延伸 -->
+            <div v-if="orderDetails.type == 1 || orderDetails.type == 2" class="workOrder-box">
+              <!-- 查漏 -->
+              <div class="back-box">
+                <div class="back-title">查漏：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 查漏延伸 -->
+              <div class="back-box">
+                <div class="back-title">查漏延伸：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 查漏地点 -->
+              <div class="back-box">
+                <div class="back-title">查漏地点：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 维修管道、维修管道延伸、贫水区改造 -->
+            <div
+              v-if="orderDetails.type == 3 || orderDetails.type == 4 || orderDetails.type == 6"
+              class="workOrder-box"
+            >
+              <!-- 维修 -->
+              <div class="back-box">
+                <div class="back-title">维修：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 改管 -->
+              <div class="back-box">
+                <div class="back-title">改管：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 阀门 -->
+              <div class="back-box">
+                <div class="back-title">阀门：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 消防栓 -->
+              <div class="back-box">
+                <div class="back-title">消防栓：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+              <!-- 贫水区改造地点 -->
+              <div class="back-box">
+                <div class="back-title">贫水区改造地点：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 违章罚款 -->
+            <div v-if="orderDetails.type == 5" class="workOrder-box">
+              <!-- 违章单位 -->
+              <div class="back-box">
+                <div class="back-title">违章单位：</div>
+                <div class="back-content">
+                  <div
+                    v-for="(item, index) in 11"
+                    :key="index"
+                    class="back-item">{{ item }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -52,11 +186,13 @@
 </template>
 
 <script>
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('workOrderManagement');
 export default {
   name: 'OrderDetail',
   props: ['dialogView'],
-  data() {
-    return {};
+  computed: {
+    ...mapState(['orderDetails'])
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
@@ -74,6 +210,8 @@ export default {
 
 .addTask-box {
   .content-box {
+    height: 500px;
+    overflow: auto;
     .list-box {
       padding: 0 40px;
 
@@ -129,6 +267,30 @@ export default {
         }
         .has-two-item {
           width: 46%;
+        }
+      }
+      .workOrder-back-box {
+        width: 100%;
+        .back-box {
+          display: flex;
+          .back-title {
+            width: 100px;
+            text-align: right;
+          }
+          .back-content {
+            flex: 1;
+            width: 100%;
+            .back-item {
+              width: 46%;
+              line-height: 20px;
+            }
+            .back-item:nth-child(odd) {
+              float: left;
+            }
+            .back-item:nth-child(even) {
+              float: right;
+            }
+          }
         }
       }
     }

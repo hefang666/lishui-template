@@ -78,7 +78,7 @@ import Search from '@/components/search';
 import Page from '@/components/page/Page.vue';
 import ViewDetail from './ViewDetail.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('equipment');
+const {mapState, mapActions} = createNamespacedHelpers('equipment');
 export default {
   name: 'Equipment',
   components: {
@@ -100,11 +100,15 @@ export default {
       // 当前分页
       currentPage: 1,
 
+      // 当前页数
+      pageSize: 30,
+
       // 是否显示查看
       dialogView: false
     };
   },
   methods: {
+    ...mapActions(['GetDeviceInspectionList']),
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -129,7 +133,18 @@ export default {
     // 关闭查看
     closeView(data) {
       this.dialogView = data.dialogView;
+    },
+    getData() {
+      let param = {
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize
+      }
+      console.log(param);
+      this.GetDeviceInspectionList(param);
     }
+  },
+  mounted() {
+    this.getData();
   }
 };
 </script>

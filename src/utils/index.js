@@ -443,6 +443,21 @@ export function processingNodes(data) {
 }
 
 /**
- * 时间转换
- * @param {}
+ * 判断时间是否大于当前时间
+ * @param {String} datetime
  */
+// 判断时间是否大于等于当前时间
+export function judgeTime(datetime) {
+  // 传入的时间
+  let myDate = new Date(datetime);
+  let my = myDate.valueOf();
+  // 获取当前时间
+  let nowDate = new Date();
+  let now = nowDate.valueOf();
+
+  if (my >= now) {
+    return true;
+  } else {
+    return false;
+  }
+}

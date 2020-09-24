@@ -1,5 +1,5 @@
 <template>
-  <div class="choosePeople-box button-box">
+  <div class="choosePeople-box dialog-box button-box">
     <el-dialog title="选择人员" :visible="dialogCharge">
       <div class="content-box">
         <div class="cancel-box" @click="closeChoosePeople">

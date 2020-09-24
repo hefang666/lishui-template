@@ -1,23 +1,35 @@
 import request from '@/utils/otherRequest';
 
+// 获取人员
 export function getPeopleList(data) {
   return request({
-    url: 'User/GetPersonnelSelector',
+    url: 'services/app/User/GetPersonnelSelector',
     method: 'get',
     params: data
   });
 }
 
+// 获取组织树信息
 export function getOrganizationData() {
   return request({
-    url: 'Orgagency/GetOrgagencyTreeByPersonnel',
+    url: 'services/app/Orgagency/GetOrgagencyTreeByPersonnel',
     method: 'get'
   });
 }
 
+// 获取角色树信息
 export function getRoleData() {
   return request({
-    url: 'Role/GetRoleTree',
+    url: 'services/app/Role/GetRoleTree',
     method: 'get'
+  });
+}
+
+// 下载（图片）
+export function DownloadFile(data) {
+  return request({
+    url: 'UploadFiles/DownloadFile',
+    method: 'get',
+    params: data
   });
 }

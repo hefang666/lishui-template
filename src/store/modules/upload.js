@@ -1,14 +1,40 @@
 var state = {
-  fileList: [
-    {
-      id: 1,
-      name: 'food.jpeg',
-      url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-    }
-  ]
+  fileListData: [],
+  actionUrl: 'http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture',
+  httpUrl: 'http://192.168.9.44:9090/'
+};
+
+var mutations = {
+  set_fileListData: function(state, data) {
+    state.fileListData = data;
+  }
+};
+
+var actions = {
+  setFileListData({commit}, data) {
+    commit('set_fileListData', data);
+  },
+  // 下载（图片）
+  downloadFile({state}, data) {
+    console.log(data);
+    var downLoadUrl =
+      state.httpUrl +
+      'api/UploadFiles/DownloadFile?fileName=' +
+      data.fileName +
+      '&downLoadName=' +
+      data.downLoadName;
+    window.open(downLoadUrl);
+  },
+  // 删除（图片）
+  delFil({commit}, data) {
+    console.log(commit);
+    console.log(data);
+  }
 };
 
 export default {
   namespaced: true,
-  state
+  state,
+  mutations,
+  actions
 };

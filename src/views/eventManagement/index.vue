@@ -49,7 +49,10 @@
           </div>
         </div>
         <div class="item has-two">
-          <div class="item-title">异常类型：</div>
+          <div class="item-title">
+            <span style="color: red;">*</span>
+            异常类型：
+          </div>
           <div class="item-content">
             <el-select
               v-model="exceptionType"
@@ -72,13 +75,14 @@
             <el-date-picker
               v-model="submissionTime"
               type="datetime"
+              format="yyyy-MM-dd HH:mm"
               placeholder="提交时间"
             ></el-date-picker>
           </div>
         </div>
       </div>
       <div class="button-group-box">
-        <el-button type="primary" plain>搜索</el-button>
+        <el-button type="primary" plain @click="search">搜索</el-button>
         <el-button type="primary" plain>清空</el-button>
       </div>
     </div>
@@ -156,6 +160,7 @@
     <!-- 选择人员 -->
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'single'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
@@ -224,6 +229,8 @@ export default {
       // 筛选数据
       // 选择人员
       person: '',
+      // 人员信息
+      personInfo: '',
       // 异常类型
       exceptionType: 0,
       // 提交时间
@@ -258,17 +265,17 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['GetEventList', 'GetEventDetails']),
+    ...mapActions(['GetEventList', 'GetEventDetails', 'UpdateEvent']),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentIndex = index;
-
       let param = {
         pageIndex: 1,
-        maxResultCount: 30,
-        status: this.currentIndex
+        maxResultCount: 30
+      };
+      if (this.currentIndex != 0) {
+        param.status = this.currentIndex;
       }
-      console.log(param);
       this.GetEventList(param);
     },
 
@@ -285,6 +292,19 @@ export default {
     // 关闭提示消息弹窗
     closeMessage(data) {
       this.dialogMessage = data;
+    },
+
+    // 搜索
+    search() {
+      let param = {
+        errorType: this.exceptionType,
+        creationName: this.personInfo.trueName,
+        creationTime: this.submissionTime,
+        pageIndex: 1,
+        maxResultCount: 30,
+      };
+      this.GetEventList(param);
+      this.isScreen = !this.isScreen;
     },
 
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
@@ -307,17 +327,16 @@ export default {
     // 关闭
     close() {
       if (this.onlyOne()) {
-        // if (this.multipleSelection[0].statusList != 3) {
-        //   // 关闭任务只能对已暂停状态的任务进行
-        //   this.messageText = '该状态不能关闭';
-        //   this.dialogMessage = true;
-        // } else {
-          
-        // }
-        // 操作弹窗
-        this.messageT = '确认要关闭事件类型的事件？';
+        if (this.multipleSelection[0].statusList == 3) {
+          // 关闭任务只能对已暂停状态的任务进行
+          this.messageText = '该状态不能关闭';
+          this.dialogMessage = true;
+        } else {
+          // 操作弹窗
+          this.messageT = '确认要关闭事件类型的事件？';
           this.operateType = 'close';
           this.dialogOperate = true;
+        }
       }
     },
 
@@ -326,14 +345,22 @@ export default {
       if (this.onlyOne()) {
         let param = {
           Id: this.multipleSelection[0].id
-        }
+        };
         this.GetEventDetails(param);
         this.dialogTransfer = true;
       }
     },
 
     // 查看
-    See() {},
+    See() {
+      if (this.onlyOne()) {
+        let param = {
+          Id: this.multipleSelection[0].id
+        };
+        this.GetEventDetails(param);
+        this.dialogView = true;
+      }
+    },
 
     // 点击选择负责人按钮
     choosePerson() {
@@ -347,12 +374,14 @@ export default {
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       console.log(data);
+      this.person = data.personinfo[0].trueName;
+      console.log(this.person);
+      this.personInfo = data.personinfo;
       this.dialogCharge = data.dialogCharge;
-      this.addForm.inCharge = data.name;
     },
     // 异常类型选择
-    selectType() {
-      console.log(this.exceptionType);
+    selectType(val) {
+      this.exceptionType = val;
     },
 
     // 关闭操作提示弹窗
@@ -366,26 +395,14 @@ export default {
       console.log(index, row);
     },
 
-    // 转工单
-    handleTransfer (index,row) {
-      console.log(index, row);
-    },
-
-    // 查看任务
-    handleSee(index, row) {
-      console.log(index, row);
-    },
-
     // 关闭转工单弹窗
     closeTransfer(data) {
-      console.log(data);
       this.dialogTransfer = data.dialogTransfer;
     },
     // 确定转工单
     checkedTransfer(data) {
       console.log(data);
-      this.dialogTransfer = data.dialogTransfer;
-      this.addForm.inCharge = data.name;
+      this.dialogTransfer = data;
     },
 
     // 多选选择后拿到的数据
@@ -417,36 +434,14 @@ export default {
     determine(data) {
       console.log(data);
       this.dialogOperate = data.flag;
-      // let param;
-      // if (data.type == 'restart') {
-      //   // 重启
-      //   param.id = this.multipleSelection[0].id;
-      //   param.operate = 5;
-      //   this.UpdateTaskStatus(param);
-      // } else if (data.type == 'del') {
-      //   // 删除
-      //   this.multipleSelection.forEach(item => {
-      //     let param = {
-      //       id: item.id
-      //     };
-      //     this.deleteTask(param);
-      //   });
-      // } else if (data.type == 'suspend') {
-      //   // 暂停
-      //   param.id = this.multipleSelection[0].id;
-      //   param.operate = 1;
-      //   this.UpdateTaskStatus(param);
-      // } else if (data.type == 'close') {
-      //   // 关闭
-      //   param.id = this.multipleSelection[0].id;
-      //   param.operate = 4;
-      //   this.UpdateTaskStatus(param);
-      // } else if (data.type == 'complete') {
-      //   // 完成
-      //   param.id = this.multipleSelection[0].id;
-      //   param.operate = 2;
-      //   this.UpdateTaskStatus(param);
-      // }
+      if (data.type == 'close') {
+        // 关闭
+        let param = {
+          Id: this.multipleSelection[0].id,
+          status: 3
+        };
+        this.UpdateEvent(param);
+      }
     }
   },
   mounted() {
@@ -499,6 +494,12 @@ export default {
 
         .item-content {
           width: 220px;
+          .choose-active {
+            color: #ffffff;
+            background: #4b77be;
+            border: none;
+            cursor: auto;
+          }
         }
       }
     }
