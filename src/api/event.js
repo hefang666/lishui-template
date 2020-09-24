@@ -18,3 +18,12 @@ export function GetEventDetails(data) {
     data
   });
 }
+
+// 改变事件状态
+export function UpdateEventById(data) {
+  return request({
+    url: api + 'EventService/UpdateEventById',
+    method: 'post',
+    data
+  });
+}

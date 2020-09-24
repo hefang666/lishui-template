@@ -6,7 +6,7 @@
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          
+          <img class="img" :src="httpUrl + fileData.url" alt="">
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -17,9 +17,14 @@
 </template>
 
 <script>
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('upload');
 export default {
   name: 'Preview',
-  props: ['dialogPreview'],
+	props: ['dialogPreview', 'fileData'],
+	computed: {
+    ...mapState(['httpUrl'])
+  },
   methods: {
     closePreview() {
       let data = false;
@@ -34,7 +39,7 @@ export default {
 .preview-box {
   width: 100%;
   /deep/ .el-dialog{
-    width: 100%;
+    width: 100% !important;
     height: 100%;
     margin: 0 !important;
   }
@@ -78,6 +83,7 @@ export default {
 
 		.content_box {
 			padding: 16px;
+			text-align: center;
 		}
 	}
 }

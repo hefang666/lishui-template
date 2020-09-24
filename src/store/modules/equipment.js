@@ -1,3 +1,5 @@
+import {GetDeviceInspectionList} from '@/api/inspection';
+
 var state = {
   equipmentList: [
     {
@@ -26,7 +28,39 @@ var state = {
   ]
 };
 
+var mutations = {
+  set_equipmentList: function(state, data) {
+    state.equipmentList = data;
+  },
+  // 设置提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
+  }
+};
+
+var actions = {
+  GetDeviceInspectionList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetDeviceInspectionList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_equipmentList', response.result.items);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+};
+
 export default {
   namespaced: true,
-  state
+  state,
+  mutations,
+  actions
 };

@@ -8,7 +8,7 @@
           </div>
           <div class="content_box select_box">
             <div>
-              <div class="list-item has-two-item">
+              <div class="list-item">
                 <div class="items-box">
                   <div class="title">
                     <span class="tips">*</span>
@@ -18,7 +18,7 @@
                     <div class="list-item-content-box">
                       <el-select
                       v-model="orderType"
-                      placeholder="请选择异常类型"
+                      placeholder="请选择工单类型"
                       @change="selectType"
                     >
                       <el-option
@@ -30,6 +30,8 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <div class="list-item has-two-item">
                 <div class="items-box">
                   <div class="title">
                     <span class="tips">*</span>
@@ -40,13 +42,27 @@
                     class="choose-active"
                     type="primary"
                     plain
-                    v-if="addForm.inCharge != ''"
-                    v-model="addForm.inCharge"
-                    >{{ addForm.inCharge }}</el-button
+                    v-if="inCharge != ''"
+                    v-model="inCharge"
+                    >{{ inCharge }}</el-button
                   >
                   <el-button type="primary" plain @click="choosePerson"
                     >选择人员</el-button
                   >
+                  </div>
+                </div>
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>预计完成时间：</span>
+                  </div>
+                  <div class="content">
+                    <el-date-picker
+                      v-model="endTime"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm"
+                      placeholder="预计完成时间"
+                    ></el-date-picker>
                   </div>
                 </div>
               </div>
@@ -59,7 +75,7 @@
                     <el-input
                       type="textarea"
                       :rows="3"
-                      v-model="addForm.remarks"
+                      v-model="remarks"
                       autocomplete="off"
                     ></el-input >
                   </div>
@@ -199,13 +215,14 @@
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button @click="closeTransfer">取 消</el-button>
-          <el-button type="primary" @click="closeTransfer">确 定</el-button>
+          <el-button type="primary" @click="determineTransfer">确 定</el-button>
         </div>
       </el-dialog>
     </div>
 
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'single'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
@@ -213,6 +230,7 @@
     <!-- 预览弹窗 -->
     <preview
       :dialog-preview="dialogPreview"
+      :file-data="fileData"
       @closePreview="closePreview"
     ></preview>
   </div>
@@ -223,7 +241,7 @@ import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('eventManagement');
+const {mapState, mapActions} = createNamespacedHelpers('eventManagement');
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
   name: 'TransferOrder',
@@ -238,25 +256,31 @@ export default {
   },
   data() {
     return {
-      addForm: {
-        taskName: '',
-        inCharge: '测试人员',
-        estimatedStartTime: '',
-        estimatedEndTime: '',
-        taskType: '',
-        inspectionArea: '',
-        remarks: ''
-      },
+      // 人员
+      inCharge: '',
+      // 人员信息
+      personInfo: '',
+
+      // 备注
+      remarks: '',
+
       // 负责人弹窗状态
       dialogCharge: false,
 
+      // 工单类型
       orderType: 1,
-      // exceptionType: 0,
+
       // 是否显示预览弹窗
-      dialogPreview: false
+      dialogPreview: false,
+
+      // 选中要预览的文件
+      fileData: '',
+      // 预计完成时间
+      endTime: ''
     };
   },
   methods: {
+    ...mapActions(['UpdateEvent']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       console.log('点击了取消');
@@ -280,11 +304,13 @@ export default {
     checkedPerson(data) {
       console.log(data);
       this.dialogCharge = data.dialogCharge;
-      this.addForm.inCharge = data.name;
+      this.inCharge = data.personinfo[0].trueName;
+      this.personInfo = data.personinfo[0];
     },
     // 打开预览弹窗
     showPreview(data) {
-      this.dialogPreview = data;
+      this.dialogPreview = data.flag;
+      this.fileData = data.data;
     },
     // 关闭预览弹窗
     closePreview(data) {
@@ -293,6 +319,28 @@ export default {
     // 选择工单类型
     selectType(val) {
       console.log(val);
+      this.orderType = val;
+    },
+    // 点击确定，进行转工单操作
+    determineTransfer() {
+      console.log(this.orderType);
+      console.log(this.inCharge);
+      if (this.inCharge == '') {
+        alert('请选择负责人');
+        return;
+      }
+      console.log(this.eventDetails.id);
+      let param = {
+        Id: this.eventDetails.id,
+        status: 2,
+        type: this.orderType,
+        personId: this.personInfo.id,
+        person: this.personInfo.trueName,
+        planCompleteTime: this.endTime,
+        content: this.remarks
+      };
+      this.UpdateEvent(param);
+      this.$emit('checkedTransfer', false);
     }
   }
 };
