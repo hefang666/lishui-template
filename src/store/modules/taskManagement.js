@@ -1,4 +1,14 @@
-import {getTaskList} from '@/api/task';
+import {
+  getTaskList,
+  addTask,
+  GetTaskDetails,
+  UpdateTaskStatus,
+  deleteTask,
+  GetInspectionPointList,
+  GetPointDetails,
+  GetAreaByTaskId
+} from '@/api/task';
+import {parseTime} from '@/utils/index.js';
 var state = {
   taskList: [
     {
@@ -23,13 +33,41 @@ var state = {
   taskStatus: '',
   searchText: '',
   currentPage: 1,
-  maxResultCount: 30, // 每条页数
+  listTotalCount: 1, // 数据总数
+  messageText: '', // 提示信息
   editModalVisble: false,
   addModalVisible: false,
   checkModalVisible: false,
-  // 当前状态
-  currentState: '',
-  // 筛选时输入框的输入的任务名称
+  // 任务详情内容
+  taskDetail: {
+    areaId: '',
+    areaName: '',
+    closeReason: null,
+    endTime: null,
+    id: '',
+    name: '',
+    participantIds: [],
+    participants: [],
+    pauseTime: null,
+    person: '',
+    personId: '',
+    planEndTime: '',
+    planStartTime: '',
+    remark: '',
+    resourcelist: [],
+    startTime: null,
+    status: '',
+    statusStr: '',
+    stopReason: null,
+    type: '',
+    typeStr: ''
+  },
+  // 设备点巡检信息列表
+  inspectionPointList: [],
+  // 设备点详情
+  pointDetails: '',
+  // 任务详情中的巡检路线信息
+  areaDetail: ''
 };
 
 var mutations = {
@@ -49,13 +87,43 @@ var mutations = {
     state.taskName = data.taskName;
     state.startTime = data.startTime;
     state.endTime = data.endTime;
+  },
+  // 更新列表总条数
+  set_listTotal: function(state, data) {
+    console.log(data);
+    state.listTotalCount = data;
+    console.log(state.listTotalCount);
+  },
+  // 更新提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
+    console.log(state.messageText);
+  },
+  // 设置任务详情信息
+  set_taskDetail: function(state, data) {
+    state.taskDetail = data;
+    console.log(state.taskDetail);
+  },
+  // 设置设备点巡检信息列表
+  set_inspectionPointList: function(state, data) {
+    state.inspectionPointList = data;
+    console.log(state.inspectionPointList);
+  },
+  // 设置设备点详情
+  set_pointDetails: function(state, data) {
+    state.pointDetails = data;
+    console.log(state.pointDetails);
+  },
+  // 设置任务详情中的片区信息
+  set_areaDetail: function(state, data) {
+    state.areaDetail = data;
+    console.log(state.areaDetail);
   }
 };
 
 var actions = {
+  // 获取数据
   getTaskList({commit, state}, param) {
-    console.log(param);
-    console.log(state.taskStatus);
     var data = '';
     if (state.taskStatus == 0) {
       data = {
@@ -72,6 +140,45 @@ var actions = {
     return new Promise((resolve, reject) => {
       getTaskList(data)
         .then(response => {
+          console.log(response);
+          if (response.success) {
+            response.result.items.forEach(item => {
+              item.planStartTime = parseTime(
+                item.planStartTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+              item.planEndTime = parseTime(
+                item.planEndTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+              if (item.endTime != null) {
+                item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+              }
+            });
+            commit('set_task_list', response.result.items);
+            commit('set_listTotal', response.result.totalCount);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 搜索
+  searchTask({commit}, param) {
+    var data = {
+      pageIndex: param.pageIndex,
+      maxResultCount: param.maxResultCount,
+      startTime: param.startTime,
+      endTime: param.endTime,
+      name: param.taskName
+    };
+    return new Promise((resolve, reject) => {
+      getTaskList(data)
+        .then(response => {
           if (response.code) {
             commit('set_task_list', response);
             console.log(state.taskList);
@@ -83,21 +190,132 @@ var actions = {
         });
     });
   },
-  searchTask({commit}, param) {
-    var data = {
-      pageIndex: param.pageIndex,
-      maxResultCount: param.maxResultCount,
-      startTime: param.startTime,
-      endTime: param.endTime,
-      name: param.taskName
-    }
+  // 新建
+  addTask({commit}, data) {
     return new Promise((resolve, reject) => {
-      getTaskList(data)
+      addTask(data)
         .then(response => {
-          if (response.code) {
-            commit('set_task_list', response);
-            console.log(state.taskList);
+          console.log(response);
+          if (response.success) {
+            commit('set_message', '新增任务成功！');
             resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 查看、修改
+  GetTaskDetails({commit}, data) {
+    console.log(data);
+    return new Promise((resolve, reject) => {
+      GetTaskDetails(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            response.result.planStartTime = parseTime(
+              response.result.planStartTime,
+              '{y}-{m}-{d} {h}:{i}'
+            );
+            response.result.planEndTime = parseTime(
+              response.result.planEndTime,
+              '{y}-{m}-{d} {h}:{i}'
+            );
+            commit('set_taskDetail', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 修改任务状态
+  UpdateTaskStatus({commit}, data) {
+    return new Promise((resolve, reject) => {
+      UpdateTaskStatus(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 删除任务
+  deleteTask({commit}, data) {
+    return new Promise((resolve, reject) => {
+      deleteTask(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 设备点巡检信息列表
+  GetInspectionPointList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetInspectionPointList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_inspectionPointList', response.result.items);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 设备点巡检信息详情
+  GetPointDetails({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetPointDetails(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_pointDetails', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 任务详情中的片区信息
+  GetAreaByTaskId({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetAreaByTaskId(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_areaDetail', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
           }
         })
         .catch(error => {

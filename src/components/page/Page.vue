@@ -98,19 +98,23 @@ export default {
     // },
     // 计算当前显示的是多少条到多少条
     getShowRecoeding() {
-      if (this.currentPageNum == this.pagesNum) {
-        this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
-        this.endRecoeding = this.$props.total;
+      if(this.total == 0) {
+        this.startRecording = 0;
+        this.endRecoeding = 0;
       } else {
-        this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
-        this.endRecoeding = this.currentPageNum * this.pageSize;
+        if (this.currentPageNum == this.pagesNum) {
+          this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+          this.endRecoeding = this.$props.total;
+        } else {
+          this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+          this.endRecoeding = this.currentPageNum * this.pageSize;
+        }
       }
     }
   },
   mounted() {
     // 处理组件名称（讲传过来的字符串转化成数组）
     this.assembly = this.$props.layout.split(',');
-
     // this.getPagesNum();
     this.getShowRecoeding();
   }

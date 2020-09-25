@@ -13,13 +13,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">设备名称：</div>
                     <div class="item-content">
-                      <span>********巡检任务</span>
+                      <span>{{ equipmentDetails.name }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">设备编号：</div>
                     <div class="item-content">
-                      <span>张三</span>
+                      <span>{{ equipmentDetails.code }}</span>
                     </div>
                   </div>
                 </div>
@@ -27,13 +27,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">设备坐标：</div>
                     <div class="item-content">
-                      <span>进行中</span>
+                      <span>{{ equipmentDetails.point }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">地址：</div>
                     <div class="item-content">
-                      <span>张三、李四</span>
+                      <span>{{ equipmentDetails.address }}</span>
                     </div>
                   </div>
                 </div>
@@ -41,13 +41,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年被巡检次数：</div>
                     <div class="item-content">
-                      <span>临时任务</span>
+                      <span>{{ equipmentDetails.inspectionCount }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">今年触发事件次数：</div>
                     <div class="item-content">
-                      <span>2019-01-01 18:00</span>
+                      <span>{{ equipmentDetails.eventCount }}</span>
                     </div>
                   </div>
                 </div>
@@ -55,7 +55,7 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年转工单次数：</div>
                     <div class="item-content">
-                      <span>2019-01-01 18:00</span>
+                      <span>{{ equipmentDetails.workCount }}</span>
                     </div>
                   </div>
                 </div>
@@ -65,7 +65,6 @@
               <div class="equipmentInfo-box">
                 <div class="table-box">
                   <el-table
-                    ref="multipleTable"
                     :data="equipmentTaskList"
                     :stripe="true"
                     tooltip-effect="dark"
@@ -73,21 +72,20 @@
                     height="400"
                     style="width: 100%"
                     :highlight-current-row="true"
-                    @row-click="clickRow"
                   >
                     <el-table-column
                       align="center"
-                      prop="taskName"
+                      prop="name"
                       label="任务名称"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="taskTypeString"
+                      prop="typeStr"
                       label="任务类别"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="personInChargeName"
+                      prop="person"
                       label="负责人"
                     ></el-table-column>
                     <el-table-column
@@ -97,12 +95,12 @@
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="suspendTimeString"
+                      prop="suspendTimeStr"
                       label="暂停时长"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="taskStatusString"
+                      prop="statusStr"
                       label="任务状态"
                     ></el-table-column>
                     <el-table-column width="100" align="center" label="操作">
@@ -110,7 +108,7 @@
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="handleSee(scope.$index, scope.row)"
+                          @click="handleSee(scope.row)"
                           >查看</el-button
                         >
                       </template>
@@ -119,9 +117,9 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
+                  :total="equipmentTaskPageInfo.total"
+                  @changePageSize="changeTaskPageSize"
+                  @changeCurrentPage="changeTaskCurrentPage"
                 ></page>
               </div>
             </el-tab-pane>
@@ -129,52 +127,45 @@
               <div class="inspectionPath-box">
                 <div class="table-box">
                   <el-table
-                    ref="multipleTable"
-                    :data="equipmentTaskList"
+                    :data="equipmentEventList"
                     :stripe="true"
                     tooltip-effect="dark"
                     :show-overflow-tooltip="true"
                     height="400"
                     style="width: 100%"
                     :highlight-current-row="true"
-                    @row-click="clickRow"
                   >
                     <el-table-column
                       align="center"
-                      prop="taskName"
-                      label="任务名称"
+                      prop="typeStr"
+                      label="事件类型"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="taskTypeString"
-                      label="任务类别"
+                      prop="person"
+                      label="报告人"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="personInChargeName"
-                      label="负责人"
+                      prop="creationTime"
+                      label="提交时间"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="endTime"
-                      label="实际完成时间"
+                      prop="errorType"
+                      label="异常类型"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="suspendTimeString"
-                      label="暂停时长"
-                    ></el-table-column>
-                    <el-table-column
-                      align="center"
-                      prop="taskStatusString"
-                      label="任务状态"
+                      prop="statusStr"
+                      label="事件状态"
                     ></el-table-column>
                     <el-table-column width="100" align="center" label="操作">
                       <template slot-scope="scope">
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="SeeEventDetail(scope.$index, scope.row)"
+                          @click="SeeEventDetail(scope.row)"
                           >查看</el-button
                         >
                       </template>
@@ -183,9 +174,9 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
+                  :total="equipmentEventPageInfo.total"
+                  @changePageSize="changeEventPageSize"
+                  @changeCurrentPage="changeEventCurrentPage"
                 ></page>
               </div>
             </el-tab-pane>
@@ -216,7 +207,9 @@ import Page from '@/components/page/Page.vue';
 import ViewTaskDetail from './ViewTaskDetail.vue';
 import ViewEventDetail from './ViewEventDetail.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('equipment');
+const {mapState: equipmentState, mapActions: equipmentActions} = createNamespacedHelpers('equipment');
+const {mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 export default {
   name: 'Viewdetail',
   props: ['dialogView'],
@@ -226,41 +219,19 @@ export default {
     ViewEventDetail
   },
   computed: {
-    ...mapState(['equipmentTaskList'])
+    ...equipmentState([
+      'equipmentTaskList',
+      'equipmentEventList',
+      'equipmentDetails',
+      'equipmentTaskPageInfo',
+      'equipmentEventPageInfo'
+    ])
   },
   data() {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'basicInfo',
-      addForm: {
-        taskName: '巡检任务1',
-        inCharge: '测试人员',
-        estimatedStartTime: '2020-09-23 23:00:00',
-        estimatedEndTime: '2020-09-24 23:00:00',
-        taskType: '普通任务',
-        inspectionArea: '巡检片区1',
-        remarks: '这里是备注内容'
-      },
-      tableData: [
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '正常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '异常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '未知',
-          inspectionStatus: '未巡检'
-        }
-      ],
+      
       checkedName: '',
 
       // 是否显示设备点巡检信息详情弹窗
@@ -273,10 +244,25 @@ export default {
       dialogViewDetail: false,
 
       // 是否显示查看事件弹窗
-      dialogEventView: false
+      dialogEventView: false,
+
+      // 任务列表当前所在页数
+      taskCurrentPage: 1,
+
+      // 任务列表当前页条数
+      taskPageSize: 30,
+
+      // 事件列表当前所在页数
+      eventCurrentPage: 1,
+
+      // 事件列表当前页条数
+      eventPageSize: 30
     };
   },
   methods: {
+    ...equipmentActions(['GetDeviceTaskList', 'GetDeviceEventList']),
+    ...taskActions(['GetTaskDetails']),
+    ...eventActions(['GetEventDetails']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
       let data = {
@@ -287,25 +273,59 @@ export default {
     },
 
     // tabs切换时的点击事件
-    handleClick(tab, event) {
-      console.log(tab, event);
+    handleClick(tab) {
+      console.log(tab);
+      if (tab.name == 'equipmentInfo') {
+        // 获取任务列表
+        let param = {
+          Id: this.equipmentDetails.id,
+          pageIndex: this.taskCurrentPage,
+          MaxResultCount: this.taskPageSize
+        };
+        this.GetDeviceTaskList(param);
+      } else if (tab.name == 'inspectionPath') {
+        // 获取事件列表
+        let param = {
+          Id: this.equipmentDetails.id,
+          pageIndex: this.eventCurrentPage,
+          MaxResultCount: this.eventPageSize
+        };
+        this.GetDeviceEventList(param);
+      }
     },
-    // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
+    // 获取从分页传过来的每页多少条数据(任务)
+    changeTaskPageSize(data) {
       console.log(data);
     },
-    // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
+    // 获取从分页传过来的当前页数（任务）
+    changeTaskCurrentPage(data) {
+      console.log(data);
+    },
+    // 获取从分页传过来的每页多少条数据（事件）
+    changeEventPageSize(data) {
+      console.log(data);
+    },
+    // 获取从分页传过来的当前页数（事件）
+    changeEventCurrentPage(data) {
       console.log(data);
     },
     // 查看任务
-    handleSee() {},
+    handleSee(row) {
+      console.log(row);
+      let param = {
+        Id: row.id
+      };
+      this.GetTaskDetails(param);
+      this.dialogViewDetail = true;
+    },
     // 查看事件
-    SeeEventDetail() {},
-    // 选中的行
-    clickRow(val) {
-      console.log(val);
-      this.checkedName = val.name;
+    SeeEventDetail(row) {
+      console.log(row);
+      let param = {
+        Id: row.id
+      };
+      this.GetEventDetails(param);
+      this.dialogEventView = true;
     },
     // 关闭查看任务弹窗
     closeViewDetail(data) {

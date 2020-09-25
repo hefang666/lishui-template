@@ -10,13 +10,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备名称：</div>
               <div class="item-content">
-                <span>阀门</span>
+                <span>{{ pointDetails.name }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备编号：</div>
               <div class="item-content">
-                <span>2019010120190101</span>
+                <span>{{ pointDetails.code }}</span>
               </div>
             </div>
           </div>
@@ -24,13 +24,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备点坐标：</div>
               <div class="item-content">
-                <span>116.557771,39.972465</span>
+                <span>{{ pointDetails.point }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备点巡检时间：</div>
               <div class="item-content">
-                <span>2019-01-01 9:00</span>
+                <span>{{ pointDetails.time }}</span>
               </div>
             </div>
           </div>
@@ -38,13 +38,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">巡检状态：</div>
               <div class="item-content">
-                <span>已巡检</span>
+                <span>{{ pointDetails.inspectionStatusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备点状态：</div>
               <div class="item-content">
-                <span>正常</span>
+                <span>{{ pointDetails.statusStr }}</span>
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
             <div class="list-items">
               <div class="item-title">地址：</div>
               <div class="item-content">
-                <span>重庆市渝中区上清寺正街111号1单元101</span>
+                <span>{{ pointDetails.address }}</span>
               </div>
             </div>
           </div>
@@ -61,18 +61,7 @@
               <div class="item-title">巡检内容：</div>
               <div class="item-content">
                 <div class="content-text">
-                  Lorem ipsum dolor sit amet,
-                  consectetur adipiscing elit.
-                  Aenean euismod bibendum laoreet.
-                  Proin gravida dolor sit amet
-                  lacus accumsan et viverra justo commodo.
-                  Proin sodales pulvinar sic tempor.
-                  Sociis natoque penatibus et
-                  magnis dis parturient montes,
-                  nascetur ridiculus mus. Nam fermentum,
-                  nulla luctus pharetra vulputate,
-                  felis tellus mollis orci,
-                  sed rhoncus pronin sapien nunc accuan eget.
+                  {{ pointDetails.content }}
                 </div>
               </div>
             </div>
@@ -82,8 +71,12 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div class="enclosure-item">
-                    <div class="enclosure-title">附件名字</div>
+                  <div
+                    v-for="(item, index) in pointDetails.resourcelist"
+                    :key="index"
+                    class="enclosure-item"
+                  >
+                    <div class="enclosure-title">{{ item.fileName }}</div>
                     <div class="enclosure-download">下载</div>
                     <div class="enclosure-preview">预览</div>
                   </div>
@@ -101,9 +94,14 @@
 </template>
 
 <script>
+import {createNamespacedHelpers} from 'vuex';
+const {mapState} = createNamespacedHelpers('taskManagement');
 export default {
   name: 'EquipmentInformation',
   props: ['dialogEqui'],
+  computed: {
+    ...mapState(['pointDetails'])
+  },
   data() {
     return {};
   },

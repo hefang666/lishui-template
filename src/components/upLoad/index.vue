@@ -4,6 +4,8 @@
       class="upload-demo"
       :action="actionUrl"
       :multiple="multiple"
+      :limit="limit"
+      :show-file-list="showList"
       :on-success="handleSuccess"
       :on-err="handleError">
       <el-button size="small" type="primary">
@@ -11,20 +13,20 @@
         点击上传
       </el-button>
     </el-upload>
-    <div v-if="fileList.length != 0" class="list-box">
+    <div v-if="fileListData.length != 0" class="list-box">
       <el-table
-      :data="fileList"
+      :data="fileListData"
       style="width: 100%">
       <el-table-column
-        prop="name"
+        prop="fileName"
         label="文件名">
       </el-table-column>
       <el-table-column
         label="操作"
         width="200">
         <template slot-scope="scope">
-          <el-button type="primary" @click="showPreview(scope.$index, scope.row)">预览</el-button>
-          <el-button type="primary">下载</el-button>
+          <el-button type="primary" @click="showPreview(scope.row)">预览</el-button>
+          <el-button type="primary" @click="download(scope.row)">下载</el-button>
           <el-button type="primary">删除</el-button>
         </template>
       </el-table-column>
@@ -35,7 +37,7 @@
 
 <script>
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('upload');
+const {mapState, mapActions} = createNamespacedHelpers('upload');
 export default {
   name: 'upload',
   data() {
@@ -44,27 +46,27 @@ export default {
       showList: false,
 
       // 是否能多选
-      multiple: false,
+      multiple: true,
 
       // 一次最多上传限制
-      limit: 1,
+      limit: 3,
 
-      // 上传地址
-      actionUrl: 'https://jsonplaceholder.typicode.com/posts/',
-
-      fileUrl: ''
+      // 返回的图片列表
+      listData: []
 
     }
   },
   computed: {
-    ...mapState(['fileList'])
+    ...mapState(['fileListData', 'actionUrl'])
   },
   methods: {
+    ...mapActions(['setFileListData', 'downloadFile']),
     // 上传成功后
-    handleSuccess(response, file, fileList) {
-      console.log(response);
-      console.log(file);
-      console.log(fileList)
+    handleSuccess(response) {
+      response.result.items.forEach(item => {
+        this.listData.push(item)
+      })
+      this.setFileListData(this.listData);
     },
     // 上传失败
     handleError(err, file, fileList) {
@@ -74,14 +76,22 @@ export default {
       console.log(fileList)
     },
     // 打开弹窗
-    showPreview({id, row}) {
-      console.log(id + '，' + row);
-      let data = true;
+    showPreview(row) {
+      console.log(row);
+      let data = {
+        flag: true,
+        data: row
+      }
       this.$emit('showPreview', data)
     },
-  },
-  mounted() {
-    console.log(this.fileList)
+    // 下载附件
+    download(row) {
+      let param = {
+        fileName: row.url,
+        downLoadName: row.fileName
+      }
+      this.downloadFile(param);
+    }
   }
 }
 </script>

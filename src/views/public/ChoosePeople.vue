@@ -1,6 +1,6 @@
 <template>
-  <div class="choosePeople-box button-box">
-    <el-dialog title="选择人员" :visible.sync="dialogCharge">
+  <div class="choosePeople-box dialog-box button-box">
+    <el-dialog title="选择人员" :visible="dialogCharge">
       <div class="content-box">
         <div class="cancel-box" @click="closeChoosePeople">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -8,30 +8,51 @@
         <div class="content_box">
           <div class="content-left">
             <div class="select_box">
-              <el-select v-model="typeSelectValue" placeholder="请选择">
+              <el-select
+                v-model="typeSelectValue"
+                placeholder="请选择"
+                @change="getType">
                 <el-option
                   v-for="item in selectData"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
+                  :value="item.value"
+                >
                 </el-option>
               </el-select>
             </div>
             <div class="select-content-box">
               <!-- 按组织选择 -->
               <div v-if="typeSelectValue == 1" class="organization-box">
-                <el-tree
-                  :data="orgData"
-                  :props="defaultOrgProps"
-                  @node-click="handleNodeClick"></el-tree>
+                <layer-tree
+                  :treedata="organizationData"
+                  :labelname="'orgName'"
+                  :childrenname="'roleItems'"
+                  @nodeClick="nodeClick"
+                >
+                </layer-tree>
               </div>
               <!-- 按角色选择 -->
-              <div v-if="typeSelectValue == 2" class="role-box"></div>
+              <div v-if="typeSelectValue == 2" class="role-box">
+                <layer-tree
+                  :treedata="roleData"
+                  :labelname="'roleName'"
+                  :childrenname="'roleItems'"
+                  @nodeClick="getRoleNode"
+                >
+                </layer-tree>
+              </div>
               <!-- 按人员选择 -->
               <div v-if="typeSelectValue == 3" class="people-box">
                 <div class="peoele-title">按人员排序</div>
                 <ul>
-                  <li class="item-li" v-for="(item, index) in pinData" :key="index">{{ item }}</li>
+                  <li
+                    class="item-li"
+                    v-for="(item, index) in pinData"
+                    :key="index"
+                  >
+                    {{ item }}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -44,24 +65,34 @@
                   prefix-icon="el-icon-search"
                   v-model="searchWords"
                 ></el-input>
-                <el-button class="search-button" type="primary">查询</el-button>
+                <el-button class="search-button" type="primary" @click="searchPeople">查询</el-button>
               </div>
               <div class="selected-person-box">
                 <div class="selected-button">
                   <el-button type="primary" @click="changeShowBox">
                     已选人员
-                    <i :class="showSelectBox ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"></i>
+                    <i
+                      :class="showSelectBox == true ? 'el-icon-arrow-up' :
+                        'el-icon-arrow-down'"
+                    ></i>
                   </el-button>
                 </div>
                 <div v-show="showSelectBox" class="selected-person">
                   <ul v-if="selectedData.length != 0">
-                    <li class="selected-item" v-for="(item, index) in selectedData" :key="index">{{ item.nickName }}</li>
+                    <li
+                      class="selected-item"
+                      v-for="(item, index) in selectedData"
+                      :key="index"
+                    >
+                      {{ item.nickName }}
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
             <div class="table-box">
-              <el-table v-if="selectType == 'single'"
+              <el-table
+                v-if="selectType == 'single'"
                 :data="personList"
                 :stripe="true"
                 tooltip-effect="dark"
@@ -70,12 +101,19 @@
                 :highlight-current-row="true"
                 @row-click="clickRow"
               >
-                <el-table-column prop="loginAccount" label="账号"></el-table-column>
+                <el-table-column
+                  prop="loginAccount"
+                  label="账号"
+                ></el-table-column>
                 <el-table-column prop="nickName" label="姓名"></el-table-column>
                 <el-table-column prop="orgName" label="部门"></el-table-column>
-                <el-table-column prop="mobile" label="联系方式"></el-table-column>
+                <el-table-column
+                  prop="mobile"
+                  label="联系方式"
+                ></el-table-column>
               </el-table>
-              <el-table v-if="selectType == 'multiple'"
+              <el-table
+                v-if="selectType == 'multiple'"
                 ref="multipleTable"
                 :data="personList"
                 :stripe="true"
@@ -86,17 +124,23 @@
                 @selection-change="handleSelectionChange"
               >
                 <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="loginAccount" label="账号"></el-table-column>
-                <el-table-column prop="nickName" label="姓名"></el-table-column>
-                <el-table-column prop="orgName" label="部门"></el-table-column>
-                <el-table-column prop="mobile" label="联系方式"></el-table-column>
+                <el-table-column
+                  prop="loginAccount"
+                  label="账号"></el-table-column>
+                <el-table-column prop="nickName" label="姓名"
+                ></el-table-column>
+                <el-table-column prop="orgName" label="部门"
+                ></el-table-column>
+                <el-table-column
+                  prop="mobile"
+                  label="联系方式"
+                ></el-table-column>
               </el-table>
             </div>
-            <div class="page-box">
+            <div v-if="personList.length != 0" class="page-box">
               <page
                 :page-data="[30, 40, 50, 100]"
-                :total="400"
-                layout="sizes,pager,jump"
+                :total="persontotalCount"
                 @changePageSize="changePageSize"
                 @changeCurrentPage="changeCurrentPage"
               ></page>
@@ -121,14 +165,15 @@
 
 <script>
 import Page from '@/components/page/Page.vue';
+import LayerTree from '@/components/tree/LayerTree.vue';
 import {createNamespacedHelpers} from 'vuex';
-import {filterArray} from '@/utils/index';
 const {mapState, mapActions} = createNamespacedHelpers('xunjianPublic');
 export default {
   name: 'ChoosePeople',
   props: ['dialogCharge', 'selectType'],
   components: {
-    Page
+    Page,
+    LayerTree
   },
   data() {
     return {
@@ -151,6 +196,8 @@ export default {
           label: '按人员选择'
         }
       ],
+      // 返回的人员总数据有多少条
+      total: 100,
       // 已经选中的人员
       selectedData: [],
       // 多选后的数据
@@ -162,14 +209,22 @@ export default {
         children: 'items',
         label: 'orgName'
       },
-      // 按人员选择字母
-      pinData: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
       // 是否显示已选人员div
-      showSelectBox: false
+      showSelectBox: false,
+      currentPage: 1,
+      pageSize: 30,
+      // 当前dialog是否显示了
+      dialogShow: false,
+      typeId: 0
     };
   },
   computed: {
-    ...mapState(['personList', 'organizationData'])
+    ...mapState(['personList', 'organizationData', 'pinData', 'roleData', 'persontotalCount']),
+
+    dialogChange:function() {
+      console.log(this.dialogCharge);
+      return this.dialogCharge
+    }
   },
   methods: {
     ...mapActions(['getPeopleList', 'getOrganizationData']),
@@ -189,17 +244,17 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
       this.selectedData = this.multipleSelection;
     },
     // 点击确定
     determine() {
-      if (this.personInfo == '') {
+      if (this.selectedData.length == 0) {
         alert('请选择负责人！');
         return;
       } else {
         let data = {
-          personinfo: this.personInfo,
+          type: this.selectType,
+          personinfo: this.selectedData,
           dialogCharge: false
         };
 
@@ -220,13 +275,56 @@ export default {
     // 是否显示已选人员
     changeShowBox() {
       this.showSelectBox = !this.showSelectBox;
+    },
+    // 选择搜索类型
+    getType(val) {
+      this.typeSelectValue = val;
+    },
+    // 点击树形节点(组织)并查询人员
+    nodeClick(data) {
+      console.log(data.nodeData);
+      this.typeId = data.nodeData.id;
+      let param = {
+        SelectType: this.typeSelectValue,
+        TypeId: data.nodeData.id,
+        PageIndex: this.currentPage,
+        MaxResultCount: this.pageSize,
+        IsContainSublevel: false
+      };
+      this.getPeopleList(param);
+    },
+    // 点击树形节点（角色）并查询人员
+    getRoleNode(data) {
+      if(data.nodeData.disabled) {
+        this.typeId = 0;
+        return
+      }
+      this.typeId = data.nodeData.id;
+      let param = {
+        SelectType: this.typeSelectValue,
+        TypeId: data.nodeData.roleId,
+        PageIndex: this.currentPage,
+        MaxResultCount: this.pageSize,
+        IsContainSublevel: false
+      };
+      this.getPeopleList(param);
+    },
+    // 点击搜索
+    searchPeople() {
+      if(this.searchWords == '') {
+        alert('请输入选择关键字');
+        return
+      }
+      
+      let param = {
+        SelectType: this.typeSelectValue,
+        TypeId: this.typeId,
+        PageIndex: this.currentPage,
+        MaxResultCount: this.pageSize,
+        IsContainSublevel: false
+      }
+      this.getPeopleList(param);
     }
-  },
-  mounted() {
-    if(this.$props.dialogCharge){
-      this.orgData = filterArray(this.organizationData);
-    }
-    console.log(this.selectedData.length);
   }
 };
 </script>
@@ -250,10 +348,18 @@ export default {
           border: 1px solid #e5e5e5;
           border-radius: 5px;
           height: 410px;
-          overflow: auto;
+          overflow: hidden;
           margin-top: 10px;
 
+          .organization-box,
+          .role-box {
+            width: 100%;
+            height: 100%;
+          }
+
           .people-box {
+            width: 100%;
+            height: 100%;
             .peoele-title {
               line-height: 35px;
               padding-left: 10px;
@@ -291,9 +397,9 @@ export default {
               background: #ffffff;
               border: 1px solid #e5e5e5;
               border-radius: 5px;
-              box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, .1);
+              box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.1);
               z-index: 22;
-              
+
               ul {
                 list-style: none;
 

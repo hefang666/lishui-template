@@ -1,5 +1,7 @@
 import axios from 'axios';
+
 // import {Message} from 'element-ui';
+
 // import {api} from '@/api/api';
 
 //设置cross跨域 并设置访问权限 允许跨域携带cookie信息
@@ -75,6 +77,7 @@ service.interceptors.response.use(
     // } else {
     //   return res;
     // }
+
   },
   error => {
     // Message({

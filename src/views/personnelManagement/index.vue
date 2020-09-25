@@ -2,29 +2,34 @@
   <div class="task_management_pages button-box">
     <div class="header-box">
       <div class="header-left">
-        <snt-search :placeholder="'请输入姓名'" />
+        <snt-search :placeholder="'请输入姓名'" @submit="handlesubmit" />
       </div>
       <div class="header-right button-box">
-        <div class="attendance-export-box">
+        <div class="date-box">
+          <el-button-group>
+            <el-button type="primary" plain>查看</el-button>
+            <el-button type="primary" plain>出勤查看</el-button>
+            <el-button type="primary" plain>出勤导出</el-button>
+          </el-button-group>
           <el-date-picker
-            v-model="month"
-            type="month"
-            class="attendance-box"
-            placeholder="出勤导出"
-          >
-          </el-date-picker>
-          <el-button class="attendance-button" type="primary" plain
-            >出勤导出</el-button
-          >
+              v-model="month"
+              type="month"
+              class="attendance-box"
+              :picker-options="pickerOptions"
+              placeholder="出勤导出"
+              @change="handechange"
+            >
+            </el-date-picker>
         </div>
-        <el-button type="primary" plain>导出</el-button>
+        
+        <el-button type="primary" plain @click="handlexport">导出</el-button>
       </div>
     </div>
     <div class="content-box">
       <div class="table-box">
         <el-table
           ref="multipleTable"
-          :data="tableData"
+          :data="personList"
           :stripe="true"
           tooltip-effect="dark"
           height="830"
@@ -33,13 +38,13 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="personName"
+            prop="userName"
             label="人员姓名"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column prop="department" label="所属部门"></el-table-column>
+          <el-table-column prop="location" label="所属部门"></el-table-column>
           <el-table-column
-            prop="contactInformation"
+            prop="mobile"
             label="联系方式"
             show-overflow-tooltip
           ></el-table-column>
@@ -75,22 +80,33 @@
       </div>
       <page
         :page-data="[30, 40, 50, 100]"
-        :total="400"
+        :total="total"
         @changePageSize="changePageSize"
         @changeCurrentPage="changeCurrentPage"
       ></page>
     </div>
 
-    <!-- 工作情况弹窗 -->
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
+    <!-- 出勤 -->
     <working
       :dialog-working="dialogWorking"
-      @getWorkingData="getWorkingData"></working>
-    
-      <!-- 出勤 -->
-      <attendance
-        :dialog-attend="dialogAttend"
-        @getAttendData="getAttendData"
-      ></attendance>
+      @getWorkingData="getWorkingData"
+    ></working>
+
+    <!-- 出勤查看弹窗 -->
+    <attendance
+      :total="dialogAttendTOT"
+      :tableData="attendance"
+      :dialog-attend="dialogAttend"
+      @getAttendData="getAttendData"
+      @attenquery="attenquery"
+    ></attendance>
   </div>
 </template>
 
@@ -99,53 +115,188 @@ import Page from '@/components/page/Page.vue';
 import Search from '@/components/search';
 import Working from './WorkingConditions.vue';
 import Attendance from './Attendance.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('personManagement');
+
+import {GetByUserId} from '@/api/personnel';
+import {parseTime} from '@/utils/index';
 export default {
   name: 'TaskManagement',
   components: {
     Page,
     'snt-search': Search,
     Working,
-    Attendance
+    Attendance,
+    Message
+  },
+  computed: {
+    ...mapState(['personList']),
   },
   data() {
     return {
       searchWords: '',
-      tableData: [
-        {
-          personName: '张三',
-          department: '森鑫炬',
-          contactInformation: '12345678901',
-          onlineTime: '2019-01-01 9:00',
-          offlineTime: '2019-01-01 17:00'
-        }
-      ],
+      // 初始化table
+      tableData: [],
+
+      // table选中
       multipleSelection: [],
+
+      // 出勤弹框table
+      attendance: [],
+
+      // 输入框姓名
+      userName: '',
 
       // 当前分页
       currentPage: 1,
 
+      // 多少页
+      maxResultCount: 30,
+
+      // 总数
+      total: 0,
+
       // 选择的月份
       month: '',
+
       // 是否显示查看工作情况弹窗
       dialogWorking: false,
+
       // 是否显示查看出勤
-      dialogAttend: true
+      dialogAttend: false,
+
+      // 查看出勤(携带id)
+      dialogAttendID: 0,
+
+      // 查看出勤(总页数)
+      dialogAttendTOT: 0,
+
+      // 提示消息
+      messageText: '',
+
+      // 是否显示提示消息框
+      dialogMessage: false,
+
+      // 出勤导出的快捷键
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: '今日',
+            onClick(picker) {
+              let date = new Date();
+              picker.$emit('pick', {date, script: '今日'})
+            }
+          },
+          {
+            text: '清除',
+            onClick(picker) {
+              picker.$emit('pick', {script: '清除'})
+            }
+          }
+        ]
+      }
     };
   },
+  mounted() {
+    this.tableinfo();
+  },
   methods: {
+    ...mapActions(['GetByDay']),
+    // 初始化table
+    tableinfo(oneDay, userName) {
+      let data = {
+        oneDay,
+        userName,
+        pageIndex: this.currentPage,
+        maxResultCount: this.maxResultCount
+      };
+      console.log(data);
+      this.GetByDay(data);
+    },
+    caozuo() {
+      console.log('拿到了函数');
+    },
+    // 选择月(出勤导出)
+    handechange() {
+      if(this.onlyOne()) {
+        // 时间
+        let date;
+
+        if(this.month.script != undefined) {
+          if(this.month.script == '今日') {
+            date = parseTime(this.month.date, '{y}-{m}-{d}');
+          }else if (this.month.script == '清除') {
+            return
+          }
+        }else {
+          date = parseTime(this.month, '{y}-{m}');
+        }
+        console.log(this.month);
+        let param = {
+          oneMonth: date,
+          userId: this.multipleSelection[0].userId
+        };
+        console.log(param);
+      }
+    },
+
+    // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
+    onlyOne() {
+      if (this.multipleSelection.length == 0) {
+        console.log('请选择要操作数据');
+        this.messageText = '请选择要操作数据';
+        this.dialogMessage = true;
+        return false;
+      } else if (this.multipleSelection.length > 1) {
+        this.messageText = '只能选择一行数据';
+        this.dialogMessage = true;
+        console.log('只能选择一行数据');
+        return false
+      } else {
+        return true;
+      }
+    },
+
+     // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
+
+    // 导出
+    handlexport() {},
+    // table选择
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-
-    // 查看
+    handlesubmit(userName) {
+      this.userName = userName;
+      this.tableinfo('', userName);
+    },
+    // 点击查看
     handleSee(index, row) {
       console.log(index, row);
-      this.dialogView = true;
+      this.dialogWorking = true;
     },
 
     // 出勤查看
     AttenadanceCheck(index, row) {
       console.log(index, row);
+      this.dialogAttendID = row.userId;
+      let data = {
+        userId: row.userId,
+        pageIndex: this.currentPage,
+        maxResultCount: this.maxResultCount
+      };
+      GetByUserId(data).then(res => {
+        if (res.success) {
+          res.result.items.map(item => {
+            item.oneDay = item.oneDay.replace(/\//g, '-');
+          });
+          this.attendance = res.result.items;
+        }
+      });
+      this.dialogAttend = true;
     },
 
     // 获取从分页传过来的每页多少条数据
@@ -158,14 +309,27 @@ export default {
     },
     // 关闭工作情况弹窗
     getWorkingData(data) {
-      this.dialogWorking = data.dialogWorking
+      this.dialogWorking = data.dialogWorking;
+    },
+    //出勤弹窗点击查询(emit)
+    attenquery(oneDay) {
+      let data = {
+        oneDay,
+        userId: this.dialogAttendID,
+        pageIndex: this.currentPage,
+        maxResultCount: this.maxResultCount
+      };
+      GetByUserId(data).then(res => {
+        console.log('res :>> ', res);
+        this.attendance = res.result.items
+        this.dialogAttendTOT = res.result.totalCount
+      });
     },
     // 关闭出勤弹窗
-    getAttendData(data) {
-      this.dialogAttend = data.dialogAttend
+    getAttendData() {
+      this.dialogAttend = false;
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 
@@ -195,18 +359,18 @@ export default {
 
     .header-right {
       display: flex;
-      .attendance-export-box {
+      .date-box {
         position: relative;
         margin-right: 5px;
-        overflow: hidden;
         .attendance-box {
           position: absolute;
           top: 0;
-          left: 0;
+          right: 0;
           width: 74px;
           height: 28px;
           opacity: 0;
           cursor: pointer;
+          z-index: 30;
         }
       }
     }

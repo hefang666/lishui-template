@@ -1,3 +1,10 @@
+import {
+  GetDeviceInspectionList,
+  GetDeviceInspectionDetails,
+  GetDeviceTaskList,
+  GetDeviceEventList
+} from '@/api/inspection';
+
 var state = {
   equipmentList: [
     {
@@ -9,6 +16,11 @@ var state = {
       order: '0'
     }
   ],
+
+  // 基本信息
+  equipmentDetails: '',
+
+  // 任务列表
   equipmentTaskList: [
     {
       endTime: null,
@@ -23,10 +35,136 @@ var state = {
       taskType: 1,
       taskTypeString: '计划任务'
     }
-  ]
+  ],
+  // 任务总数量信息
+  equipmentTaskPageInfo: {
+    total: 1
+  },
+
+  // 事件列表
+  equipmentEventList: [],
+
+  // 事件总数量信息
+  equipmentEventPageInfo: {
+    total: 1
+  }
+};
+
+var mutations = {
+  // 设置列表
+  set_equipmentList: function(state, data) {
+    state.equipmentList = data;
+  },
+  // 设置提示消息
+  set_message: function(state, data) {
+    state.messageText = data;
+  },
+  // 设置详情
+  set_equipmentDetails: function(state, data) {
+    state.equipmentDetails = data;
+  },
+  // 设置任务列表
+  set_equipmentTaskList: function(state, data) {
+    state.equipmentTaskList = data;
+  },
+  // 设置事件列表
+  set_equipmentEventList: function(state, data) {
+    state.equipmentEventList = data;
+  },
+  // 设置任务page信息
+  set_equipmentTaskPageInfo: function(state, data) {
+    state.equipmentTaskPageInfo.total = data.totalCount;
+  },
+  // 设置事件page信息
+  set_equipmentEventPageInfo: function(state, data) {
+    state.equipmentEventPageInfo.total = data.totalCount;
+  }
+};
+
+var actions = {
+  // 获取列表
+  GetDeviceInspectionList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetDeviceInspectionList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_equipmentList', response.result.items);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 获取详情
+  GetDeviceInspectionDetails({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetDeviceInspectionDetails(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_equipmentDetails', response.result);
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 获取任务列表
+  GetDeviceTaskList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetDeviceTaskList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_equipmentTaskList', response.result.items);
+            commit('set_equipmentTaskPageInfo', {
+              totalCount: response.result.totalCount
+            });
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 获取事件列表
+  GetDeviceEventList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetDeviceEventList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_equipmentEventList', response.result.items);
+            commit('set_equipmentEventPageInfo', {
+              totalCount: response.result.totalCount
+            });
+            resolve(response);
+          } else {
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
 };
 
 export default {
   namespaced: true,
-  state
+  state,
+  mutations,
+  actions
 };

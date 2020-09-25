@@ -23,6 +23,9 @@
       </div>
       <div class="header-right">
         <el-button-group>
+          <el-button type="primary" plain @click="close">关闭</el-button>
+          <el-button type="primary" plain @click="transfer">转工单</el-button>
+          <el-button type="primary" plain @click="See">查看</el-button>
           <el-button type="primary" plain>导出</el-button>
         </el-button-group>
       </div>
@@ -46,7 +49,10 @@
           </div>
         </div>
         <div class="item has-two">
-          <div class="item-title">异常类型：</div>
+          <div class="item-title">
+            <span style="color: red;">*</span>
+            异常类型：
+          </div>
           <div class="item-content">
             <el-select
               v-model="exceptionType"
@@ -69,13 +75,14 @@
             <el-date-picker
               v-model="submissionTime"
               type="datetime"
+              format="yyyy-MM-dd HH:mm"
               placeholder="提交时间"
             ></el-date-picker>
           </div>
         </div>
       </div>
       <div class="button-group-box">
-        <el-button type="primary" plain>搜索</el-button>
+        <el-button type="primary" plain @click="search">搜索</el-button>
         <el-button type="primary" plain>清空</el-button>
       </div>
     </div>
@@ -92,78 +99,36 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="name"
-            label="任务名称"
+            prop="typeStr"
+            label="事件类型"
             min-width="120"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="type"
-            label="任务类别"
+            prop="creationName"
+            label="报告人"
             width="120"
           ></el-table-column>
           <el-table-column
-            prop="person"
-            label="负责人"
+            prop="creationTime"
+            label="事件提交时间"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="participants"
-            label="参与人"
+            prop="errorType"
+            label="异常类型"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="planTime"
-            min-width="110"
-            label="预计开始时间"
+            prop="predictWaterLoss"
+            label="预估损失水量"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="planEndTime"
-            min-width="110"
-            label="预计完成时间"
+            prop="statusStr"
+            label="事件状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column
-            prop="endTime"
-            min-width="110"
-            label="实际完成时间"
-            show-overflow-tooltip
-          ></el-table-column>
-          <el-table-column
-            prop="stopTime"
-            label="暂停时长"
-            show-overflow-tooltip
-          ></el-table-column>
-          <el-table-column
-            prop="status"
-            label="任务状态"
-            show-overflow-tooltip
-          ></el-table-column>
-          <el-table-column label="操作" width="180">
-            <template slot-scope="scope">
-              <div class="operate-box">
-                <el-button
-                  type="text"
-                  class="operate-button"
-                  @click="handleClose(scope.$index, scope.row)"
-                  >关闭</el-button
-                >
-                <el-button
-                  type="text"
-                  class="operate-button"
-                  @click="handleTransfer(scope.$index, scope.row)"
-                  >转工单</el-button
-                >
-                <el-button
-                  type="text"
-                  class="operate-button"
-                  @click="handleSee(scope.$index, scope.row)"
-                  >查看</el-button
-                >
-              </div>
-            </template>
-          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -175,12 +140,31 @@
         ></page>
       </div>
     </div>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
+    <!-- 操作提示弹窗 -->
+    <operate
+      :dialog-operate="dialogOperate"
+      :operate-type="operateType"
+      :message="messageT"
+      @closeOperate="closeOperate"
+      @determine="determine"
+    ></operate>
+
     <!-- 选择人员 -->
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'single'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
+
     <!-- 转工单 -->
     <transfer-order
       :dialog-transfer="dialogTransfer"
@@ -207,8 +191,10 @@ import Page from '@/components/page/Page.vue';
 import Tips from '@/components/tipsDialog/index.vue';
 import TransferOrder from './TransferOrder.vue';
 import ViewDetail from './ViewDetail.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
+import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('eventManagement');
+const {mapState, mapActions} = createNamespacedHelpers('eventManagement');
 export default {
   name: 'EventManagement',
   components: {
@@ -216,7 +202,9 @@ export default {
     Page,
     TransferOrder,
     ViewDetail,
-    Tips
+    Tips,
+    Message,
+    Operate
   },
   computed: {
     ...mapState(['exceptionTypeData', 'eventList'])
@@ -241,6 +229,8 @@ export default {
       // 筛选数据
       // 选择人员
       person: '',
+      // 人员信息
+      personInfo: '',
       // 异常类型
       exceptionType: 0,
       // 提交时间
@@ -256,13 +246,37 @@ export default {
       dialogView: false,
 
       // 是否显示提示窗
-      dialogTips: false
+      dialogTips: false,
+
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
+
+      // 提示消息
+      messageText: '',
+
+      // 是否显示操作提示弹窗
+      dialogOperate: false,
+
+      // 操作类型
+      operateType: '',
+
+      // 操作提示文字
+      messageT: '请确认操作'
     }
   },
   methods: {
+    ...mapActions(['GetEventList', 'GetEventDetails', 'UpdateEvent']),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentIndex = index;
+      let param = {
+        pageIndex: 1,
+        maxResultCount: 30
+      };
+      if (this.currentIndex != 0) {
+        param.status = this.currentIndex;
+      }
+      this.GetEventList(param);
     },
 
     // 点击切换条件筛选div的显示状态
@@ -272,6 +286,79 @@ export default {
         this.screen = '收起';
       } else {
         this.screen = "筛选";
+      }
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
+
+    // 搜索
+    search() {
+      let param = {
+        errorType: this.exceptionType,
+        creationName: this.personInfo.trueName,
+        creationTime: this.submissionTime,
+        pageIndex: 1,
+        maxResultCount: 30,
+      };
+      this.GetEventList(param);
+      this.isScreen = !this.isScreen;
+    },
+
+    // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
+    onlyOne() {
+      if (this.multipleSelection.length == 0) {
+        console.log('请选择要操作数据');
+        this.messageText = '请选择要操作数据';
+        this.dialogMessage = true;
+        return false;
+      } else if (this.multipleSelection.length > 1) {
+        this.messageText = '只能选择一行数据';
+        this.dialogMessage = true;
+        console.log('只能选择一行数据');
+        return false
+      } else {
+        return true;
+      }
+    },
+
+    // 关闭
+    close() {
+      if (this.onlyOne()) {
+        if (this.multipleSelection[0].statusList == 3) {
+          // 关闭任务只能对已暂停状态的任务进行
+          this.messageText = '该状态不能关闭';
+          this.dialogMessage = true;
+        } else {
+          // 操作弹窗
+          this.messageT = '确认要关闭事件类型的事件？';
+          this.operateType = 'close';
+          this.dialogOperate = true;
+        }
+      }
+    },
+
+    // 转工单
+    transfer() {
+      if (this.onlyOne()) {
+        let param = {
+          Id: this.multipleSelection[0].id
+        };
+        this.GetEventDetails(param);
+        this.dialogTransfer = true;
+      }
+    },
+
+    // 查看
+    See() {
+      if (this.onlyOne()) {
+        let param = {
+          Id: this.multipleSelection[0].id
+        };
+        this.GetEventDetails(param);
+        this.dialogView = true;
       }
     },
 
@@ -287,12 +374,19 @@ export default {
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       console.log(data);
+      this.person = data.personinfo[0].trueName;
+      console.log(this.person);
+      this.personInfo = data.personinfo;
       this.dialogCharge = data.dialogCharge;
-      this.addForm.inCharge = data.name;
     },
     // 异常类型选择
-    selectType() {
-      console.log(this.exceptionType);
+    selectType(val) {
+      this.exceptionType = val;
+    },
+
+    // 关闭操作提示弹窗
+    closeOperate(data) {
+      this.dialogOperate = data;
     },
 
     // 关闭任务
@@ -301,26 +395,14 @@ export default {
       console.log(index, row);
     },
 
-    // 转工单
-    handleTransfer (index,row) {
-      console.log(index, row);
-    },
-
-    // 查看任务
-    handleSee(index, row) {
-      console.log(index, row);
-    },
-
     // 关闭转工单弹窗
     closeTransfer(data) {
-      console.log(data);
       this.dialogTransfer = data.dialogTransfer;
     },
     // 确定转工单
     checkedTransfer(data) {
       console.log(data);
-      this.dialogTransfer = data.dialogTransfer;
-      this.addForm.inCharge = data.name;
+      this.dialogTransfer = data;
     },
 
     // 多选选择后拿到的数据
@@ -346,7 +428,29 @@ export default {
     // 关闭提示窗
     closeTips(data) {
       this.dialogTips = data;
+    },
+
+    // 操作弹窗点击了确定
+    determine(data) {
+      console.log(data);
+      this.dialogOperate = data.flag;
+      if (data.type == 'close') {
+        // 关闭
+        let param = {
+          Id: this.multipleSelection[0].id,
+          status: 3
+        };
+        this.UpdateEvent(param);
+      }
     }
+  },
+  mounted() {
+    let param = {
+      pageIndex: 1,
+      maxResultCount: 30,
+      status: this.currentIndex
+    }
+    this.GetEventList(param);
   }
 }
 </script>
@@ -390,6 +494,12 @@ export default {
 
         .item-content {
           width: 220px;
+          .choose-active {
+            color: #ffffff;
+            background: #4b77be;
+            border: none;
+            cursor: auto;
+          }
         }
       }
     }
