@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       // 每页数据条数
-      pageSize: 30,
+      pageSize: this.pageData[0],
       // 当前页码
       currentPageNum: 1,
       // input输入的页码
@@ -65,34 +65,37 @@ export default {
       // 处理后的组件名称
       assembly: [],
       // 共有多少页
-      pagesNum: 1,
+      // pagesNum: 1,
       // 从第几条开始显示
       startRecording: 1,
       // 显示到第几条
       endRecoeding: 30
     };
   },
+  computed: {
+    pagesNum() {
+      return Math.ceil(this.$props.total / this.pageSize);
+    }
+  },
   methods: {
     // 获取每页多少条数据
     handleSizeChange(data) {
       this.pageSize = data;
-
+      // this.getPagesNum();
       this.getShowRecoeding();
-
       this.$emit('changePageSize', data);
     },
     // 获取当前选择了第几页
     handleCurrentChange(data) {
       this.currentPageNum = data;
-
       this.getShowRecoeding();
 
       this.$emit('changeCurrentPage', data);
     },
     // 计算共有多少页
-    getPagesNum() {
-      this.pagesNum = Math.ceil(this.$props.total / this.pageSize);
-    },
+    // getPagesNum() {
+    //   this.pagesNum = Math.ceil(this.$props.total / this.pageSize);
+    // },
     // 计算当前显示的是多少条到多少条
     getShowRecoeding() {
       if (this.currentPageNum == this.pagesNum) {
@@ -108,7 +111,7 @@ export default {
     // 处理组件名称（讲传过来的字符串转化成数组）
     this.assembly = this.$props.layout.split(',');
 
-    this.getPagesNum();
+    // this.getPagesNum();
     this.getShowRecoeding();
   }
 };

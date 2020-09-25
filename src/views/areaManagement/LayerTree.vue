@@ -60,8 +60,6 @@ export default {
   methods: {
     getCheckedList() {
       return this.$refs.tree.getCheckedKeys();
-      // console.log(this.$refs.tree.getCheckedNodes())
-      // console.log(this.$refs.tree.getCheckedKeys())
     },
     // 处理点击每一个节点做的事件并返回节点数据
     nodeClick(nodeData, node, comp) {
@@ -73,7 +71,6 @@ export default {
     },
     checkChange () {
       let checkedList = this.$refs.tree.getCheckedNodes();
-      console.log(checkedList)
       this.$emit('checkedChange', checkedList)
 
     }

@@ -8,6 +8,8 @@
       v-model.number="pageNum"
       oninput="value=value.replace(/[^\d]/g,'')"
       @blur="getInputValue"
+      @keyup.enter.native="jump"
+      :max="pagesNum"
     >
       {{ pageNum }}
     </el-input>
@@ -27,6 +29,14 @@ export default {
       pageNum: 1
     };
   },
+  watch: {
+    pagesNum() {
+      console.log(this.pagesNum)
+      if(this.pageNum > this.pagesNum)
+        this.pageNum = this.pagesNum;
+      this.$emit('handleCurrentChange', this.pageNum);
+    }
+  },
   methods: {
     // 获取输入框中的数值并进行处理
     getInputValue() {
@@ -35,11 +45,12 @@ export default {
       } else if (this.pageNum == 0) {
         this.pageNum = 1;
       } else if (this.pageNum > this.$props.pagesNum) {
-        this.pageNum = 1;
+        this.pageNum = this.pagesNum;
       }
     },
     // 点击跳转
     jump() {
+      if(this.pageNum > this.pagesNum) this.pageNum = this.pagesNum;
       this.$emit('handleCurrentChange', this.pageNum);
     }
   }
