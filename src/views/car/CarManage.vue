@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree></c-tree>
+      <c-tree :treeData="treeData" @changeTree="getChangeTree"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
@@ -13,12 +13,12 @@
                 placeholder="请输入车牌/姓名"
                 prefix-icon="el-icon-search"
                 clearable
-                @clear="getList" 
-                v-model="form.numberOrName"
+                @clear="getList(1)" 
+                v-model="numberOrName"
                 style="margin-right:20px;"
               ></el-input>
               <el-select 
-                v-model="form.carType" 
+                v-model="carType" 
                 clearable
                 placeholder="请选择车辆类型">
                 <el-option 
@@ -30,12 +30,13 @@
                 value="1">
                 </el-option>
               </el-select>
-              <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
+              <el-button class="search-button" type="primary"  @click="getList(1)">查询</el-button>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
               <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
+              <el-button type="primary" plain @click="handleCheckInfo">详情</el-button>
             </el-button-group>
           </div>
         </div>
@@ -46,6 +47,7 @@
               ref="multipleTable"
               :data="tableData"
               :stripe="true"
+              v-loading="loading"
               tooltip-effect="dark"
               style="width: 100%"
               @selection-change="handleSelectionChange"
@@ -64,6 +66,7 @@
               <el-table-column
                 prop="type"
                 label="车辆类型"
+                :formatter="formatType"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
@@ -87,14 +90,20 @@
                     <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleCheckInfo(scope.$index, scope.row)"
-                      >查看</el-button
+                      @click="handleEdit(scope.$index, scope.row)"
+                      >修改</el-button
                     >
                     <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleEdit(scope.$index, scope.row)"
-                      >修改</el-button
+                      @click="handleDel(scope.$index, scope.row)"
+                      >删除</el-button
+                    >
+                    <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleCheckInfo(scope.$index, scope.row)"
+                      >详情</el-button
                     >
                   </div>
                 </template>
@@ -170,7 +179,7 @@
               </div>
             </div>
             <div slot="footer" class="dialog-footer">
-              <el-button @click.native="detilFormVisible = false">取消</el-button>
+              <el-button @click="closeAdd">取消</el-button>
             </div>
         </el-dialog>
       </div>
@@ -186,6 +195,7 @@ import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
 import EditTask from './carManageTask/editTask/EditTask';
 import { GetByOrgIdPage, GetById, DeleteCar } from '@/api/car';
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
   components: { 
@@ -197,15 +207,17 @@ export default {
     return {
       // 查询参数
       form: {
-        orgId: 0,
-        numberOrName: '',
-        carType: 0,
+        orgId: '', // 组织ID
         pageIndex: 1,
         maxResultCount: 30,
       },
+      numberOrName:'',
+      carType:'',
       // 总条数
-      totalCount:0,
+      totalCount: 0,
       loading: false,
+      // 组织机构树
+      treeData: [],
       // 列表数据
       tableData: [],
       // 是否显示修改弹窗
@@ -219,17 +231,43 @@ export default {
       detilFormVisible:false,
       // 批量删除id
       ids:[],
+      
     };
   },
   mounted() {
-    this.getList();
+    this.getTreeData()// 加载组织机构树
   },
   methods: {
+    // 点击节点时获取到id
+    getChangeTree(v) {
+      this.id = v
+      this.getList()
+    },
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        // console.log(res)
+        if(res.success) {
+          this.treeData = res.result
+          let id = res.result[0].id
+          this.form.orgId = id
+          this.getList()
+        }else {
+          return false
+        }
+        
+      })
+    },
+    
     // 获取列表
-    getList() {
+    getList(n) {
       this.loading = true
+      if(n) {
+        this.form.numberOrName = this.numberOrName
+        this.form.carType = this.carType
+      }
       GetByOrgIdPage(this.form).then(res => {
-        console.log(res)
+        // console.log(res)
         if(res.success){
           this.tableData = res.result.items
           this.totalCount =  res.result.totalCount
@@ -237,11 +275,19 @@ export default {
         }
       })
     },
+    // 判断车辆类型
+    formatType: function(row) {
+      return row.type === 1 ? '工程车辆' : row.type === 0 ? '标准民用车' : ''
+    },
+    // 点击取消关闭详情弹窗
+    closeAdd() {
+      this.detilFormVisible = false
+    },
     // 当选择项发生变化时的事件
     handleSelectionChange(val) {
       let list = []
       this.multipleSelection = val;
-      console.log(val)
+      // console.log(val)
       val.forEach((res) => {
         list.push(res.id)
       })
@@ -249,21 +295,19 @@ export default {
     },
     // 显示修改车辆弹窗
     handleEdit(index, row){
-      console.log(index, row)
+      // console.log(index, row)
       this.editData = row
       this.dialogEdit = true
     },
     // 查看车辆信息详情
     handleCheckInfo(index, row) {
-      console.log(index, row);
       this.detilFormVisible = true
       this.detilForm = row
-      let param = {
-        id: row.id
+      let params = {
+        Id: row.id
       }
-      GetById(param).then(res => {
+      GetById(params).then(res => {
         if(res.success){
-          this.detilForm = res.result
           this.detilFormVisible = false
         }
       }).catch(err => {
@@ -272,9 +316,9 @@ export default {
     },
     
     // 删除
-    handleDel(rows){  
+    handleDel(){  
       const _this = this
-      console.log(rows)
+      // console.log(rows)
       if (_this.ids.length === 0) {
         _this.$message({
           message: '请勾选要删除的行',

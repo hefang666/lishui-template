@@ -80,11 +80,11 @@
                     placeholder="请选择车辆类型">
                     <el-option 
                     label="标准民用车" 
-                    value="0">
+                    :value="0">
                     </el-option>
                     <el-option 
                     label="工程车辆" 
-                    value="1">
+                    :value="1">
                     </el-option>
                   </el-select>
                 </div>
@@ -114,6 +114,8 @@
                 <el-date-picker
                 v-model="editForm.registrationTime"
                 type="datetime"
+                format="yyyy-MM-dd hh:mm"
+                value-format="yyyy-MM-dd hh:mm"
                 placeholder="登记时间">
                 </el-date-picker>
               </el-form-item>
@@ -159,12 +161,12 @@ export default {
     return {
       editForm: {
         id: 0,
-        organizationId: 0,
+        organizationId: 10294,
         number: '',
         ownerName: '',
         phoneNumber: '',
         color: '',
-        type: 0,
+        type: '',
         brand: '',
         remark: '',
         registrationTime: '',

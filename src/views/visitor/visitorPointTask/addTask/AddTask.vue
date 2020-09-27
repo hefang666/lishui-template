@@ -72,8 +72,8 @@ export default {
         code:'',
         pointName: '',
         remark: '',
-        orgIds:[0],
-        roleIds:[0]
+        orgIds:[],
+        roleIds:[]
       },
       addFormRules:{
         pointName: [

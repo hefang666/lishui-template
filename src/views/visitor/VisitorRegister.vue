@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree></c-tree>
+      <c-tree :treeData="treeData"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="form-box">
@@ -35,9 +35,9 @@
           label-width="120px">
             <div class="list-item-content-box">
               <el-select v-model="ruleForm.idCardType" placeholder="请选择证件类型">
-                <el-option label="身份证" value="0"></el-option>
-                <el-option label="军官证" value="1"></el-option>
-                <el-option label="护照" value="2"></el-option>
+                <el-option label="身份证" :value="0"></el-option>
+                <el-option label="军官证" :value="1"></el-option>
+                <el-option label="护照" :value="2"></el-option>
               </el-select>
             </div>
           </el-form-item>
@@ -65,7 +65,9 @@
           <el-form-item 
           class="has-two-item" 
           label-width="120px"
-          label="车牌号码：">
+          label="车牌号码："
+          prop="carNumber"
+          >
           <div class="list-item-content-box">
             <el-input type="text" v-model="ruleForm.carNumber"></el-input>
           </div>
@@ -123,7 +125,7 @@
           class="has-two-item" 
           label-width="120px"
           label="同行人数：" 
-          prop="visitorCount">
+          >
           <div class="list-item-content-box">
             <el-input
               type="text"
@@ -181,6 +183,7 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import { PostUserList, GetInsertRecord } from '@/api/visitor';
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
   components: { cTree },
@@ -196,24 +199,36 @@ export default {
       // 验证不通过，不合法
       callback(new Error('请输入合法的手机号'))
     }
+    // 正则验证车牌,验证通过返回true,不通过返回false
+    var isLicensePlate = (rule, value, callback) => {
+      const regLicensePlate = /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/
+      if (regLicensePlate.test(value)) {
+        // 验证通过，合法的车牌号
+        return callback()
+      }
+      // 验证不通过，不合法
+      callback(new Error('请输入合法的车牌号'))
+    }
     return {
-      // labelPosition: "left",
+      // 组织机构树
+      treeData: [],
       ruleForm: {
         visitorName: "",
-        idCardType: "",
+        idCardType: '',
         idCardNumber: "",
         phoneNumber: "",
         carNumber: "",
+        address: "",
         company: "",
         reason: "",
         interviewees: "",
-        visitorCount: "",
+        visitorCount: '',
         idCardPhoto: "",
         visitTime: "",
-        checkStatus:0,
-        checkAddress:"",
-        resource:1,
-        code:"123"
+        checkStatus: 1,
+        checkAddress: "",
+        resource: 1,
+        code: ""
 
       },
       rules: {
@@ -230,12 +245,13 @@ export default {
           { validator: checkMobile, trigger: "blur" }
         ],
         carNumber: [
-          { required: true, message: "请输入车牌号码", trigger: "blur" }
+          { required: true, message: "请输入车牌号码", trigger: "blur" },
+          { validator: isLicensePlate, trigger: "blur" }
         ],
         interviewees: [
           { required: true, message: "请选择被访人", trigger: "blur" }
         ],
-        visitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
+        // visitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
         visitTime: [
           { required: true, message: "请输入来访时间", trigger: "blur" },
         ]
@@ -247,27 +263,32 @@ export default {
     };
   },
   created(){
-    this.getInterviewees()
+    this.getInterviewees(),
+    this.getTreeData()// 加载组织机构树
   },
   methods: {
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        // console.log(res)
+        if(res.success) {
+          this.treeData = res.result
+        }else {
+          return false
+        }
+        
+      })
+    },
     // 获取被访人列表
     getInterviewees() {
       var _this = this
       let parm = {
-        orgId:10294,
-        isContainSublevel:true,
-        pageIndex:1,
-        maxResultCount:10
+        orgId: 10294,
+        isContainSublevel: true,
+        pageIndex: 1,
+        maxResultCount: 10
       }
       PostUserList(parm).then(res => {
-        // let data = res.result.items
-        // for(let i=0; i<data.length; i++){
-        //     data[i].value = data[i].id
-        //     data[i].label = data[i].nickName
-        // }
-        // console.log(data)
-        // this.userlist = data
-        // console.log(this.userlist)
         res.result.items.forEach((e) => {
           // console.log(e)
           _this.intervieweesData.push({
@@ -275,7 +296,6 @@ export default {
             id: e.id
           })
         })
-        // console.log(_this.intervieweesData)
       })
     },
     // 保存访客记录信息
@@ -283,14 +303,15 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           GetInsertRecord(this.ruleForm).then(res => {
-            console.log(res)
-            this.$message.success('创建成功！')
-            this.getList()
+            if(res.success) {
+              this.$message.success('登记成功！')
+              //  this.getList()
+            }
             }).catch(err => {
             console.log(err)
           })
         } else {
-          console.log("创建失败！");
+          console.log("登记失败！");
           return false;
         }
       });

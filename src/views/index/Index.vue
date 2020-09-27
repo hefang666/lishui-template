@@ -2,82 +2,83 @@
   <div>
     <div class="flex-container">
       <div class="flex-item">
-        <h2>考勤管理</h2>
+        <div class="title">考勤管理</div>
         <div class="item-box">
           <div class="item-col">
             <div class="col-icon" @click="getToCheckManage">
-              <i class="el-icon-edit-outline"></i>
+              <!-- <i class="el-icon-edit-outline"></i> -->
+              <img src="../../assets/icon-attendance-record.png" width="116px">
             </div>
-            <h3>考勤管理</h3>
+            <div class="sub-title">考勤记录</div>
           </div>
           <div class="item-col">
             <div class="col-icon" @click="getToRecordImport">
-              <i class="el-icon-download"></i>
+              <img src="../../assets/icon-import.png" width="116px">
             </div>
-            <h3>考勤记录导入</h3>
+            <div class="sub-title">记录导入</div>
           </div>
         </div>
       </div>
       <div class="flex-item">
-        <h2>访客管理</h2>
+        <div class="title">访客管理</div>
         <div class="item-box">
           <div class="item-col">
             <div class="col-icon" @click="getToVisitorRegister">
-              <i class="el-icon-edit-outline"></i>
+              <img src="../../assets/icon-visitor-regist.png" width="116px">
             </div>
-            <h3>访客登记</h3>
+            <div class="sub-title">访客登记</div>
           </div>
           <div class="item-col">
             <div class="col-icon" @click="getToVisitorManage">
-              <i class="el-icon-s-management"></i>
+              <img src="../../assets/icon-visitor-manage.png" width="116px">
             </div>
-            <h3>访客管理</h3>
+            <div class="sub-title">访客管理</div>
           </div>
-          <div class="item-col">
+          <!-- <div class="item-col">
             <div class="col-icon" @click="getToVisitorPointManage">
               <i class="el-icon-s-management"></i>
             </div>
             <h3>访客点管理</h3>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="flex-item">
-        <h2>车辆管理</h2>
+        <div class="title">车辆管理</div>
         <div class="item-box">
           <div class="item-col">
             <div class="col-icon" @click="getToCarRegister">
-              <i class="el-icon-edit-outline"></i>
+              <img src="../../assets/icon-car-regist.png" width="116px">
             </div>
-            <h3>车辆登记</h3>
+            <div class="sub-title">车辆登记</div>
           </div>
           <div class="item-col">
             <div class="col-icon" @click="getToCarManage">
-              <i class="el-icon-folder-add"></i>
+              <img src="../../assets/icon-car-manage.png" width="116px">
             </div>
-            <h3>车辆管理</h3>
+            <div class="sub-title">车辆管理</div>
           </div>
           <div class="item-col">
             <div class="col-icon" @click="getToCarGps">
-              <i class="el-icon-location-outline"></i>
+              <img src="../../assets/icon-gps.png" width="116px">
             </div>
-            <h3>车辆定位</h3>
+            <div class="sub-title">车辆定位</div>
           </div>
         </div>
       </div>
       <div class="flex-item">
-        <h2>巡更记录管理</h2>
+        <div class="title">巡更记录管理</div>
         <div class="item-box">
           <div class="item-col">
             <div class="col-icon" @click="getToPatrolRecordManage">
-              <i class="el-icon-s-management"></i>
+              <img src="../../assets/icon-patrol-record.png" width="116px">
             </div>
-            <h3>巡更记录管理</h3>
+            <div class="sub-title">巡更记录管理</div>
           </div>
           <div class="item-col">
             <div class="col-icon" @click="getToPatrolRecordImport">
-              <i class="el-icon-download"></i>
+              <img src="../../assets/icon-import.png" width="116px">
             </div>
-            <h3>巡更记录导入</h3>
+            <div class="sub-title">巡更记录导入</div>
           </div>
         </div>
       </div>
@@ -105,9 +106,9 @@ export default {
     getToVisitorManage() {
       this.$router.push({ path: "/visitor/VisitorManage" });
     },
-    getToVisitorPointManage() {
-      this.$router.push({ path: "../visitor/VisitorPointManage" });
-    },
+    // getToVisitorPointManage() {
+    //   this.$router.push({ path: "../visitor/VisitorPointManage" });
+    // },
     // 车辆管理
     getToCarRegister() {
       this.$router.push({ path: "/car/CarRegister" });
@@ -145,9 +146,14 @@ export default {
   border-radius: 10px;
   box-shadow: 1px 1px 2px 2px#ccc;
 }
-.flex-item h2,.flex-item h3 {
+.flex-item .title{
+  font-size: 24px;
   text-align: center;
-  font-weight: normal;
+  margin: 15px;
+}
+.flex-item .sub-title {
+  font-size: 18px;
+  text-align: center;
 }
 .item-box {
   display: -webkit-flex;
@@ -159,13 +165,19 @@ export default {
   width: 50%;
   text-align: center;
 }
-.item-col {
-  border-right: 1px solid #ccc;
-}
+// .item-col {
+//   border-right: 1px solid #ccc;
+// }
 .item-col:last-child {
   border: none;
 }
-.col-icon i {
-  font-size: 58px;
+.col-icon{
+  border-right: 1px solid #ddd;
+}
+.col-icon:last-child{
+  border: none;
+}
+.col-icon img {
+  cursor: pointer;
 }
 </style>

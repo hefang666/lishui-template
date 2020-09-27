@@ -6,27 +6,27 @@
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          <el-form :model="addForm" :rules="addFormRules" ref="addFormRef">
+          <el-form :rules="addFormRules"  :model="form"  ref="addFormRef">
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
                 label="选择车辆："
                 label-width="120px"
-                prop="carNumber"
+                prop="carId"
                 >
                 <div class="list-item-content-box">
-                   <el-select
-                    v-model="addForm.carNumber"
+                  <el-select
+                    v-model="form.carId"
                     clearable
                     placeholder="请选择车辆"
                     >
-                    <el-option
-                    v-for="item in carListData"
-                    :key="item.id"
-                    :id="item.id"
-                    :value="item.value"
+                      <el-option
+                      v-for="item in carListData"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
                     />
-                    </el-select>
+                  </el-select>
                 </div>
               </el-form-item>
             </div>
@@ -38,18 +38,16 @@
                 prop="userName"
                 >
                 <div class="list-item-content-box">
-                  <el-select 
-                    v-model="addForm.userName" 
-                    clearable
-                    placeholder="请选择用车人">
-                    <el-option 
-                    label="张三" 
-                    value="0">
-                    </el-option>
-                    <el-option 
-                    label="李四" 
-                    value="1">
-                    </el-option>
+                  <el-select
+                    v-model="form.userName"
+                    placeholder="请选择用车人"
+                  >
+                    <el-option
+                      v-for="item in userListData"
+                      :key="item.id"
+                      :id="item.id"
+                      :value="item.value"
+                    />
                   </el-select>
                 </div>
               </el-form-item>
@@ -64,7 +62,7 @@
                 <div class="list-item-content-box">
                   <el-input
                     type="text"
-                    v-model="addForm.userPhone"
+                    v-model="form.userPhone"
                     autocomplete="off"
                   ></el-input>
                 </div>
@@ -76,18 +74,33 @@
                 label="用车时间："
                 label-width="120px"
                 >
-                <div class="list-item-content-box">
-                    <el-date-picker
-                    v-model="data_value"
-                    type="datetimerange"
-                    format="yyyy-MM-dd hh:mm"
-                    value-format="yyyy-MM-dd hh:mm"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeDate"
-                    >
-                    </el-date-picker>
+                <div>
+                  <!-- <el-date-picker
+                  v-model="data_value"
+                  type="datetimerange"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeDate"
+                  >
+                  </el-date-picker> -->
+                <el-date-picker
+                  v-model="form.beginTime"
+                  type="datetime"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  placeholder="请选择开始时间"
+                ></el-date-picker>
+                <span class="to-style">-</span>
+                <el-date-picker
+                  v-model="form.endTime"
+                  type="datetime"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  placeholder="请选择结束时间"
+                ></el-date-picker>
                 </div>
               </el-form-item>
             </div>
@@ -96,7 +109,7 @@
                 type="textarea"
                 :rows="3"
                 maxlength="200"
-                v-model="addForm.reason"
+                v-model="form.reason"
                 show-word-limit
                 autocomplete="off"
               ></el-input
@@ -113,7 +126,9 @@
 </template>
 
 <script>
+// import { mapState } from "vuex";
 import { AddCarUseRecord, GetByOrgId } from '@/api/car'
+import { GetOrgUserList } from '@/api/visitor'
 
 export default {
   name: 'AddTask',
@@ -137,21 +152,23 @@ export default {
       callback(new Error('请输入合法的手机号'))
     }
     return {
-      addForm: {
-        carId: 1,
-        carNumber: '',
-        userId: 1,
-        userName:'',
-        userPhone:'',
+      // 新增用车信息参数
+      form: {
+        carId: '',
+        userName: '',
+        userPhone: '',
         beginTime: '',
         endTime: '',
         reason: ''
       },
-      data_value:'',
+      // 时间日期值
+      // data_value:'',
       // 车辆下拉列表数据
       carListData: [],
+      // 用车人下拉列表数据
+      userListData: [],
       addFormRules:{
-        carNumber: [
+        carId: [
           { required: true, message: "车辆不能为空", trigger: "blur" }
         ],
         userName: [
@@ -165,8 +182,15 @@ export default {
       visible: this.dialogAdd,
     };
   },
+  // computed: {
+  //   ...mapState({
+  //     carId: state => state.car.carId
+  //   })
+  // },
+  
   created(){
-    this.getCarList()
+    this.getCarList(),
+    this.getUserList()
   },
   watch: {
     dialogAdd() {
@@ -175,27 +199,46 @@ export default {
   },
   methods: {
     // 获取用车时间
-    changeDate() {
-      this.addForm.beginTime = this.data_value[0]
-      this.addForm.endTime = this.data_value[1]
-    },
+    // changeDate() {
+    //   this.form.beginTime = this.data_value[0]
+    //   this.form.endTime = this.data_value[1]
+    // },
     
     // 获取车辆下拉列表
     getCarList() {
       var _this = this
       let parms = {
-        orgId: this.orgId,
-        carType: this.carType
+        orgId: 10294,
+        numberOrName:'',
+        carType: 0
       }
       GetByOrgId(parms).then(res => {
         res.result.forEach((e) => {
+          e.carNumber = e.number
           // console.log(e)
           _this.carListData.push({
-            value: e.number,
-            id: e.id
+            value: e.id.toString(),
+            label: e.carNumber
+          })
+        //  console.log(_this.carListData)
+        })
+      })
+    },
+    // 获取用车人下拉列表
+    getUserList() {
+      var _this = this
+      let parm = {
+        orgIds: []
+      }
+      GetOrgUserList(parm).then(res => {
+        res.result.map(item => {
+          item.users.map(items => {
+            _this.userListData.push({
+            value: items.nickName,
+            id: items.id
+          })
           })
         })
-    //    console.log(_this.carListData)
       })
     },
     // 点击取消或者右上角的×关闭新增弹窗
@@ -205,11 +248,11 @@ export default {
     },
     // 新增信息并提交
     addSubmit() {
+      // this.addForm.carId = this.$store.state.car.carId
       this.$refs.addFormRef.validate(async valid => {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
-        AddCarUseRecord(this.addForm).then(res => {
-          console.log(res)
+        AddCarUseRecord(this.form).then(res => {
            if(res.success){
               // this.dialogAdd = false
               this.$emit("update:dialogAdd", false);
@@ -234,12 +277,16 @@ export default {
       display: flex;
       justify-content: space-between;
       .has-two-item {
-        width: 46%;
+        // width: 46%;
         .list-item-content-box {
           width: 220px;
+         
         }
+        
       }
-      
+      .to-style{
+        padding:5px 10px;
+      }
     }
     
   }

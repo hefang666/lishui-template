@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree></c-tree>
+      <c-tree :treeData="treeData" @changeTree="getChangeTree"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
@@ -17,7 +17,7 @@
                 v-model="form.nameOrTel"
                 style="width:210px;margin-right:20px;"
               ></el-input>
-              <el-date-picker
+              <!-- <el-date-picker
                 v-model="visitTime"
                 type="datetimerange"
                 format="yyyy-MM-dd hh:mm"
@@ -26,12 +26,29 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 @change="changeDate"
-              />
+              /> -->
+              <el-date-picker
+                v-model="form.visitTimeBegin"
+                type="datetime"
+                format="yyyy-MM-dd hh:mm"
+                value-format="yyyy-MM-dd hh:mm"
+                placeholder="请选择开始时间"
+              ></el-date-picker>
+              <span class="to-style">-</span>
+              <el-date-picker
+                v-model="form.visitTimeEnd"
+                type="datetime"
+                format="yyyy-MM-dd hh:mm"
+                value-format="yyyy-MM-dd hh:mm"
+                placeholder="请选择结束时间"
+              ></el-date-picker>
+
               <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
+              <el-button type="primary" plain @click="handleCheckInfo">详情</el-button>
               <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
             </el-button-group>
           </div>
@@ -59,7 +76,7 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="idCardPhoto"
+                prop="phoneNumber"
                 label="联系电话"
                 show-overflow-tooltip
               ></el-table-column>
@@ -85,15 +102,14 @@
                       type="text"
                       class="operate-button"
                       @click="handleCheckInfo(scope.$index, scope.row)"
-                      >查看</el-button
+                      >详情</el-button
                     >
                     <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleLeaveTimeAdd"
+                      @click="handleLeaveTimeAdd(scope.row)"
                       >添加离开时间</el-button
                     >
-                    
                   </div>
                 </template>
               </el-table-column>
@@ -122,7 +138,7 @@
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="证件类型：" prop="idCardType">
+                        <el-form-item label="证件类型：" prop="idCardType" :formatter="formatType">
                           <span>{{ detilForm.idCardType }}</span>
                         </el-form-item>
                       </div>
@@ -215,6 +231,8 @@
                   <el-date-picker
                     v-model="addForm.leaveTime"
                     type="datetime"
+                    format="yyyy-MM-dd hh:mm"
+                    value-format="yyyy-MM-dd hh:mm"
                     placeholder="选择离开时间"
                   >
                   </el-date-picker> </el-form-item
@@ -241,22 +259,26 @@ import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
 // import ViewTask from './visitorManageTask/viewTask/ViewTask';
 import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord } from '@/api/visitor';
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
   components: { cTree, Page },
   data() {
     return {
+      id:'',
       // 查询参数
       form: {
         nameOrTel:'',
         visitTimeBegin:'',
         visitTimeEnd:'',
-        codes: ["1"],
+        codes: [""],
         pageIndex: 1,
         maxResultCount: 30,
       },
+      // 组织机构树
+      treeData: [],
       // 日期时间参数
-      visitTime:'',
+      // visitTime:'',
       // 总条数
       totalCount:0,
       loading: false,
@@ -271,8 +293,9 @@ export default {
       dialogAddLeaveTimeVisible:false,
       // 新增添加时间参数
       addForm: { 
-        id:0,
-        leaveTime: "" 
+        id: 0,
+        leaveTime: "" ,
+        checkStatus: 1
       }, 
       addFormRules:{
         leaveTime: [
@@ -284,19 +307,43 @@ export default {
     };
   },
   mounted() {
-    this.getList();
+    this.getTreeData()// 加载组织机构树
   },
   methods: {
     // 获取查询的访问时间
-    changeDate() {
-      this.form.visitTimeBegin = this.visitTime[0]
-      this.form.visitTimeEnd = this.visitTime[1]
+    // changeDate() {
+    //   this.form.visitTimeBegin = this.visitTime[0]
+    //   this.form.visitTimeEnd = this.visitTime[1]
+    // },
+    // 
+    // 点击节点时获取到id
+    getChangeTree(v) {
+      this.id = v
+      this.getList()
+    },
+    // 判断证件类型
+    formatType: function(row) {
+      return row.idCardType === 1 ? '军官证' : row.idCardType === 0 ? '身份证' : ''
+    },
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        if(res.success) {
+          this.treeData = res.result
+          // let id = res.result[0].id
+          // this.form.organizationId = id
+          this.getList()
+        }else {
+          return false
+        }
+        
+      })
     },
     // 获取列表
     getList() {
       this.loading = true
       GetPageList(this.form).then(res => {
-        console.log(res)
+        // console.log(res)
         if(res.success){
           this.tableData = res.result.items
           this.totalCount =  res.result.totalCount
@@ -316,21 +363,25 @@ export default {
     },
     // 查看访客记录详情
     handleCheckInfo(index, row) {
-      console.log(index, row);
+      // console.log(index, row);
       this.detilFormVisible = true
-      this.detilForm = row
-      let param = {
-        id: row.id
+      if(row) {
+        this.detilForm = row
+        let param = {
+          id: row.id
+        }
+        GetById(param).then(res => {
+          this.detilForm = res.result
+        })
+      } else{
+        this.detilForm = this.multipleSelection[0]
       }
-      GetById(param).then(res => {
-       this.detilForm = res.result
-       this.loading = false
-      //  this.getList()
-      })
+      
     },
     // 打开新增添加时间弹窗
-    handleLeaveTimeAdd() {
+    handleLeaveTimeAdd(row) {
       this.dialogAddLeaveTimeVisible = true;
+      this.addForm.id = row.id
     },
     // 关闭新增添加时间弹窗
     closeAdd() {
@@ -439,6 +490,9 @@ export default {
           display: flex;
           .search-button {
             margin-left: 5px;
+          }
+          .to-style{
+            padding:5px 10px;
           }
         }
       }

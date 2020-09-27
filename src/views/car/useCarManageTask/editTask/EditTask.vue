@@ -37,17 +37,16 @@
                 prop="userName"
                 >
                 <div class="list-item-content-box">
-                  <el-select 
-                    v-model="editForm.userName" 
-                    placeholder="请选择用车人">
-                    <el-option 
-                    label="张三" 
-                    value="0">
-                    </el-option>
-                    <el-option 
-                    label="李四" 
-                    value="1">
-                    </el-option>
+                  <el-select
+                    v-model="editForm.userName"
+                    placeholder="请选择用车人"
+                  >
+                    <el-option
+                      v-for="item in userListData"
+                      :key="item.id"
+                      :id="item.id"
+                      :value="item.value"
+                    />
                   </el-select>
                 </div>
               </el-form-item>
@@ -58,18 +57,33 @@
                 label="用车时间："
                 label-width="120px"
                 >
-                <div class="list-item-content-box">
-                    <el-date-picker
-                    v-model="date_value"
-                    type="datetimerange"
-                    format="yyyy-MM-dd hh:mm"
-                    value-format="yyyy-MM-dd hh:mm"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeDate"
-                    >
-                    </el-date-picker>
+                <div>
+                  <!-- <el-date-picker
+                  v-model="date_value"
+                  type="datetimerange"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeDate"
+                  >
+                  </el-date-picker> -->
+                  <el-date-picker
+                  v-model="editForm.beginTime"
+                  type="datetime"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  placeholder="请选择开始时间"
+                ></el-date-picker>
+                <span class="to-style">-</span>
+                <el-date-picker
+                  v-model="editForm.endTime"
+                  type="datetime"
+                  format="yyyy-MM-dd hh:mm"
+                  value-format="yyyy-MM-dd hh:mm"
+                  placeholder="请选择结束时间"
+                ></el-date-picker>
                 </div>
               </el-form-item>
             </div>
@@ -90,8 +104,8 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
+        <el-button @click="closeEdit">取消</el-button>
+        <el-button type="primary" @click="editSubmit">确定</el-button>
       </div>
     </el-dialog>
     </div>
@@ -99,6 +113,7 @@
 
 <script>
 import { UpdateCarUseRecord, GetByOrgId } from '@/api/car'
+import { GetOrgUserList } from '@/api/visitor'
 
 export default {
   name: 'EditTask',
@@ -112,7 +127,7 @@ export default {
   data() {
     return {
       editForm: {
-        id: 0,
+        id: '',
         carId: '',
         carNumber:'',
         userId: '',
@@ -120,12 +135,13 @@ export default {
         beginTime: '',
         endTime: '',
         reason: ''
-       
       },
       // 车辆列表数据
       carListData: [],
+      // 用车人列表数据
+      userListData: [],
       // 日期时间
-      date_value: '',
+      // date_value: '',
       // 车辆下拉列表数据
       rules:{
         carNumber: [
@@ -141,10 +157,11 @@ export default {
     };
   },
   created(){
-    this.getCarList()
+    this.getCarList(),
+    this.getUserList()
   },
   watch: {
-    // 监听编辑的对象
+    // 监听修改用车信息的对象
     editData(obj){
       this.editForm = obj
     },
@@ -155,23 +172,40 @@ export default {
   },
   methods: {
     // 获取用车时间
-    changeDate() {
-      this.addForm.beginTime = this.date_value[0]
-      this.addForm.endTime = this.date_value[1]
-    },
+    // changeDate() {
+    //   this.editForm.beginTime = this.date_value[0]
+    //   this.editForm.endTime = this.date_value[1]
+    // },
     // 获取车辆下拉列表
     getCarList() {
       var _this = this
       let parms = {
-        orgId: this.orgId,
-        carType: this.carType
+        orgId: 10294,
+        carType: 0
       }
       GetByOrgId(parms).then(res => {
         res.result.forEach((e) => {
           // console.log(e)
           _this.carListData.push({
             value: e.number,
-            id: e.id
+            id: e.id.toString()
+          })
+        })
+      })
+    },
+    // 获取用车人列表
+    getUserList() {
+      var _this = this
+      let parms = {
+        orgIds: []
+      }
+      GetOrgUserList(parms).then(res => {
+        res.result.map(item => {
+          item.users.map(items => {
+            _this.userListData.push({
+            value: items.nickName,
+            id: items.id
+          })
           })
         })
       })
@@ -187,11 +221,11 @@ export default {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
         UpdateCarUseRecord(this.editForm).then(res => {
-          console.log(res)
+          // console.log(res)
           if(res.success){
-              this.$emit("update:dialogEdit", false);
-              this.$message.success('修改成功！')
-              // this.$parent.getList()
+            this.$emit("update:dialogEdit", false);
+            this.$message.success('修改成功！')
+            // this.$parent.getList()
           }
         })
       })
@@ -210,10 +244,13 @@ export default {
       display: flex;
       justify-content: space-between;
       .has-two-item {
-        width: 46%;
+        // width: 46%;
         .list-item-content-box {
           width: 220px;
         }
+      }
+      .to-style{
+        padding:5px 10px;
       }
     }
   }

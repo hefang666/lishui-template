@@ -4,11 +4,17 @@
       <div class="search-box">
         <el-input placeholder="请输入车牌号/车主" v-model="form" prefix-icon="el-icon-search"></el-input>
         <div class="total-box">
-          <div class="car-total">车辆总数：100</div>
-          <div class="online-otal">在线：10</div>
+          <div class="car-total">车辆总数：</div>
+          <div class="online-otal">在线：</div>
         </div>
-        <!-- <c-tree></c-tree> -->
-        <div class="list-box">
+        <c-tree :treeData="treeData"></c-tree>
+        <div 
+          class="car-list" 
+          v-for="(item, index) in carListData" 
+          :key="index">
+          <span><i class="el-icon-truck" style="font-size:32px;margin-right:10px;"></i>{{item.number}}</span>
+        </div>
+        <!-- <div class="list-box">
           <div class="snt-left-list">
             <div 
               :class="{active: currentIndex === index}" 
@@ -24,7 +30,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="snt-table-right-col">
@@ -34,48 +40,67 @@
 </template>
 
 <script>
-// import cTree from "@/components/tree/cTree";
+import cTree from "@/components/tree/cTree";
 import Map from './map/Map';
 
-import { GetPointPower } from '@/api/visitor';
+// import { GetPointPower } from '@/api/visitor';
 import { GetByOrgId } from '@/api/car'
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
-  components: { Map},
+  components: { Map, cTree},
   data() {
     return {
       form: '',
-      // 访客登记点列表
-      listData: [],
-      currentIndex: 0,
+      // // 访客登记点列表
+      // listData: [],
+      // currentIndex: 0,
+      // 组织机构树
+      treeData: [],
       // 车辆列表
       carListData:[]
      
     };
   },
   mounted() {
-    this.getLeftList(),
+    // this.getLeftList(),
+    this.getTreeData()// 加载组织机构树
     this.getLeftCarList()
   },
   
   methods: {
     // 获取访客登记点列表
-    getLeftList(){
-      let _this = this
-      GetPointPower().then(res => {
-        console.log(res)
-        if(res.success){
-          _this.listData = res.result
+    // getLeftList(){
+    //   let _this = this
+    //   GetPointPower().then(res => {
+    //     console.log(res)
+    //     if(res.success){
+    //       _this.listData = res.result
+    //     }
+    //   })
+    // },
+    // changeList(index) {
+    //   this.currentIndex = index;
+    // },
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        // console.log(res)
+        if(res.success) {
+          this.treeData = res.result
+          // let id = res.result[0].id
+          // this.form.organizationId = id
+          // this.getList()
+        }else {
+          return false
         }
+        
       })
-    },
-    changeList(index) {
-      this.currentIndex = index;
     },
     // 获取车辆列表
     getLeftCarList() {
       let param = {
-        orgId: this.orgId,
+        orgId: 10294,
         carType: this.carType
       }
       GetByOrgId(param).then(res => {
@@ -96,9 +121,9 @@ export default {
   width:100%;
   display: flex;
   overflow: hidden;
-  .search-box{
-    margin: 10px;
-  }
+  // .search-box{
+  //   margin: 10px;
+  // }
   .total-box{
     margin: 5px;
     display: flex;
@@ -123,9 +148,13 @@ export default {
       background: #4b77be;
       color: #fff;
     }
-    .car-list{
-      border:none;
-      color: #4b77be;
+  }
+  .car-list{
+    text-align: center;
+    border:none;
+    color: #4b77be;
+    span{
+      line-height: 30px;
     }
   }
 }

@@ -73,6 +73,7 @@ export default {
         pointName: '',
         remark: '',
         orgIds:[],
+        roleIds:[]
       },
       rules:{
         pointName: [

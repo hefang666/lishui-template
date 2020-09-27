@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree></c-tree>
+      <c-tree :treeData="treeData" @changeTree="getChangeTree"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
@@ -34,6 +34,7 @@
               ref="multipleTable"
               :data="tableData"
               :stripe="true"
+              :loading="loading"
               tooltip-effect="dark"
               style="width: 100%"
               @selection-change="handleSelectionChange"
@@ -52,6 +53,7 @@
               <el-table-column
                 prop="type"
                 label="车辆类型"
+                :formatter="formatType"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
@@ -76,7 +78,7 @@
                       type="text"
                       class="operate-button"
                       @click="handleCheckInfo(scope.$index, scope.row)"
-                      >查看</el-button
+                      >详情</el-button
                     >
                     <el-button
                       type="text"
@@ -142,7 +144,7 @@
               </div>
             </div>
             <div slot="footer" class="dialog-footer">
-              <el-button @click.native="detilFormVisible = false">取消</el-button>
+              <el-button @click="closeAdd">取消</el-button>
             </div>
         </el-dialog>
       </div>
@@ -161,6 +163,7 @@ import Page from '@/components/page/Page';
 import AddTask from './useCarManageTask/addTask/AddTask';
 import EditTask from './useCarManageTask/editTask/EditTask';
 import { GetByOrgIdCarUseRecord, GetByIdCarUseRecord, DeleteCarUseRecord } from '@/api/car';
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
   components: { 
@@ -173,7 +176,7 @@ export default {
     return {
       // 查询参数
       form: {
-        organizationId: 1,
+        organizationId: '',
         numberOrNameOrTel: '',
         pageIndex: 1,
         maxResultCount: 30,
@@ -181,6 +184,8 @@ export default {
       // 总条数
       totalCount:0,
       loading: false,
+      // 组织机构树
+      treeData: [],
       // 列表数据
       tableData: [],
       // 是否显示新增弹窗
@@ -193,26 +198,58 @@ export default {
       dialogView: false,
       // 用车详情对象
       detilForm: {}, 
-      detilFormVisible:false,
+      detilFormVisible: false,
       // 批量删除id
       ids:[],
     };
   },
+  
   mounted() {
-    this.getList();
+    // this.getList();
+    this.getTreeData()// 加载组织机构树
   },
   methods: {
+    // 点击节点时获取到id
+    getChangeTree(v) {
+      this.id = v
+      this.getList()
+    },
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        // console.log(res)
+        if(res.success) {
+          this.treeData = res.result
+          let id = res.result[0].id
+          this.form.organizationId = id
+          this.getList()
+        }else {
+          return false
+        }
+        
+      })
+    },
     // 获取列表
     getList() {
       this.loading = true
       GetByOrgIdCarUseRecord(this.form).then(res => {
-        console.log(res)
         if(res.success){
+          // res.result.items.map(item => {
+          //   item.id = item.carId
+          // })
           this.tableData = res.result.items
           this.totalCount =  res.result.totalCount
           this.loading = false
         }
       })
+    },
+    // 判断车辆类型
+    formatType: function(row) {
+      return row.type === 1 ? '工程车辆' : row.type === 0 ? '标准民用车' : ''
+    },
+    // 点击取消关闭详情弹窗
+    closeAdd() {
+      this.detilFormVisible = false
     },
     // 当选择项发生变化时的事件
     handleSelectionChange(val) {
@@ -236,15 +273,17 @@ export default {
     },
     // 查看用车详情
     handleCheckInfo(index, row) {
-      console.log(index, row);
       this.detilFormVisible = true
       this.detilForm = row
-      let param = {
-        id: row.id
+      let params = {
+        Id: row.id
       }
-      GetByIdCarUseRecord(param).then(res => {
-       this.detilForm = res.result
-       this.loading = false
+      GetByIdCarUseRecord(params).then(res => {
+        if(res.success){
+          // this.detilFormVisible = false
+        }
+      }).catch(err => {
+        console.log(err)
       })
     },
     

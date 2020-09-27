@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree></c-tree>
+      <c-tree :treeData="treeData"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
@@ -76,8 +76,7 @@
 <script>
 import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
-
-// import { GetPagePointList } from '@/api/visitor';
+import { GetOrgagencyTree } from '@/api/role';
 
 export default {
   components: { 
@@ -88,6 +87,9 @@ export default {
     return {
       search:'',
       multipleSelection: [],
+      // 组织机构树
+      treeData: [],
+      // 表格数据
       tableData:[],
       loading: false,
       // 分页参数
@@ -100,10 +102,25 @@ export default {
     }
   },
   mounted() {
-    this.getList()
+    this.getList(),
+    this.getTreeData()
   },
   methods: {
-    
+    // 加载组织机构树
+    getTreeData() {
+      GetOrgagencyTree().then(res => {
+        // console.log(res)
+        if(res.success) {
+          this.treeData = res.result
+          let id = res.result[0].id
+          this.form.orgId = id
+          this.getList()
+        }else {
+          return false
+        }
+        
+      })
+    },
     // 获取列表
     getList() {
       
