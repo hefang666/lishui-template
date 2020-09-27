@@ -70,7 +70,7 @@
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="AttenadanceCheck(scope.$index, scope.row)"
+                  @click="AttenadanceCheck(scope.row)"
                   >出勤查看</el-button
                 >
               </div>
@@ -101,12 +101,11 @@
 
     <!-- 出勤查看弹窗 -->
     <attendance
-      :total="dialogAttendTOT"
-      :tableData="attendance"
       :dialog-attend="dialogAttend"
+      :ID="dialogAttendID"
       @getAttendData="getAttendData"
-      @attenquery="attenquery"
     ></attendance>
+
   </div>
 </template>
 
@@ -119,7 +118,6 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('personManagement');
 
-import {GetByUserId} from '@/api/personnel';
 import {parseTime} from '@/utils/index';
 export default {
   name: 'TaskManagement',
@@ -136,14 +134,10 @@ export default {
   data() {
     return {
       searchWords: '',
-      // 初始化table
-      tableData: [],
+      
 
       // table选中
       multipleSelection: [],
-
-      // 出勤弹框table
-      attendance: [],
 
       // 输入框姓名
       userName: '',
@@ -202,7 +196,7 @@ export default {
     this.tableinfo();
   },
   methods: {
-    ...mapActions(['GetByDay']),
+    ...mapActions(['GetByDay', 'GetByUserId']),
     // 初始化table
     tableinfo(oneDay, userName) {
       let data = {
@@ -280,22 +274,14 @@ export default {
     },
 
     // 出勤查看
-    AttenadanceCheck(index, row) {
-      console.log(index, row);
+    AttenadanceCheck(row) {
       this.dialogAttendID = row.userId;
-      let data = {
+      let param = {
         userId: row.userId,
-        pageIndex: this.currentPage,
-        maxResultCount: this.maxResultCount
+        pageIndex: 1,
+        maxResultCount: 10
       };
-      GetByUserId(data).then(res => {
-        if (res.success) {
-          res.result.items.map(item => {
-            item.oneDay = item.oneDay.replace(/\//g, '-');
-          });
-          this.attendance = res.result.items;
-        }
-      });
+      this.GetByUserId(param);
       this.dialogAttend = true;
     },
 
@@ -303,28 +289,17 @@ export default {
     changePageSize(data) {
       console.log(data);
     },
+
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
     },
+
     // 关闭工作情况弹窗
     getWorkingData(data) {
       this.dialogWorking = data.dialogWorking;
     },
-    //出勤弹窗点击查询(emit)
-    attenquery(oneDay) {
-      let data = {
-        oneDay,
-        userId: this.dialogAttendID,
-        pageIndex: this.currentPage,
-        maxResultCount: this.maxResultCount
-      };
-      GetByUserId(data).then(res => {
-        console.log('res :>> ', res);
-        this.attendance = res.result.items
-        this.dialogAttendTOT = res.result.totalCount
-      });
-    },
+
     // 关闭出勤弹窗
     getAttendData() {
       this.dialogAttend = false;

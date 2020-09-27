@@ -24,7 +24,7 @@ export function ExportList(data) {
     data
   });
 }
-// 根据人人员ID获取考勤信息
+// 根据人员ID获取考勤信息
 export function GetByUserId(data) {
   return request({
     url: api + 'PersonService/GetByUserId',

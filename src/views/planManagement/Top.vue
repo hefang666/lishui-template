@@ -1,17 +1,19 @@
 <template>
-  <div class="header-box">
-    <div class="header-left">
-      <snt-buttongroup
-        @change="searchConditional"
-        :list="statusList"
-      ></snt-buttongroup>
-      <snt-search class="m-l-20" />
-    </div>
-    <div class="header-right">
-      <snt-buttongroup
-        @change="changeHandle"
-        :list="list"
-      ></snt-buttongroup>
+  <div class="top-box">
+    <div class="header-box">
+      <div class="header-left">
+        <snt-buttongroup
+          @change="searchConditional"
+          :list="statusList"
+        ></snt-buttongroup>
+        <snt-search class="m-l-20" />
+      </div>
+      <div class="header-right">
+        <snt-buttongroup
+          @change="changeHandle"
+          :list="list"
+        ></snt-buttongroup>
+      </div>
     </div>
     <add-task></add-task>
     <edit-task></edit-task>
@@ -71,3 +73,24 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.top-box {
+  .header-box {
+    display: flex;
+    justify-content: space-between;
+
+    .header-left {
+      display: flex;
+
+      .search-box {
+        margin-left: 20px;
+
+        .search-button {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+</style>

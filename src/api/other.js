@@ -1,4 +1,4 @@
-import request from '@/utils/otherRequest';
+import request from '@/utils/request';
 
 // 获取人员
 export function getPeopleList(data) {

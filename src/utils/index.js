@@ -443,21 +443,43 @@ export function processingNodes(data) {
 }
 
 /**
- * 判断时间是否大于当前时间
- * @param {String} datetime
+ * 判断结束时间是否大于等于开始时间
+ * @param {String} startTime 开始时间
+ * @param {String} endTime 结束时间
+ * @param {Num} period 间隔周期（小时）,结束时间是否大于等于开始时间多少小时
  */
-// 判断时间是否大于等于当前时间
-export function judgeTime(datetime) {
-  // 传入的时间
-  let myDate = new Date(datetime);
-  let my = myDate.valueOf();
-  // 获取当前时间
-  let nowDate = new Date();
-  let now = nowDate.valueOf();
+export function judgeTime(startTime, endTime, period) {
+  // 开始的时间
+  let startDate = new Date(startTime);
+  let start = startDate.valueOf();
+  // 结束时间
+  let endDate = new Date(endTime);
+  let end = endDate.valueOf();
 
-  if (my >= now) {
-    return true;
+  if (period == undefined) {
+    if (end >= start) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
-    return false;
+    let intervalTime = period * 60 * 60 * 1000;
+    start = start + intervalTime;
+    if (end >= start) {
+      return true;
+    } else {
+      return false;
+    }
   }
+}
+
+/**
+ * 获取当月天数
+ */
+export function mGetDate() {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let d = new Date(year, month, 0);
+  return d.getDate();
 }
