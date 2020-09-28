@@ -24,61 +24,70 @@ Vue.use(VueRouter);
   }
  */
 const routes = [
-
+  // {
+  //   path: "/",
+  //   component: () =>
+  //   import(
+  //     /* webpackChunkName: "about" */ "../views/videomonitoring/RealTimePreview.vue"
+  //   ),
+  //   name: "home",
+  //   meta: { title: "首页", icon: "el-icon-user", affix: true }
+  // },
 
   {
     path: '/',
-    name: 'water',
+    name: 'monitoring',
     component: Home,
     meta: {
-      title: '化验室检测数据',
-      icon: 'el-icon-ship',
-      noCache: true,
-      affix: true
+      title: '视频监控',
+      icon: 'el-icon-user',
+      affix: true,
+      noCache: true
     },
+    alwaysShow: true,
     children: [
       {
-        path: '/dailymanagement',
-        name: 'dailymanagement',
+        path: '/realtimepreview',
+        name: 'realtimepreview',
         component: () =>
           import(
-            /* webpackChunkName: "about" */ '../views/waterdetection/DailyManagement.vue'
+            /* webpackChunkName: "about" */ '../views/videomonitoring/RealTimePreview.vue'
           ),
         meta: {
-          title: '每日简报管理'
+          title: '实时预览'
         }
       },
       {
-        path: '/dailyupload',
-        name: 'dailyupload',
+        path: '/videoplayback',
+        name: 'videoplayback',
         component: () =>
           import(
-            /* webpackChunkName: "about" */ '../views/waterdetection/DailyUpload.vue'
+            /* webpackChunkName: "about" */ '../views/videomonitoring/VideoPlayback.vue'
           ),
         meta: {
-          title: '每日简报上传'
+          title: '视频回放'
         }
       },
       {
-        path: '/mounthmanagement',
-        name: 'mounthmanagement',
+        path: '/groupingswipe',
+        name: 'groupingswipe',
         component: () =>
           import(
-            /* webpackChunkName: "about" */ '../views/waterdetection/MounthManagement.vue'
+            /* webpackChunkName: "about" */ '../views/videomonitoring/GroupingSwiper.vue'
           ),
         meta: {
-          title: '水质检测月报管理'
+          title: '分组轮播'
         }
       },
       {
-        path: '/mounthupload',
-        name: 'mounthupload',
+        path: '/directorymanagement',
+        name: 'directorymanagement',
         component: () =>
           import(
-            /* webpackChunkName: "about" */ '../views/waterdetection/MounthUpload.vue'
+            /* webpackChunkName: "about" */ '../views/videomonitoring/DirectoryManagement.vue'
           ),
         meta: {
-          title: '水质检测月报上传'
+          title: '目录管理'
         }
       }
     ]

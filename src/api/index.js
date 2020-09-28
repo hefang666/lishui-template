@@ -20,3 +20,10 @@ export const deletes = (url, data = {}) =>
     method: 'delete',
     params: data
   });
+
+export const put = (url, data = {}) =>
+  request({
+    url,
+    method: 'put',
+    data
+  });

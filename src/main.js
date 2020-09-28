@@ -6,14 +6,23 @@ import Element from 'element-ui';
 import './styles/element-variables.scss';
 import '@/styles/index.scss';
 
-import Print from 'vue-print-nb'
-Vue.use(Print)
+import 'xe-utils'
+import VXETable from 'vxe-table'
+import 'vxe-table/lib/style.css'
+
+Vue.use(VXETable)
+import VideoPlayer from 'vue-video-player';
+import 'video.js/dist/video-js.css';
+import 'vue-video-player/src/custom-theme.css';
+Vue.use(VideoPlayer);
+
 Vue.use(Element);
 
-import {get, post, deletes} from './api/index';
+import {get, post, deletes, put} from './api/index';
 Vue.prototype.$HTTPGET = get;
 Vue.prototype.$HTTPPOST = post;
 Vue.prototype.$HTTPDEL = deletes;
+Vue.prototype.$HTTPPUT = put;
 import {api} from './api/api.js';
 Vue.prototype.api = api;
 

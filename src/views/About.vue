@@ -1,5 +1,18 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <hkvideo></hkvideo>
   </div>
 </template>
+<script>
+import hkvideo from './haikangvideo/hkvideo.vue'
+export default {
+  components: {
+    hkvideo
+  },
+  data(){
+    return{
+
+    }
+  }
+}
+</script>

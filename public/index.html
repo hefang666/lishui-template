@@ -6,25 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
-    <style media="print">
-      @page {
-        size: auto;
-        margin: 3mm;
-      }
-  
-      html {
-        background-color: #FFFFFF;
-        margin: 0;
-      }
-  
-      body {
-        margin: 10mm 15mm 10mm 15mm;
-        -webkit-print-color-adjust:exact;
-        -moz-print-color-adjust:exact;
-        -ms-print-color-adjust:exact;
-        print-color-adjust:exact;
-      }
-    </style>
   </head>
   <body>
     <noscript>
@@ -32,5 +13,8 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script src="<%= BASE_URL %>static/haikang/jquery-1.7.1.min.js"></script>
+    <script src="<%= BASE_URL %>static/haikang/webVideoCtrl.js"></script>
+    <script src="<%= BASE_URL %>static/haikang/video.js"></script>
   </body>
 </html>
