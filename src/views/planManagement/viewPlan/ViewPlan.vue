@@ -5,228 +5,56 @@
         <div class="cancel-box" @click="closeView">
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
-        <div class="tabs-box">
-          <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-            <el-tab-pane label="基础信息" name="basicInfo">
-              <div class="basicInfo-box">
-                <div class="list-item">
-                  <div class="list-items has-two-item">
-                    <div class="item-title">任务名称：</div>
-                    <div class="item-content">
-                      <span>********巡检任务</span>
-                    </div>
-                  </div>
-                  <div class="list-items has-two-item">
-                    <div class="item-title">任务负责人：</div>
-                    <div class="item-content">
-                      <span>张三</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="list-item">
-                  <div class="list-items has-two-item">
-                    <div class="item-title">任务状态：</div>
-                    <div class="item-content">
-                      <span>进行中</span>
-                    </div>
-                  </div>
-                  <div class="list-items has-two-item">
-                    <div class="item-title">参与人：</div>
-                    <div class="item-content">
-                      <span>张三、李四</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="list-item">
-                  <div class="list-items has-two-item">
-                    <div class="item-title">任务类别：</div>
-                    <div class="item-content">
-                      <span>临时任务</span>
-                    </div>
-                  </div>
-                  <div class="list-items has-two-item">
-                    <div class="item-title">预计结束时间：</div>
-                    <div class="item-content">
-                      <span>2019-01-01 18:00</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="list-item">
-                  <div class="list-items has-two-item">
-                    <div class="item-title">实际结束时间：</div>
-                    <div class="item-content">
-                      <span>2019-01-01 18:00</span>
-                    </div>
-                  </div>
-                  <div class="list-items has-two-item">
-                    <div class="item-title">开始时间：</div>
-                    <div class="item-content">
-                      <span>2019-01-01 18:00</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="list-item">
-                  <div class="list-items has-two-item">
-                    <div class="item-title">暂停时间：</div>
-                    <div class="item-content">
-                      <span>3小时20分</span>
-                    </div>
-                  </div>
-                  <div class="list-items has-two-item">
-                    <div class="item-title">巡检片区：</div>
-                    <div class="item-content">
-                      <span>*****路线</span>
-                      <el-button @click="viewRoute" class="view-button"
-                        >查看路线</el-button
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div class="list-item">
-                  <div class="list-items">
-                    <div class="item-title">备注：</div>
-                    <div class="item-content">
-                      <span>这里是备注内容备注内容备注内容</span>
-                    </div>
-                  </div>
+        <div class="details-box">
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">计划名称：</div>
+              <div class="item-content">
+                <span>{{ planDetails.name }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">负责人：</div>
+              <div class="item-content">
+                <span>{{ planDetails.person }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">巡检片区：</div>
+              <div class="item-content">
+                <span>{{ planDetails.areaId }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">参与人：</div>
+              <div class="item-content">
+                <span>{{ planDetails.participant }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">计划时效：</div>
+              <div class="item-content">
+                <span>{{ planDetails.endTime }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="list-item">
+            <div class="list-items">
+              <div class="item-title">计划周期：</div>
+              <div class="item-content">
+                <div
+                  v-for="(item, index) in planDetails.taskLists"
+                  :key="index"
+                  class="cycle-box">
+                  {{ item.beginTime }}——{{ item.endTime }}
                 </div>
               </div>
-            </el-tab-pane>
-            <el-tab-pane label="设备点巡检信息" name="equipmentInfo">
-              <div class="equipmentInfo-box">
-                <div class="table-box">
-                  <el-table
-                    ref="multipleTable"
-                    :data="tableData"
-                    :stripe="true"
-                    tooltip-effect="dark"
-                    height="400"
-                    style="width: 100%"
-                    :highlight-current-row="true"
-                    @row-click="clickRow"
-                  >
-                    <el-table-column
-                      align="center"
-                      prop="equipmentName"
-                      label="设备名称"
-                    ></el-table-column>
-                    <el-table-column
-                      align="center"
-                      prop="equipmentNumber"
-                      label="设备编号"
-                    ></el-table-column>
-                    <el-table-column
-                      align="center"
-                      prop="equipmentPoints"
-                      label="设备点情况"
-                    ></el-table-column>
-                    <el-table-column
-                      align="center"
-                      prop="inspectionStatus"
-                      label="巡检状态"
-                    ></el-table-column>
-                    <el-table-column align="center" label="操作">
-                      <template slot-scope="scope">
-                        <el-button
-                          type="text"
-                          class="operate-button"
-                          @click="handleSee(scope.$index, scope.row)"
-                          >查看</el-button
-                        >
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </div>
-                <page
-                  :page-data="[30, 40, 50, 100]"
-                  :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
-                ></page>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="巡检路径" name="inspectionPath">
-              <div class="inspectionPath-box">
-                <div class="map-box"></div>
-                <div class="inspectionPath-info-box button-box">
-                  <div class="inspectionPath-info-item">
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        巡检路线：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        *****巡检线路
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        设备点数：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        15个
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        管道长度：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        5.78km
-                      </div>
-                    </div>
-                  </div>
-                  <div class="inspectionPath-info-item">
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        规划路径：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        <el-button type="primary" plain>
-                          显示
-                        </el-button>
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        预计里程：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        1.95km
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        预计花费时间：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        0.10小时
-                      </div>
-                    </div>
-                  </div>
-                  <div class="inspectionPath-info-item">
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        实际路径：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        <el-button type="primary" plain>
-                          隐藏
-                        </el-button>
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        实际花费时间：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        0.00小时
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
+            </div>
+          </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -249,7 +77,6 @@
 </template>
 
 <script>
-import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '../public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
@@ -258,7 +85,6 @@ export default {
   name: 'AddTask',
   props: ['dialogView'],
   components: {
-    Page,
     EquipmentInfo,
     ViewRoute
   },
@@ -359,82 +185,48 @@ export default {
 
 .addTask-box {
   .content-box {
-    .tabs-box {
-      .basicInfo-box {
-        padding: 0 40px;
-
-        .list-item {
-          display: flex;
-          justify-content: space-between;
-          height: 40px;
-          line-height: 40px;
-
-          .list-items {
-            display: flex;
-            flex: 1;
-
-            .item-title,
-            .item-content span {
-              font-size: 12px;
-            }
-
-            .item-title {
-              width: 100px;
-              text-align: right;
-              margin-right: 5px;
-            }
-
-            .item-content {
-              span {
-                color: #999999;
-              }
-
-              .view-button {
-                margin-left: 10px;
-              }
-              /deep/ .el-button {
-                color: #4b77be;
-                border-color: #4b77be;
-              }
-              /deep/ .el-button:hover {
-                background: #4b77be;
-                color: #ffffff;
-              }
-            }
-          }
-          .has-two-item {
-            width: 46%;
-          }
-        }
-      }
-
-      .equipmentInfo-box {
-        .table-box {
-          margin: 0 0 10px 0;
-          border: 1px solid #ddd;
-          box-sizing: border-box;
-        }
-      }
-
-      .inspectionPath-box {
+    .details-box {
+      .list-item {
         display: flex;
         justify-content: space-between;
-        .map-box {
-          width: 70%;
-        }
+        height: 40px;
+        line-height: 40px;
 
-        .inspectionPath-info-box {
+        .list-items {
+          display: flex;
           flex: 1;
-          .inspectionPath-info-item {
-            padding: 20px 15px;
-            border-bottom: 1px dashed #0099cc;
 
-            .inspectionPath-info-items {
-              display: flex;
-              height: 35px;
-              line-height: 35px;
+          .item-title,
+          .item-content span {
+            font-size: 12px;
+          }
+
+          .item-title {
+            width: 100px;
+            text-align: right;
+            margin-right: 5px;
+          }
+
+          .item-content {
+            span {
+              color: #999999;
+            }
+
+            .view-button {
+              margin-left: 10px;
+            }
+            /deep/ .el-button {
+              color: #4b77be;
+              border-color: #4b77be;
+            }
+            /deep/ .el-button:hover {
+              background: #4b77be;
+              color: #ffffff;
             }
           }
+        }
+        .has-two-item {
+          width: 46%;
         }
       }
     }

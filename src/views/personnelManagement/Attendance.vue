@@ -73,7 +73,7 @@ const {mapState, mapActions} = createNamespacedHelpers('personManagement');
 import {parseTime} from '@/utils/index';
 export default {
   name: 'Attendance',
-  props: ['dialogAttend', 'ID'],
+  props: ['dialogAttend', 'attendanceId'],
   components: {
     Page
   },

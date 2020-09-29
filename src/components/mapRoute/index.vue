@@ -694,7 +694,7 @@ export default {
     },
     /*
       以下另个方法参数描述
-      @param {String} str 传入设备信息  '设备编号, 设备名称'  'JL15324, 球墨铸铁'
+      @param {String} str 传入设备信息  '设备编号; 设备名称'  'JL15324, 球墨铸铁'
     */
     // 展示点
     ShowPointFunc(str) {

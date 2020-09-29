@@ -1,9 +1,10 @@
 import request from '@/utils/request';
+import {personApi, api} from '@/api/api.js';
 
 // 获取人员
 export function getPeopleList(data) {
   return request({
-    url: 'services/app/User/GetPersonnelSelector',
+    url: personApi + 'User/GetPersonnelSelector',
     method: 'get',
     params: data
   });
@@ -12,7 +13,7 @@ export function getPeopleList(data) {
 // 获取组织树信息
 export function getOrganizationData() {
   return request({
-    url: 'services/app/Orgagency/GetOrgagencyTreeByPersonnel',
+    url: personApi + 'Orgagency/GetOrgagencyTreeByPersonnel',
     method: 'get'
   });
 }
@@ -20,7 +21,16 @@ export function getOrganizationData() {
 // 获取角色树信息
 export function getRoleData() {
   return request({
-    url: 'services/app/Role/GetRoleTree',
+    url: personApi + 'Role/GetRoleTree',
     method: 'get'
+  });
+}
+
+// 获取片区列表
+export function GetAreaLists(data) {
+  return request({
+    url: api + 'AreaService/GetAreaLists',
+    method: 'post',
+    data
   });
 }

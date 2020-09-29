@@ -10,7 +10,7 @@
       :treedata="lineList"
       :showcheckbox="showcheckbox"
       title="管线图层"
-      @checkedchange="changeLine"
+      @checkedChange="changeLine"
     />
   </div>
 </template>
@@ -22,7 +22,7 @@ const {mapState, mapActions} = createNamespacedHelpers('area');
 export default {
   data() {
     return {
-      showcheckbox: true,
+      showcheckbox: true
     };
   },
   computed: {
@@ -39,11 +39,11 @@ export default {
     nodeClick({nodeData}) {
       console.log(nodeData);
     },
-    changePoint (list) {
-      this.changeCheckedPoint(list)
+    changePoint(list) {
+      this.changeCheckedPoint(list);
     },
-    changeLine (list) {
-      this.changeCheckedLine(list)
+    changeLine(list) {
+      this.changeCheckedLine(list);
     }
   }
 };

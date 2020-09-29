@@ -92,7 +92,7 @@
                   <tr
                     v-for="(item, index) in 20"
                     :key="index"
-                    :class="{'has-bg': index%2 == 0}">
+                    :class="{'has-bg': index % 2 == 0}">
                     <td>5.3</td>
                     <td>观音桥</td>
                     <td>xxxxx公司</td>
@@ -129,7 +129,7 @@
 <script>
 export default {
   name: 'Inspectortable'
-}
+};
 </script>
 
 <style scoped lang="scss">

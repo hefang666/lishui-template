@@ -26,7 +26,8 @@
           <tr
             v-for="(item, index) in 20"
             :key="index"
-            :class="{'has-bg': index%2 == 0}">
+            :class="{'has-bg': index % 2 == 0}"
+          >
             <td style="width: 25%;">重庆市xxxxx有限公司</td>
             <td style="width: 20%;">2020-09-09</td>
             <td style="width: 15%;">25</td>
@@ -62,7 +63,7 @@
 <script>
 export default {
   name: 'Productiontable'
-}
+};
 </script>
 
 <style scoped lang="scss">

@@ -72,7 +72,10 @@
           </div>
           <div class="workOrder-back-box">
             <!-- 查漏、查漏延伸 -->
-            <div v-if="orderDetails.type == 1 || orderDetails.type == 2" class="workOrder-box">
+            <div
+              v-if="orderDetails.type == 1 || orderDetails.type == 2"
+              class="workOrder-box"
+            >
               <!-- 查漏 -->
               <div class="back-box">
                 <div class="back-title">查漏：</div>
@@ -80,7 +83,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 查漏延伸 -->
@@ -90,7 +96,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 查漏地点 -->
@@ -100,14 +109,21 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- 维修管道、维修管道延伸、贫水区改造 -->
             <div
-              v-if="orderDetails.type == 3 || orderDetails.type == 4 || orderDetails.type == 6"
+              v-if="
+                orderDetails.type == 3 ||
+                orderDetails.type == 4 ||
+                orderDetails.type == 6
+              "
               class="workOrder-box"
             >
               <!-- 维修 -->
@@ -117,7 +133,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 改管 -->
@@ -127,7 +146,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 阀门 -->
@@ -137,7 +159,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 消防栓 -->
@@ -147,7 +172,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
               <!-- 贫水区改造地点 -->
@@ -157,7 +185,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -171,7 +202,10 @@
                   <div
                     v-for="(item, index) in 11"
                     :key="index"
-                    class="back-item">{{ item }}</div>
+                    class="back-item"
+                  >
+                    {{ item }}
+                  </div>
                 </div>
               </div>
             </div>

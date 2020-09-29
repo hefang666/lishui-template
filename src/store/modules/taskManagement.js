@@ -6,7 +6,8 @@ import {
   deleteTask,
   GetInspectionPointList,
   GetPointDetails,
-  GetAreaByTaskId
+  GetAreaByTaskId,
+  UpdateTask
 } from '@/api/task';
 import {parseTime} from '@/utils/index.js';
 var state = {
@@ -34,7 +35,9 @@ var state = {
   searchText: '',
   currentPage: 1,
   listTotalCount: 1, // 数据总数
+
   messageText: '', // 提示信息
+
   editModalVisble: false,
   addModalVisible: false,
   checkModalVisible: false,
@@ -62,17 +65,41 @@ var state = {
     type: '',
     typeStr: ''
   },
+  // 修改任务的任务详情
+  taskDetails: {
+    areaId: '',
+    areaName: '',
+    closeReason: null,
+    endTime: null,
+    id: '',
+    name: '',
+    participantIds: [],
+    participants: [],
+    pauseTime: null,
+    person: '',
+    personId: '',
+    planEndTime: '',
+    planStartTime: '',
+    remark: '',
+    resourcelist: [],
+    startTime: null,
+    status: '',
+    statusStr: '',
+    stopReason: null,
+    type: '',
+    typeStr: ''
+  },
   // 设备点巡检信息列表
   inspectionPointList: [],
   // 设备点详情
-  pointDetails: '',
+  pointDetails: {},
   // 任务详情中的巡检路线信息
-  areaDetail: ''
+  areaDetail: {}
 };
 
 var mutations = {
-  set_task_list: function(state, list) {
-    state.taskList = list;
+  set_task_list: function(state, data) {
+    state.taskList = data;
   },
   update_modal_status: function(state, modal) {
     state[modal.name] = modal.status;
@@ -80,7 +107,7 @@ var mutations = {
   // 更新选中的状态（全部、未完成、已完成...）
   update_taskStatus: function(state, data) {
     state.taskStatus = data;
-    console.log(state.sta);
+    console.log(state.taskStatus);
   },
   // 更新搜索条件
   update_search: function(state, data) {
@@ -90,19 +117,16 @@ var mutations = {
   },
   // 更新列表总条数
   set_listTotal: function(state, data) {
-    console.log(data);
     state.listTotalCount = data;
-    console.log(state.listTotalCount);
   },
   // 更新提示消息
   set_message: function(state, data) {
     state.messageText = data;
-    console.log(state.messageText);
   },
   // 设置任务详情信息
   set_taskDetail: function(state, data) {
     state.taskDetail = data;
-    console.log(state.taskDetail);
+    state.taskDetails = data;
   },
   // 设置设备点巡检信息列表
   set_inspectionPointList: function(state, data) {
@@ -123,16 +147,17 @@ var mutations = {
 
 var actions = {
   // 获取数据
-  getTaskList({commit, state}, param) {
-    var data = '';
-    if (state.taskStatus == 0) {
+  getTaskList({commit}, param) {
+    let data = '';
+    console.log(param);
+    if (param.status == 0) {
       data = {
         pageIndex: param.currentPage,
         maxResultCount: param.maxResultCount
       };
     } else {
       data = {
-        status: state.taskStatus - 1,
+        status: param.status,
         pageIndex: param.currentPage,
         maxResultCount: param.maxResultCount
       };
@@ -142,35 +167,37 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
-            response.result.items.forEach(item => {
-              item.planStartTime = parseTime(
-                item.planStartTime,
-                '{y}-{m}-{d} {h}:{i}'
-              );
-              item.planEndTime = parseTime(
-                item.planEndTime,
-                '{y}-{m}-{d} {h}:{i}'
-              );
-              if (item.endTime != null) {
-                item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
-              }
-            });
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                item.planStartTime = parseTime(
+                  item.planStartTime,
+                  '{y}-{m}-{d} {h}:{i}'
+                );
+                item.planEndTime = parseTime(
+                  item.planEndTime,
+                  '{y}-{m}-{d} {h}:{i}'
+                );
+                if (item.endTime != null) {
+                  item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+                }
+              });
+            }
             commit('set_task_list', response.result.items);
             commit('set_listTotal', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
   },
   // 搜索
   searchTask({commit}, param) {
-    var data = {
-      pageIndex: param.pageIndex,
+    console.log(param);
+    let data = {
+      pageIndex: param.currentPage,
       maxResultCount: param.maxResultCount,
       startTime: param.startTime,
       endTime: param.endTime,
@@ -186,6 +213,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -204,11 +232,12 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
   },
-  // 查看、修改
+  // 获取任务详情（查看、修改）
   GetTaskDetails({commit}, data) {
     console.log(data);
     return new Promise((resolve, reject) => {
@@ -231,6 +260,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -248,6 +278,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -265,6 +296,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -283,6 +315,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -294,13 +327,16 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
-            commit('set_pointDetails', response.result);
+            if (response.result != null) {
+              commit('set_pointDetails', response.result);
+            }
             resolve(response);
           } else {
             commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -319,9 +355,33 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
+  },
+  UpdateTask({commit}, data) {
+    return new Promise((resolve, reject) => {
+      UpdateTask(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_message', '修改成功');
+            resolve(response);
+          } else {
+            console.log(response);
+            commit('set_message', response.error.message);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
+  },
+  // 设置提示语
+  setMessage({commit}, data) {
+    commit('set_message', data);
   }
 };
 

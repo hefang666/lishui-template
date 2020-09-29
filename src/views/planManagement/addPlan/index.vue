@@ -51,9 +51,13 @@
                 <div class="content">
                   <div class="list-item-content-box">
                     <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
-                    <el-button type="primary" plain @click="chooseArea"
-                      >选择片区</el-button
+                    <el-button
+                      type="primary"
+                      plain
+                      @click="chooseArea"
                     >
+                      选择片区
+                    </el-button>
                   </div>
                 </div>
               </div>
@@ -69,12 +73,16 @@
                     plain
                     v-for="(item, index) in participants"
                     :key="index"
-                  >{{ item.trueName }}</el-button>
+                  >
+                    {{ item.trueName }}
+                  </el-button>
                   <el-button
                     type="primary"
                     plain
                     @click="choosePar"
-                  >选择人员</el-button>
+                  >
+                    选择人员
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -100,10 +108,11 @@
                               @change="getSelectWeek"
                             >
                               <el-option
-                              v-for="(item, index) in weeklyData"
-                              :key="index"
-                              :label="item.label"
-                              :value="item.value"></el-option>
+                                v-for="(item, index) in weeklyData"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                              ></el-option>
                             </el-select>
                           </div>
                         </div>
@@ -121,10 +130,11 @@
                               @change="getSelectMonth"
                             >
                               <el-option
-                              v-for="(item, index) in monthlyData"
-                              :key="index"
-                              :label="item.label"
-                              :value="item.value"></el-option>
+                                v-for="(item, index) in monthlyData"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                              ></el-option>
                             </el-select>
                           </div>
                         </div>
@@ -134,8 +144,9 @@
                           <div
                             v-for="(item, index) in customNum"
                             :key="index"
-                            class="item-box">
-                            <div class="title-box">第{{item}}次：</div>
+                            class="item-box"
+                          >
+                            <div class="title-box">第{{ item }}次：</div>
                             <div class="item-content-box">
                               <div class="time-box">
                                 <el-date-picker
@@ -157,11 +168,15 @@
                               <div class="icon-box">
                                 <span
                                   :class="[
-                                  'iconfont',
-                                  'icon',
-                                  index == (customNum - 1) ? 'icon-jia' : 'icon-jian'
+                                    'iconfont',
+                                    'icon',
+                                    index == (customNum - 1)
+                                      ? 'icon-jia'
+                                      : 'icon-jian'
                                   ]"
-                                  :data-op="index == (customNum - 1) ? 'jia' : 'jian'"
+                                  :data-op="
+                                    index == (customNum - 1) ? 'jia' : 'jian'
+                                  "
                                   :data-index="index"
                                   @click="operate"
                                 ></span>
@@ -177,7 +192,8 @@
             </div>
             <div
               v-if="activeName == 'weekly' || activeName == 'monthly'"
-              class="list-item">
+              class="list-item"
+            >
               <div class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
@@ -232,7 +248,10 @@ import '@/fonts/iconfont.css';
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: planState, mapActions: planActions} = createNamespacedHelpers('planManagement');
+const {
+  mapState: planState,
+  mapActions: planActions
+} = createNamespacedHelpers('planManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 import {judgeTime, parseTime, mGetDate} from '@/utils/index';
 export default {
@@ -364,9 +383,9 @@ export default {
     // 点击自定义每行后面的操作
     operate() {
       var ev = ev || window.event,
-      target = ev.target || ev.srcElement,
-      opStr = target.getAttribute('data-op'),
-      opIndex = target.getAttribute('data-index');
+        target = ev.target || ev.srcElement,
+        opStr = target.getAttribute('data-op'),
+        opIndex = target.getAttribute('data-index');
       console.log(opIndex);
       if (opStr == 'jia') {
         if (this.customNum < 12) {
@@ -374,7 +393,7 @@ export default {
             startTime: '',
             endTime: ''
           });
-          this.customNum++
+          this.customNum++;
         } else {
           console.log('最多只能添加12条数据');
         }
@@ -389,12 +408,12 @@ export default {
       let user = [];
       if (this.inCharge == '') {
         alert('请选择负责人');
-        return
+        return;
       }
 
       if (this.participants.length == 0) {
         alert('请选择参与人');
-        return
+        return;
       } else {
         this.participants.forEach(item => {
           user.push({
@@ -406,62 +425,48 @@ export default {
 
       if (this.planName == '') {
         alert('请输入计划名称');
-        return
+        return;
       }
 
       if (this.activeName == 'weekly') {
         if (this.selectWeek == '') {
           alert('请选择每周时间');
-          return
+          return;
         } else {
           if (this.timeLimit == '') {
             alert('请选择计划时效');
-            return
+            return;
           }
         }
       } else if (this.activeName == 'monthly') {
         if (this.selectMonth == '') {
           alert('请选择每月时间');
-          return
+          return;
         } else {
           if (this.timeLimit == '') {
             alert('请选择计划时效');
-            return
+            return;
           }
         }
       } else if (this.activeName == 'custom') {
         this.customDate.forEach(item => {
           if (item.startTime == '' || item.endTime == '') {
             alert('请选择自定义时间');
-            return
+            return;
           } else {
-            item.startTime = parseTime(
-              item.startTime,
-              '{y}-{m}-{d} {h}:{i}'
-            );
-            item.endTime = parseTime(
-              item.endTime,
-              '{y}-{m}-{d} {h}:{i}'
-            );
+            item.startTime = parseTime(item.startTime, '{y}-{m}-{d} {h}:{i}');
+            item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
           }
         });
       }
-      
-
 
       // 判断所选时间是否符合要求
       //当前日期
       let startTime = new Date();
-      let start = parseTime(
-          startTime,
-          '{y}-{m}-{d}'
-        );
-      
+      let start = parseTime(startTime, '{y}-{m}-{d}');
+
       // 计划时效日期
-      let limitTime = parseTime(
-          this.timeLimit,
-          '{y}-{m}-{d}'
-        );
+      let limitTime = parseTime(this.timeLimit, '{y}-{m}-{d}');
       if (this.activeName == 'weekly') {
         // 计划时效超过当前日期一周以上
         let interval = 7 * 24;
@@ -469,7 +474,7 @@ export default {
           console.log('符合条件');
         } else {
           alert('时效日期必须超过当前日期一周');
-        };
+        }
       } else if (this.activeName == 'monthly') {
         // 计划时效必须大于等于一个月
         let day = mGetDate();
@@ -485,37 +490,51 @@ export default {
           // 只需要判断第一次的时间是否大于当前时间，后面的日期就大于当前时间了
           if (i == 0) {
             let myDate = new Date();
-            myDate = parseTime(
-              myDate,
-              '{y}-{m}-{d} {h}:{i}'
-            );
+            myDate = parseTime(myDate, '{y}-{m}-{d} {h}:{i}');
             if (judgeTime(this.customDate[i].startTime, myDate)) {
               console.log('符合条件');
-              if (judgeTime(this.customDate[i].startTime, this.customDate[i].endTime, 24)) {
+              if (
+                judgeTime(
+                  this.customDate[i].startTime,
+                  this.customDate[i].endTime,
+                  24
+                )
+              ) {
                 console.log('符合');
               } else {
                 alert('第' + i + '次结束时间未大于开始时间24小时');
-                return
+                return;
               }
             } else {
               alert('第' + i + '次的开始时间未大于当前时间');
-              return
+              return;
             }
           } else {
             // 第二次及以后的自定义时间
             // 判断开始时间是否大于前一次的结束时间
-            if (judgeTime(this.customDate[i].startTime, this.customDate[i - 1].endTime)) {
+            if (
+              judgeTime(
+                this.customDate[i].startTime,
+                this.customDate[i - 1].endTime
+              )
+            ) {
               console.log('符合');
               // 判断结束时间是否大于开始时间
-              if (judgeTime(this.customDate[i].startTime, this.customDate[i].endTime, 24)) {
+              if (
+                judgeTime(
+                  this.customDate[i].startTime,
+                  this.customDate[i].endTime,
+                  24
+                )
+              ) {
                 console.log('符合');
               } else {
                 alert('第' + i + '次的开始时间未大于当前时间');
-                return
+                return;
               }
             } else {
               alert('第' + i + '次的开始时间未大于第' + (i - 1) + '次的结束时间');
-              return
+              return;
             }
 
           }
@@ -534,7 +553,7 @@ export default {
         day: day,
         dateTimeLists: this.customDate,
         user: user
-      }
+      };
 
       console.log(param);
       this.addPlan(param);

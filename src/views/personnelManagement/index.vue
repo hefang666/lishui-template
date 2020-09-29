@@ -12,16 +12,15 @@
             <el-button type="primary" plain>出勤导出</el-button>
           </el-button-group>
           <el-date-picker
-              v-model="month"
-              type="month"
-              class="attendance-box"
-              :picker-options="pickerOptions"
-              placeholder="出勤导出"
-              @change="handechange"
-            >
-            </el-date-picker>
+            v-model="month"
+            type="month"
+            class="attendance-box"
+            :picker-options="pickerOptions"
+            placeholder="出勤导出"
+            @change="handechange"
+          >
+          </el-date-picker>
         </div>
-        
         <el-button type="primary" plain @click="handlexport">导出</el-button>
       </div>
     </div>
@@ -102,10 +101,9 @@
     <!-- 出勤查看弹窗 -->
     <attendance
       :dialog-attend="dialogAttend"
-      :ID="dialogAttendID"
+      :attendance-id="dialogAttendID"
       @getAttendData="getAttendData"
     ></attendance>
-
   </div>
 </template>
 
@@ -179,13 +177,13 @@ export default {
             text: '今日',
             onClick(picker) {
               let date = new Date();
-              picker.$emit('pick', {date, script: '今日'})
+              picker.$emit('pick', {date, script: '今日'});
             }
           },
           {
             text: '清除',
             onClick(picker) {
-              picker.$emit('pick', {script: '清除'})
+              picker.$emit('pick', {script: '清除'});
             }
           }
         ]
@@ -213,17 +211,17 @@ export default {
     },
     // 选择月(出勤导出)
     handechange() {
-      if(this.onlyOne()) {
+      if (this.onlyOne()) {
         // 时间
         let date;
 
-        if(this.month.script != undefined) {
-          if(this.month.script == '今日') {
+        if (this.month.script != undefined) {
+          if (this.month.script == '今日') {
             date = parseTime(this.month.date, '{y}-{m}-{d}');
-          }else if (this.month.script == '清除') {
-            return
+          } else if (this.month.script == '清除') {
+            return;
           }
-        }else {
+        } else {
           date = parseTime(this.month, '{y}-{m}');
         }
         console.log(this.month);
@@ -246,13 +244,13 @@ export default {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
         console.log('只能选择一行数据');
-        return false
+        return false;
       } else {
         return true;
       }
     },
 
-     // 关闭提示消息弹窗
+    // 关闭提示消息弹窗
     closeMessage(data) {
       this.dialogMessage = data;
     },

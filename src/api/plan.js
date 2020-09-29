@@ -27,3 +27,21 @@ export function getPlanDetails(data) {
     data
   });
 }
+
+// 计划状态变更
+export function UpdatePlanStatuById(data) {
+  return request({
+    url: api + 'PlanService/UpdatePlanStatuById',
+    method: 'post',
+    data
+  });
+}
+
+// 删除计划
+export function DeletePlanById(data) {
+  return request({
+    url: api + 'PlanService/DeletePlanById',
+    method: 'post',
+    data
+  });
+}

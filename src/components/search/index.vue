@@ -4,6 +4,8 @@
       :placeholder="placeholder"
       :prefix-icon="icon"
       v-model="searchWords"
+      @input="changeWords"
+      @keyup.enter.native="submit"
     ></el-input>
     <el-button
       v-html="text"
@@ -11,6 +13,7 @@
       @click="submit"
       class="search-button"
       type="primary"
+      :loading="loading"
     ></el-button>
   </div>
 </template>
@@ -32,6 +35,10 @@ export default {
     placeholder: {
       type: String,
       default: '请输入内容'
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -42,6 +49,9 @@ export default {
   methods: {
     submit() {
       this.$emit('submit', this.searchWords);
+    },
+    changeWords(value) {
+      this.$emit('changeSearch', value)
     }
   }
 };

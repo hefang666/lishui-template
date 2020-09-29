@@ -1,4 +1,10 @@
-import {getPlanList, addPlan, getPlanDetails} from '@/api/plan';
+import {
+  getPlanList,
+  addPlan,
+  getPlanDetails,
+  UpdatePlanStatuById,
+  DeletePlanById
+} from '@/api/plan';
 import {mGetDate} from '@/utils/index';
 var state = {
   // 计划列表
@@ -54,6 +60,26 @@ var state = {
   messageText: '',
   // 计划详情
   planDetails: '',
+  // 修改计划详情
+  editPlanDetails: {
+    name: '测试',
+    id: 2,
+    cycle: 2,
+    cycleStr: '每月',
+    personId: 1,
+    person: '张三',
+    areaId: 1,
+    participant: '张三、李四',
+    status: 1,
+    statusStr: '待接收',
+    endTime: '2020',
+    taskLists: [
+      {
+        beginTime: '2020-01-12',
+        endTime: '2020-02-13'
+      }
+    ]
+  },
 
   planStatus: 0,
   searchText: '',
@@ -80,6 +106,10 @@ var mutations = {
   // 设置计划详情
   set_planDetails: function(state, data) {
     state.planDetails = data;
+  },
+  // 设置修改计划详情
+  set_editPlanDetails: function(state, data) {
+    state.editPlanDetails = data;
   }
   // update_modal_status: function(state, modal) {
   //   state[modal.name] = modal.status;
@@ -142,6 +172,40 @@ var actions = {
         .then(response => {
           if (response.success) {
             commit('set_planDetails', response.result);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 设置修改计划的详情
+  changeEdit({commit}, data) {
+    commit('set_editPlanDetails', data);
+  },
+  // 修改计划状态（重启、暂停）
+  UpdatePlanStatuById({commit}, data) {
+    return new Promise((resolve, reject) => {
+      UpdatePlanStatuById(data)
+        .then(response => {
+          if (response.success) {
+            commit('set_message', '成功了');
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 删除计划
+  deletePlan({commit}, data) {
+    return new Promise((resolve, reject) => {
+      DeletePlanById(data)
+        .then(response => {
+          if (response.success) {
+            commit('set_message', '删除成功');
             resolve(response);
           }
         })

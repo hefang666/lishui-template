@@ -16,15 +16,16 @@
                 <div class="content">
                   <div class="list-item-content-box">
                     <el-select
-                    v-model="orderType"
-                    placeholder="请选择工单类型"
-                    @change="selectType"
-                  >
-                    <el-option
-                      v-for="(item,index) in orderTypeData"
-                      :key="index"
-                      :label="item.label"
-                      :value="item.value"></el-option>
+                      v-model="orderType"
+                      placeholder="请选择工单类型"
+                      @change="selectType"
+                    >
+                      <el-option
+                        v-for="(item, index) in orderTypeData"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"
+                      ></el-option>
                     </el-select>
                   </div>
                 </div>
@@ -36,16 +37,21 @@
                 </div>
                 <div class="content">
                   <el-button
-                  class="choose-active"
-                  type="primary"
-                  plain
-                  v-if="inCharge != ''"
-                  v-model="inCharge"
-                  >{{ inCharge }}</el-button
-                >
-                <el-button type="primary" plain @click="choosePerson"
-                  >选择人员</el-button
-                >
+                    class="choose-active"
+                    type="primary"
+                    plain
+                    v-if="inCharge != ''"
+                    v-model="inCharge"
+                  >
+                    {{ inCharge }}
+                  </el-button>
+                  <el-button
+                    type="primary"
+                    plain
+                    @click="choosePerson"
+                  >
+                    选择人员
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -61,7 +67,7 @@
                     :rows="3"
                     v-model="remarks"
                     autocomplete="off"
-                  ></el-input >
+                  ></el-input>
                 </div>
               </div>
             </div>
@@ -74,9 +80,13 @@
                 <div class="content">
                   <div class="list-item-content-box">
                     <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
-                    <el-button type="primary" plain @click="chooseArea"
-                      >选择片区</el-button
+                    <el-button
+                      type="primary"
+                      plain
+                      @click="chooseArea"
                     >
+                      选择片区
+                    </el-button>
                   </div>
                 </div>
               </div>
@@ -160,7 +170,7 @@ export default {
       dialogArea: false,
       // 片区信息
       areaInfo: ''
-    }
+    };
   },
   computed: {
     ...mapState(['orderTypeData'])
@@ -179,7 +189,7 @@ export default {
     choosePerson() {
       this.dialogCharge = true;
     },
-    
+
     // 点击选择片区弹窗
     chooseArea() {
       this.dialogArea = true;
@@ -223,22 +233,22 @@ export default {
     determine() {
       if (this.orderType == '') {
         alert('请选择工单类型');
-        return
+        return;
       }
 
       if (this.inCharge == '') {
         alert('请选择负责人');
-        return
+        return;
       }
 
       if (this.remarks == '') {
         alert('请输入工单内容');
-        return
+        return;
       }
 
       if (this.areaInfo == '') {
         alert('请选择巡检片区');
-        return
+        return;
       }
 
       let param = {
@@ -249,11 +259,11 @@ export default {
         planCompleteTime: '',
         areaId: '',
         resourceInfoList: ''
-      }
+      };
       console.log(param);
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -302,5 +312,4 @@ export default {
     }
   }
 }
-
 </style>

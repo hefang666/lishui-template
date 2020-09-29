@@ -55,7 +55,11 @@
             <td colspan="17">
               <div class="list-box">
                 <table class="water-box" cellspacing="0" cellpadding="0">
-                  <tr class="water-item" v-for="(item, index) in 5" :key="index">
+                  <tr
+                    class="water-item"
+                    v-for="(item, index) in 5"
+                    :key="index"
+                  >
                     <td>测试数据测试数据测试数据</td>
                   </tr>
                 </table>
@@ -95,7 +99,7 @@ export default {
         extraCss: '@/styles/table.scss',
         extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
       }
-    }
+    };
   },
   methods: {
     print() {
@@ -103,7 +107,7 @@ export default {
       this.$print(this.$refs.table);
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

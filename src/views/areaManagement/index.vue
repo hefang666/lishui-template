@@ -2,7 +2,7 @@
   <div class="area-panet">
     <AreaManage></AreaManage>
     <Map ref="map"></Map>
-    <AreaInfo></AreaInfo>
+    <AreaInfo ref="areaInfo"></AreaInfo>
   </div>
 </template>
 

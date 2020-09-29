@@ -1,10 +1,11 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
-    <el-dialog title="选择路线" :visible.sync="dialogArea">
+    <el-dialog
+      title="选择路线"
+      :visible.sync="dialogArea"
+      :before-close="closeChooseArea"
+    >
       <div class="content-box">
-        <div class="cancel-box" @click="closeChooseArea">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
           <div class="table-box">
             <el-table
@@ -24,21 +25,29 @@
               ></el-table-column>
               <el-table-column
                 align="center"
-                prop="pipeLength"
+                prop="pipelineLength"
                 label="管道长度"
               ></el-table-column>
               <el-table-column
                 align="center"
-                prop="number"
+                prop="pointCount"
                 label="设备点数量"
               ></el-table-column>
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
                   <el-button
+                    v-if="type == 'view'"
                     type="text"
                     class="operate-button"
-                    @click="handleSee(scope.$index, scope.row)"
+                    @click="handleSee(scope.row)"
                     >查看</el-button
+                  >
+                  <el-button
+                    v-if="type == 'choose'"
+                    type="text"
+                    class="operate-button"
+                    @click="handleChoose(scope.row)"
+                    >选择设备</el-button
                   >
                 </template>
               </el-table-column>
@@ -46,7 +55,7 @@
           </div>
           <page
             :page-data="[30, 40, 50, 100]"
-            :total="400"
+            :total="areaTotal"
             @changePageSize="changePageSize"
             @changeCurrentPage="changeCurrentPage"
           ></page>
@@ -61,6 +70,7 @@
     <!-- 查看路线弹窗 -->
     <view-route
       :dialog-route="dialogRoute"
+      :typestr="typeStr"
       @getRouteData="getRouteData"
     ></view-route>
   </div>
@@ -70,25 +80,41 @@
 import Page from '@/components/page/Page.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('xunjianPublic');
+const {mapState: xunjianState} = createNamespacedHelpers('xunjianPublic');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'ChooseArea',
-  props: ['dialogArea'],
+  props: ['dialogArea', 'type'],
   components: {
     Page,
     ViewRoute
   },
   data() {
     return {
+      // 搜素的关键字
       searchWords: '',
+
+      // 选择的片区信息
       areaInfo: '',
-      dialogRoute: false
+
+      // 是否显示查看路线弹窗
+      dialogRoute: false,
+
+      // 查看还是选择
+      typeStr: '',
+
+      // 选择的设备信息
+      equiInfo: [],
+
+      // 选择的管道信息
+      conInfo: []
     };
   },
   computed: {
-    ...mapState(['areaList'])
+    ...xunjianState(['areaList', 'areaTotal'])
   },
   methods: {
+    ...areaActions(['getAreaDetailInfo']),
     closeChooseArea() {
       let data = {
         dialogArea: false
@@ -101,17 +127,37 @@ export default {
     },
     // 点击确定
     determine() {
-      if (this.areaInfo == '') {
-        alert('请选择巡检片区！');
-        return;
-      } else {
-        let data = {
-          areaInfo: this.areaInfo,
-          dialogArea: false
-        };
+      if (this.type == 'choose') {
+        if (this.areaInfo == '') {
+          alert('请选择巡检片区！');
+          return;
+        } else if (this.equiInfo.length != 0 || this.conInfo.length != 0) {
+          let data = {
+            areaInfo: this.areaInfo,
+            equiInfo: this.equiInfo,
+            conInfo: this.conInfo,
+            dialogArea: false,
+            type: 'choose'
+          };
+          this.$emit('checkedArea', data);
+        } else {
+          alert('请选择设备!');
+        }
+      } else if (this.type == 'view') {
+        if (this.areaInfo == '') {
+          alert('请选择巡检片区！');
+          return;
+        } else {
+          let data = {
+            areaInfo: this.areaInfo,
+            dialogArea: false,
+            type: 'view'
+          };
 
-        this.$emit('checkedArea', data);
+          this.$emit('checkedArea', data);
+        }
       }
+      
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -122,12 +168,32 @@ export default {
       console.log(data);
     },
     // 查看按钮
-    handleSee() {
+    handleSee(row) {
+      console.log(row);
+      let param = {
+        Id: row.id
+      }
+      this.getAreaDetailInfo(param);
+      this.typeStr = 'view';
+      this.dialogRoute = true;
+    },
+    handleChoose(row) {
+      let param = {
+        Id: row.id
+      }
+      this.getAreaDetailInfo(param);
+      this.typeStr = 'choose';
       this.dialogRoute = true;
     },
     // 关闭查看路线弹窗
     getRouteData(data) {
+      console.log(data);
       this.dialogRoute = data.dialogRoute;
+
+      if (this.typeStr == 'choose') {
+        this.equiInfo = data.equiInfo;
+        this.conInfo = data.conInfo;
+      }
     }
   },
   mounted() {}
@@ -153,6 +219,7 @@ export default {
   .table-box {
     margin: 0 0 10px 0;
     border: 1px solid #ddd;
+    border-bottom: none;
     box-sizing: border-box;
     .el-table--striped
       .el-table__body

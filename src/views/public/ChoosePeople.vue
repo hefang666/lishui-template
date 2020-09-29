@@ -1,17 +1,19 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
-    <el-dialog title="选择人员" :visible="dialogCharge">
+    <el-dialog
+      title="选择人员"
+      :visible="dialogCharge"
+      :before-close="closeChoosePeople"
+    >
       <div class="content-box">
-        <div class="cancel-box" @click="closeChoosePeople">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
           <div class="content-left">
             <div class="select_box">
               <el-select
                 v-model="typeSelectValue"
                 placeholder="请选择"
-                @change="getType">
+                @change="getType"
+              >
                 <el-option
                   v-for="item in selectData"
                   :key="item.value"
@@ -65,15 +67,24 @@
                   prefix-icon="el-icon-search"
                   v-model="searchWords"
                 ></el-input>
-                <el-button class="search-button" type="primary" @click="searchPeople">查询</el-button>
+                <el-button
+                  class="search-button"
+                  type="primary"
+                  @click="searchPeople"
+                >
+                  查询
+                </el-button>
               </div>
               <div class="selected-person-box">
                 <div class="selected-button">
                   <el-button type="primary" @click="changeShowBox">
                     已选人员
                     <i
-                      :class="showSelectBox == true ? 'el-icon-arrow-up' :
-                        'el-icon-arrow-down'"
+                      :class="
+                        showSelectBox == true
+                          ? 'el-icon-arrow-up'
+                          : 'el-icon-arrow-down'
+                      "
                     ></i>
                   </el-button>
                 </div>
@@ -126,11 +137,10 @@
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column
                   prop="loginAccount"
-                  label="账号"></el-table-column>
-                <el-table-column prop="nickName" label="姓名"
+                  label="账号"
                 ></el-table-column>
-                <el-table-column prop="orgName" label="部门"
-                ></el-table-column>
+                <el-table-column prop="nickName" label="姓名"></el-table-column>
+                <el-table-column prop="orgName" label="部门"></el-table-column>
                 <el-table-column
                   prop="mobile"
                   label="联系方式"
@@ -219,12 +229,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(['personList', 'organizationData', 'pinData', 'roleData', 'persontotalCount']),
-
-    dialogChange:function() {
-      console.log(this.dialogCharge);
-      return this.dialogCharge
-    }
+    ...mapState([
+      'personList',
+      'organizationData',
+      'pinData',
+      'roleData',
+      'persontotalCount'
+    ])
   },
   methods: {
     ...mapActions(['getPeopleList', 'getOrganizationData']),
@@ -295,9 +306,9 @@ export default {
     },
     // 点击树形节点（角色）并查询人员
     getRoleNode(data) {
-      if(data.nodeData.disabled) {
+      if (data.nodeData.disabled) {
         this.typeId = 0;
-        return
+        return;
       }
       this.typeId = data.nodeData.id;
       let param = {
@@ -311,18 +322,18 @@ export default {
     },
     // 点击搜索
     searchPeople() {
-      if(this.searchWords == '') {
+      if (this.searchWords == '') {
         alert('请输入选择关键字');
-        return
+        return;
       }
-      
+
       let param = {
         SelectType: this.typeSelectValue,
         TypeId: this.typeId,
         PageIndex: this.currentPage,
         MaxResultCount: this.pageSize,
         IsContainSublevel: false
-      }
+      };
       this.getPeopleList(param);
     }
   }
@@ -339,7 +350,7 @@ export default {
     .content_box {
       display: flex;
       justify-content: space-between;
-      
+
       .content-left {
         width: 228px;
         margin-right: 14px;

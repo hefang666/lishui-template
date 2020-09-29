@@ -160,7 +160,8 @@
                       <div
                         v-for="(item, index) in orderDetails.resourcelist"
                         :key="index"
-                        class="enclosure-item">
+                        class="enclosure-item"
+                      >
                         <div class="enclosure-title">{{ item.fileName }}</div>
                         <div class="enclosure-download">下载</div>
                         <div class="enclosure-preview">预览</div>

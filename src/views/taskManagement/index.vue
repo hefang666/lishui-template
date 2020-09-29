@@ -19,7 +19,9 @@
           type="primary"
           plain
           @click="showScreen"
-        >{{ screen }}</el-button>
+        >
+          {{ screen }}
+        </el-button>
       </div>
       <div class="header-right">
         <el-button-group>
@@ -48,7 +50,10 @@
       </div>
       <div class="item-box">
         <div class="item has-two">
-          <div class="item-title">预计开始时间：</div>
+          <div class="item-title">
+            <span class="tips">*</span>
+            计划开始时间：
+          </div>
           <div class="item-content">
             <el-date-picker
               v-model="startTime"
@@ -58,7 +63,10 @@
           </div>
         </div>
         <div class="item has-two">
-          <div class="item-title">预计结束时间：</div>
+          <div class="item-title">
+            <span class="tips">*</span>
+            计划结束时间：
+          </div>
           <div class="item-content">
             <el-date-picker
               v-model="endTime"
@@ -70,7 +78,7 @@
       </div>
       <div class="button-group-box">
         <el-button type="primary" plain @click="search">搜索</el-button>
-        <el-button type="primary" plain>清空</el-button>
+        <el-button type="primary" plain @click="clearSearch">清空</el-button>
       </div>
     </div>
     <div class="content-box">
@@ -135,27 +143,53 @@
             label="任务状态"
             show-overflow-tooltip
           ></el-table-column>
-          <!-- <el-table-column label="操作" width="180">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
                   type="text"
-                  :class="['operate-button', scope.row['status'] != 3 ? 'operate-button-active' : '']"
+                  :class="
+                    [
+                      'operate-button',
+                      scope.row['status'] != 3 ?
+                      'operate-button-active' :
+                        ''
+                    ]
+                  "
                   :disabled="scope.row['status'] != 3 ? disabledTrue : disabledFalse"
-                  @click="handleClose(scope.$index, scope.row)"
+                  @click="handleClose(scope.row)"
                   >关闭</el-button
                 >
                 <el-button
                   type="text"
-                  class="operate-button"
-                  @click="handleComplete(scope.$index, scope.row)"
+                  :class="[
+                    'operate-button',
+                    (scope.row['status'] == 2 ||
+                    scope.row['status'] == 4)
+                    ? ''
+                    : 'operate-button-active'
+                  ]"
+                  :disabled="
+                    (scope.row['status'] == 2 ||
+                    scope.row['status'] == 4) ? disabledTrue : disabledFalse
+                  "
+                  @click="handleComplete(scope.row)"
                   >完成</el-button
                 >
                 <el-button
                   type="text"
-                  :class="['operate-button', (scope.row['status'] == 1 || scope.row['status'] == 3) ? '' : 'operate-button-active']"
-                  :disabled="(scope.row['status'] == 1 || scope.row['status'] == 3) ? disabledFalse : disabledTrue"
-                  @click="handleEdit(scope.$index, scope.row)"
+                  :class="[
+                    'operate-button',
+                    (scope.row['status'] == 1 ||
+                    scope.row['status'] == 3) 
+                    ? '' 
+                    : 'operate-button-active']"
+                  :disabled="(
+                    scope.row['status'] == 1 ||
+                    scope.row['status'] == 3) 
+                    ? disabledFalse
+                    : disabledTrue"
+                  @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
                 <el-button
@@ -166,7 +200,7 @@
                 >
               </div>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -196,11 +230,19 @@
     ></operate>
 
     <!-- 新增任务弹框 -->
-    <add-task :dialog-add="dialogAdd" @getAddData="getAddData"></add-task>
+    <add-task
+      :dialog-add="dialogAdd"
+      @closeAdd="closeAdd"
+    ></add-task>
+
     <!-- 查看任务弹窗 -->
     <view-task :dialog-view="dialogView" @getViewData="getViewData"></view-task>
     <!-- 修改任务的弹窗 -->
-    <edit-task :dialog-edit="dialogEdit" @getEditData="getEditData"></edit-task>
+    <edit-task
+      :dialog-edit="dialogEdit"
+      @closeEdit="closeEdit"
+      @getEditData="getEditData"
+    ></edit-task>
   </div>
 </template>
 
@@ -212,7 +254,8 @@ import EditTask from './editTask/EditTask.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+import {parseTime} from '@/utils/index';
 export default {
   name: 'TaskManagement',
   components: {
@@ -224,7 +267,7 @@ export default {
     Operate
   },
   computed: {
-    ...mapState(['taskList', 'listTotalCount'])
+    ...taskState(['taskList', 'listTotalCount', 'messageText'])
   },
   data() {
     return {
@@ -242,6 +285,9 @@ export default {
 
       // 当前分页
       currentPage: 1,
+
+      // 当前页的页数
+      pageSize: 30,
 
       // 传入store的page的信息
       pageInfo: {
@@ -287,9 +333,6 @@ export default {
       // 是否显示消息提示弹窗
       dialogMessage: false,
 
-      // 提示消息
-      messageText: '',
-
       // 是否显示操作提示弹窗
       dialogOperate: false,
 
@@ -301,7 +344,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['getTaskList', 'searchTask', 'GetTaskDetails', 'deleteTask','UpdateTaskStatus']),
+    ...taskActions([
+      'getTaskList',
+      'searchTask',
+      'GetTaskDetails',
+      'deleteTask',
+      'UpdateTaskStatus',
+      'setMessage'
+    ]),
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -311,15 +361,17 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
-        this.messageText = '请选择要操作数据';
+        // console.log('请选择要操作数据');
+        this.setMessage('请选择要操作数据');
+        // this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
-        this.messageText = '只能选择一行数据';
+        // this.messageText = '只能选择一行数据';
+        this.setMessage('只能选择一行数据');
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
-        return false
+        // console.log('只能选择一行数据');
+        return false;
       } else {
         return true;
       }
@@ -338,7 +390,9 @@ export default {
           this.operateType = 'restart';
           this.dialogOperate = true;
         } else {
-          this.messageText = '该状态不能重启';
+          // 只能选择一行数据
+          this.setMessage('该状态不能重启');
+          // this.messageText = '该状态不能重启';
           this.dialogMessage = true;
         }
       }
@@ -347,7 +401,8 @@ export default {
     // 删除任务
     del() {
       if (this.multipleSelection.length == 0) {
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
+        // this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -358,7 +413,9 @@ export default {
             flag = true;
           } else {
             flag = false;
-            this.messageText = '只允许删除已暂停和已关闭的任务';
+            this.setMessage('只允许删除已暂停和已关闭的任务');
+            // this.messageText = '只允许删除已暂停和已关闭的任务';
+           
             this.dialogMessage = true;
           }
         });
@@ -376,7 +433,8 @@ export default {
     suspend() {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 2) {
-          this.messageText = '该状态不能暂停';
+          this.setMessage('该状态不能暂停');
+          // this.messageText = '该状态不能暂停';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -392,7 +450,8 @@ export default {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].statusList != 3) {
           // 关闭任务只能对已暂停状态的任务进行
-          this.messageText = '该状态不能关闭';
+          this.setMessage('该状态不能关闭');
+          // this.messageText = '该状态不能关闭';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -403,25 +462,50 @@ export default {
       }
     },
 
+    // 操作栏里的关闭
+    handleClose(row) {
+      let param = {
+        Id: row.id,
+        operate: 4
+      };
+      this.UpdateTaskStatus(param);
+    },
+
     // 完成任务
     complete() {
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].status == 2 || this.multipleSelection[0].status == 4) {
+        if (
+          this.multipleSelection[0].status == 2 ||
+          this.multipleSelection[0].status == 4
+        ) {
           // 操作弹窗
           this.messageT = '请确认操作';
           this.operateType = 'complete';
           this.dialogOperate = true;
         } else {
-          this.messageText = '该状态不能完成';
+          this.setMessage('该状态不能完成');
+          // this.messageText = '该状态不能完成';
           this.dialogMessage = true;
         }
       }
     },
-    
+
+    // 操作栏里的完成
+    handleComplete(row) {
+      let param = {
+        Id: row.id,
+        operate: 2
+      };
+      this.UpdateTaskStatus(param);
+    },
+
     // 修改任务
     modify() {
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].status == 1 || this.multipleSelection[0].status == 3) {
+        if (
+          this.multipleSelection[0].status == 1 ||
+          this.multipleSelection[0].status == 3
+        ) {
           // 执行修改操作
           // 获取当前选中行的详细信息
           let param = {
@@ -430,10 +514,20 @@ export default {
           this.GetTaskDetails(param);
           this.dialogEdit = true;
         } else {
-          this.messageText = '该状态不能修改';
+          this.setMessage('该状态不能修改');
+          // this.messageText = '该状态不能修改';
           this.dialogMessage = true;
         }
       }
+    },
+
+    // 操作栏里的修改
+    handleEdit(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetTaskDetails(param);
+      this.dialogEdit = true;
     },
 
     // 查看任务
@@ -444,8 +538,18 @@ export default {
           Id: this.multipleSelection[0].id
         };
         this.GetTaskDetails(param);
+        this.
         this.dialogView = true;
       }
+    },
+
+    // 操作栏里的查看
+    handleSee(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetTaskDetails(param);
+      this.dialogView = true;
     },
 
     // 关闭提示消息弹窗
@@ -463,11 +567,18 @@ export default {
       }
     },
 
-    // 按状态筛选则并为input添加样式
+    // 按状态筛选则并为input添加样式并筛选
     searchConditional(index) {
       this.currentState = index;
       this.$store.commit('taskManagement/update_taskStatus', index);
-      this.getTaskList(this.pageInfo);
+      let param = {
+        currentPage: 1,
+        maxResultCount: 30,
+        status: index
+      };
+      console.log(index);
+      console.log(param);
+      this.getTaskList(param);
     },
 
     // 筛选
@@ -479,7 +590,8 @@ export default {
         this.$message('请选择结束日期');
         return;
       } else {
-        console.log(this.startTime);
+        this.startTime = parseTime(this.startTime, '{y}-{m}-{d}');
+        this.endTime = parseTime(this.endTime, '{y}-{m}-{d}');
         let data = {
           currentPage: this.currentPage,
           maxResultCount: this.pageSize,
@@ -492,22 +604,40 @@ export default {
       }
     },
 
+    // 清空搜索
+    clearSearch() {
+      this.isScreen = !this.isScreen;
+      this.startTime = '';
+      this.endTime = '';
+      this.taskName = '';
+    },
+
     // 打开新增弹窗
     addTask() {
       this.dialogAdd = true;
     },
     // 关闭新增弹窗
-    getAddData(data) {
+    closeAdd(data) {
       console.log(data);
-      this.dialogAdd = data.dialogAdd;
+      this.dialogAdd = data;
+    },
+    // 执行新增后的操作
+    getAddData(data) {
+      this.dialogAdd = data;
+      this.dialogMessage = true;
     },
     // 关闭查看弹窗
     getViewData(data) {
       this.dialogView = data.dialogView;
     },
     // 关闭修改弹窗
+    closeEdit(data) {
+      this.dialogEdit = data;
+    },
+    // 修改后的操作
     getEditData(data) {
-      this.dialogEdit = data.dialogEdit;
+      this.dialogEdit = data;
+      this.dialogMessage = true;
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(num) {
@@ -519,7 +649,6 @@ export default {
       this.currentPage = cur;
       this.pageInfo.currentPage = cur;
       this.getTaskList(this.pageInfo);
-      console.log(this.listTotalCount);
     },
 
     // 关闭操作提示弹窗
@@ -563,8 +692,12 @@ export default {
     }
   },
   mounted() {
-    this.getTaskList(this.pageInfo);
-    console.log(this.listTotalCount);
+    let param = {
+      currentPage: 1,
+      maxResultCount: 30,
+      status: this.currentState
+    };
+    this.getTaskList(param);
   }
 };
 </script>
@@ -615,6 +748,9 @@ export default {
           line-height: 28px;
           font-size: 12px;
           margin-right: 5px;
+          .tips {
+            color: red;;
+          }
         }
 
         .item-content {

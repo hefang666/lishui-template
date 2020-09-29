@@ -104,8 +104,7 @@
 export default {
   name: 'MaintenanceTeam',
   data() {
-    return {
-    }
+    return {};
   }
 }
 </script>
