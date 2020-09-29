@@ -5,7 +5,6 @@ import {
   GetAreaLists
 } from '@/api/other';
 import {filterArray, addIcon, processingNodes} from '@/utils/index';
-// import { reject, resolve } from 'core-js/fn/promise';
 
 var state = {
   // 组织树数据

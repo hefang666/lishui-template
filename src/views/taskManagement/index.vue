@@ -290,10 +290,10 @@ export default {
       pageSize: 30,
 
       // 传入store的page的信息
-      pageInfo: {
-        currentPage: 1,
-        maxResultCount: 30
-      },
+      // pageInfo: {
+      //   currentPage: 1,
+      //   maxResultCount: 30
+      // },
 
       // 是否显示新增弹窗
       dialogAdd: false,
@@ -361,16 +361,12 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        // console.log('请选择要操作数据');
         this.setMessage('请选择要操作数据');
-        // this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
-        // this.messageText = '只能选择一行数据';
         this.setMessage('只能选择一行数据');
         this.dialogMessage = true;
-        // console.log('只能选择一行数据');
         return false;
       } else {
         return true;
@@ -382,7 +378,6 @@ export default {
       console.log(this.onlyOne());
       // 返回为真时进行下一步
       if (this.onlyOne()) {
-        // let id = this.multipleSelection[0].id;
         if (this.multipleSelection[0].status == 3) {
           // 状态为3可暂停，其他状态无法重启
           // 操作弹窗
@@ -392,7 +387,6 @@ export default {
         } else {
           // 只能选择一行数据
           this.setMessage('该状态不能重启');
-          // this.messageText = '该状态不能重启';
           this.dialogMessage = true;
         }
       }
@@ -402,7 +396,6 @@ export default {
     del() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
-        // this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -414,8 +407,6 @@ export default {
           } else {
             flag = false;
             this.setMessage('只允许删除已暂停和已关闭的任务');
-            // this.messageText = '只允许删除已暂停和已关闭的任务';
-           
             this.dialogMessage = true;
           }
         });
@@ -434,7 +425,6 @@ export default {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 2) {
           this.setMessage('该状态不能暂停');
-          // this.messageText = '该状态不能暂停';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -451,7 +441,6 @@ export default {
         if (this.multipleSelection[0].statusList != 3) {
           // 关闭任务只能对已暂停状态的任务进行
           this.setMessage('该状态不能关闭');
-          // this.messageText = '该状态不能关闭';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -484,7 +473,6 @@ export default {
           this.dialogOperate = true;
         } else {
           this.setMessage('该状态不能完成');
-          // this.messageText = '该状态不能完成';
           this.dialogMessage = true;
         }
       }
@@ -496,7 +484,13 @@ export default {
         Id: row.id,
         operate: 2
       };
-      this.UpdateTaskStatus(param);
+      this.UpdateTaskStatus(param).then(res => {
+        if (res.success) {
+          this.dialogMessage = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 修改任务
@@ -511,11 +505,15 @@ export default {
           let param = {
             Id: this.multipleSelection[0].id
           };
-          this.GetTaskDetails(param);
-          this.dialogEdit = true;
+          this.GetTaskDetails(param).then(res => {
+            if (res.success) {
+              this.dialogEdit = true;
+            }
+          }).catch(() => {
+            this.dialogMessage = true;
+          });
         } else {
           this.setMessage('该状态不能修改');
-          // this.messageText = '该状态不能修改';
           this.dialogMessage = true;
         }
       }
@@ -526,8 +524,13 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param);
-      this.dialogEdit = true;
+      this.GetTaskDetails(param).then(res => {
+        if (res.success) {
+          this.dialogEdit = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 查看任务
@@ -537,9 +540,13 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetTaskDetails(param);
-        this.
-        this.dialogView = true;
+        this.GetTaskDetails(param).then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       }
     },
 
@@ -548,8 +555,13 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param);
-      this.dialogView = true;
+      this.GetTaskDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 关闭提示消息弹窗
@@ -571,14 +583,7 @@ export default {
     searchConditional(index) {
       this.currentState = index;
       this.$store.commit('taskManagement/update_taskStatus', index);
-      let param = {
-        currentPage: 1,
-        maxResultCount: 30,
-        status: index
-      };
-      console.log(index);
-      console.log(param);
-      this.getTaskList(param);
+      this.getData();
     },
 
     // 筛选
@@ -599,8 +604,10 @@ export default {
           startTime: this.startTime,
           endTime: this.endTime
         };
-        console.log(data);
-        this.searchTask(data);
+        this.searchTask(data).catch(() => {
+          this.dialogMessage = true;
+        });
+        this.clearSearch();
       }
     },
 
@@ -641,14 +648,13 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(num) {
-      this.pageInfo.maxResultCount = num;
-      this.getTaskList(this.pageInfo);
+      this.pageSize = num;
+      this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(cur) {
       this.currentPage = cur;
-      this.pageInfo.currentPage = cur;
-      this.getTaskList(this.pageInfo);
+      this.getData();
     },
 
     // 关闭操作提示弹窗
@@ -689,15 +695,21 @@ export default {
         param.operate = 2;
         this.UpdateTaskStatus(param);
       }
+    },
+    // 获取数据
+    getData() {
+      let param = {
+        currentPage: this.currentPage,
+        maxResultCount: this.pageSize,
+        status: this.currentState
+      };
+      this.getTaskList(param).catch(() => {
+        this.dialogMessage = true;
+      });
     }
   },
   mounted() {
-    let param = {
-      currentPage: 1,
-      maxResultCount: 30,
-      status: this.currentState
-    };
-    this.getTaskList(param);
+    this.getData();
   }
 };
 </script>

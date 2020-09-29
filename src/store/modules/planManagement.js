@@ -5,7 +5,7 @@ import {
   UpdatePlanStatuById,
   DeletePlanById
 } from '@/api/plan';
-import {mGetDate} from '@/utils/index';
+import {mGetDate, parseTime} from '@/utils/index';
 var state = {
   // 计划列表
   planList: [
@@ -80,6 +80,8 @@ var state = {
       }
     ]
   },
+  // 计划列表总数
+  planTotal: 1,
 
   planStatus: 0,
   searchText: '',
@@ -110,6 +112,10 @@ var mutations = {
   // 设置修改计划详情
   set_editPlanDetails: function(state, data) {
     state.editPlanDetails = data;
+  },
+  // 设置计划列表总数
+  set_planTotal: function(state, data) {
+    state.planTotal = data;
   }
   // update_modal_status: function(state, modal) {
   //   state[modal.name] = modal.status;
@@ -129,11 +135,20 @@ var actions = {
       getPlanList(data)
         .then(response => {
           if (response.success) {
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.endTime != null || item.endTime != '') {
+                  item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+                }
+              });
+            }
             commit('set_plan_list', response.result.items);
+            commit('set_planTotal', response.result.totalCount);
             resolve(response);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -144,7 +159,7 @@ var actions = {
     let monthData = [];
     for (let i = 1; i <= day; i++) {
       monthData.push({
-        label: i + '天',
+        label: i + '号',
         value: i
       });
     }
@@ -161,6 +176,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -176,6 +192,7 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -190,11 +207,12 @@ var actions = {
       UpdatePlanStatuById(data)
         .then(response => {
           if (response.success) {
-            commit('set_message', '成功了');
+            commit('set_message', '操作成功');
             resolve(response);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -210,6 +228,35 @@ var actions = {
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
+  },
+  // 设置消息信息
+  setMessage({commit}, data) {
+    commit('set_message', data);
+  },
+  // 查询
+  searchPlan({commit}, data) {
+    return new Promise((resolve, reject) => {
+      getPlanList(data)
+        .then(response => {
+          if (response.success) {
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.endTime != null || item.endTime != '') {
+                  item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+                }
+              });
+            }
+            commit('set_plan_list', response.result.items);
+            commit('set_planTotal', response.result.totalCount);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });

@@ -7,8 +7,8 @@
       <div class="header-right button-box">
         <div class="date-box">
           <el-button-group>
-            <el-button type="primary" plain>查看</el-button>
-            <el-button type="primary" plain>出勤查看</el-button>
+            <el-button type="primary" plain @click="See">查看</el-button>
+            <el-button type="primary" plain @click="attenadanceSee">出勤查看</el-button>
             <el-button type="primary" plain>出勤导出</el-button>
           </el-button-group>
           <el-date-picker
@@ -57,13 +57,13 @@
             label="今日离线时间"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="工作情况" min-width="200">
+          <el-table-column label="工作情况" min-width="70">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="handleSee(scope.$index, scope.row)"
+                  @click="handleSee(scope.row)"
                   >查看</el-button
                 >
                 <el-button
@@ -144,7 +144,7 @@ export default {
       currentPage: 1,
 
       // 多少页
-      maxResultCount: 30,
+      pageSize: 30,
 
       // 总数
       total: 0,
@@ -194,14 +194,14 @@ export default {
     this.tableinfo();
   },
   methods: {
-    ...mapActions(['GetByDay', 'GetByUserId']),
+    ...mapActions(['GetByDay', 'GetByUserId', 'getDetails']),
     // 初始化table
     tableinfo(oneDay, userName) {
       let data = {
         oneDay,
         userName,
         pageIndex: this.currentPage,
-        maxResultCount: this.maxResultCount
+        maxResultCount: this.pageSize
       };
       console.log(data);
       this.GetByDay(data);
@@ -257,21 +257,54 @@ export default {
 
     // 导出
     handlexport() {},
+
     // table选择
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+
     handlesubmit(userName) {
       this.userName = userName;
       this.tableinfo('', userName);
     },
-    // 点击查看
-    handleSee(index, row) {
-      console.log(index, row);
-      this.dialogWorking = true;
+
+    // 查看
+    See() {
+      if (this.onlyOne()) {
+        console.log('符合条件');
+        let param = {
+          id: this.multipleSelection[0].userId
+        };
+        this.getDetails(param).then(res => {
+          if (res.success) {
+            this.dialogWorking = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
+      }
+    },
+
+    // 点击表格里查看
+    handleSee(row) {
+      console.log(row);
+      let param = {
+        id: row.userId
+      };
+      this.getDetails(param).then(res => {
+        if (res.success) {
+          this.dialogWorking = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
+      
     },
 
     // 出勤查看
+    attenadanceSee() {},
+
+    // 点击表格里的出勤查看
     AttenadanceCheck(row) {
       this.dialogAttendID = row.userId;
       let param = {

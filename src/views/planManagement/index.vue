@@ -18,7 +18,11 @@
           </el-button-group>
         </div>
         <div class="left-search">
-          <snt-search :placeholder="'请输入任务名称'" />
+          <snt-search
+          :placeholder="'请输入任务名称'"
+          @changeSearch="getSearchText"
+          @submit="search"
+          />
         </div>
       </div>
       <div class="header-right">
@@ -40,6 +44,7 @@
           :stripe="true"
           tooltip-effect="dark"
           height="830"
+          border
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
@@ -50,7 +55,7 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="cycle"
+            prop="cycleStr"
             label="巡检周期"
           ></el-table-column>
           <el-table-column
@@ -75,13 +80,22 @@
           ></el-table-column>
           <el-table-column
             label="操作"
-            width="120"
+            width="100"
           >
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
                   type="text"
                   class="operate-button"
+                  :class="
+                    [
+                      'operate-button',
+                      scope.row['status'] != 2 ?
+                      'operate-button-active' :
+                        ''
+                    ]
+                  "
+                  :disabled="scope.row['status'] != 2 ? disabledTrue : disabledFalse"
                   @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
@@ -98,12 +112,13 @@
       </div>
       <page
         :page-data="[30, 40, 50, 100]"
-        :total="400"
+        :total="planTotal"
       ></page>
     </div>
     <!-- 新增任务弹框 -->
     <add-plan
       :dialog-add="dialogAdd"
+      @closeAdd="closeAdd"
       @getAddData="getAddData"
     ></add-plan>
 
@@ -167,11 +182,17 @@ export default {
         '已到期'
       ],
 
+      disabledTrue: true,
+      disabledFalse: false,
+
       // 当前活动状态
       currentState: 0,
 
       // table多选后的数据
       multipleSelection: [],
+
+      // 搜索文字
+      searchText: '',
 
       // 当前分页
       currentPage: 1,
@@ -186,13 +207,10 @@ export default {
       dialogView: false,
 
       // 是否打开修改弹窗
-      dialogEdit: true,
+      dialogEdit: false,
 
       // 是否显示消息提示弹窗
       dialogMessage: false,
-
-      // 提示消息
-      messageText: '',
 
       // 是否显示操作提示弹窗
       dialogOperate: false,
@@ -211,7 +229,7 @@ export default {
     this.getData();
   },
   computed: {
-    ...mapState(['planList', 'planDetails'])
+    ...mapState(['planList', 'planDetails', 'messageText', 'planTotal'])
   },
   methods: {
     ...mapActions([
@@ -220,25 +238,26 @@ export default {
       'getPlanDetails',
       'changeEdit',
       'UpdatePlanStatuById',
-      'deletePlan'
+      'deletePlan',
+      'setMessage',
+      'searchPlan',
     ]),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentState = index;
       this.$store.commit('taskManagement/update_taskStatus', index);
-      this.getTaskList(this.pageInfo);
+      
+      this.getData();
     },
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
-        this.messageText = '只能选择一行数据';
+        this.setMessage('只能选择一行数据');
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
         return false;
       } else {
         return true;
@@ -251,41 +270,91 @@ export default {
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       };
-      console.log(param);
-      this.getPlanList(param);
+      this.getPlanList(param).catch(() => {
+        this.dialogMessage = true;
+      });
     },
+
+    // 获取搜索文字
+    getSearchText(data) {
+      this.searchText = data;
+    },
+
+    // 点击了搜索
+    search(data) {
+      console.log(data);
+      if (data == '') {
+        this.setMessage('请输入搜索关键字');
+        this.dialogMessage = true;
+        return;
+      } else {
+        let param = {
+          pageIndex: 1,
+          maxResultCount: 30,
+          name: data
+        }
+        console.log(param);
+        this.searchPlan(param).catch(() => {
+          this.dialogMessage = true;
+        });
+      }
+    },
+
+    // 关闭新增页面
+    closeAdd(data) {
+      this.dialogAdd = data;
+    },
+
     // 获取从新增页面返回来的值
     getAddData(data) {
       this.dialogAdd = data;
+      this.getData();
     },
+
     // 打开新增弹窗
     openAdd() {
       this.getMounthDate();
       this.dialogAdd = true;
     },
 
+    // 表格多选后的数组
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+
+    // 表格里的修改
     handleEdit(row) {
       if (row.status == 2) {
         let param = {
           Id: row.id
         };
-        this.getPlanDetails(param);
+        this.getPlanDetails(param).then(res => {
+          if (res.success) {
+            this.dialogEdit = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
         this.changeEdit(this.planDetails);
       } else {
-        this.messageText = '该状态不能修改';
+        this.setMessage('该状态不能修改');
         this.dialogMessage = true;
       }
     },
+
+    // 表格里的查看
     handleSee(row) {
       console.log(row);
       let param = {
-        Id: row.id
+        id: row.id
       };
-      this.getPlanDetails(param);
-      // this.dialogView = true;
+      this.getPlanDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     //关闭查看弹窗
@@ -320,7 +389,7 @@ export default {
           this.operateType = 'restart';
           this.dialogOperate = true;
         } else {
-          this.messageText = '该状态不能重启';
+          this.setMessage('该状态不能重启');
           this.dialogMessage = true;
         }
       }
@@ -329,7 +398,7 @@ export default {
     // 删除任务
     del() {
       if (this.multipleSelection.length == 0) {
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -340,7 +409,7 @@ export default {
             flag = true;
           } else {
             flag = false;
-            this.messageText = '只允许删除已暂停和已关闭的任务';
+            this.setMessage('只允许删除已暂停和已关闭的任务');
             this.dialogMessage = true;
           }
         });
@@ -358,7 +427,7 @@ export default {
     suspend() {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 1) {
-          this.messageText = '该状态不能暂停';
+          this.setMessage('该状态不能暂停');
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -376,20 +445,38 @@ export default {
         // 重启
         param.id = this.multipleSelection[0].id;
         param.status = 1;
-        this.UpdatePlanStatuById(param);
+        this.UpdatePlanStatuById(param).then(res => {
+          if (res.success) {
+            this.dialogMessage = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'del') {
         // 删除
         this.multipleSelection.forEach(item => {
           let param = {
             id: item.id
           };
-          this.deletePlan(param);
+          this.deletePlan(param).then(res => {
+            if (res.success) {
+              this.dialogMessage = true;
+            }
+          }).catch(() => {
+            this.dialogMessage = true;
+          });
         });
       } else if (data.type == 'suspend') {
         // 暂停
         param.id = this.multipleSelection[0].id;
         param.status = 2;
-        this.UpdatePlanStatuById(param);
+        this.UpdatePlanStatuById(param).then(res => {
+          if (res.success) {
+            this.dialogMessage = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       }
     }
   }
@@ -425,13 +512,7 @@ export default {
 
   .content-box {
     margin-top: 10px;
-
-    .table-box {
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-
-    .page-box {
+    .page_box {
       margin-top: 10px;
     }
   }

@@ -43,9 +43,13 @@
               v-model="person"
               >{{ person }}</el-button
             >
-            <el-button type="primary" plain @click="choosePerson"
-              >选择人员</el-button
+            <el-button
+              type="primary"
+              plain
+              @click="choosePerson"
             >
+              选择人员
+            </el-button>
           </div>
         </div>
         <div class="item has-two">
@@ -129,12 +133,55 @@
             label="事件状态"
             show-overflow-tooltip
           ></el-table-column>
+          <el-table-column label="操作" width="180">
+            <template slot-scope="scope">
+              <div class="operate-box">
+                <el-button
+                  type="text"
+                  :class="
+                    [
+                      'operate-button',
+                      scope.row['status'] != 1 ?
+                      'operate-button-active' :
+                        ''
+                    ]
+                  "
+                  :disabled="scope.row['status'] != 1 ? disabledTrue : disabledFalse"
+                  @click="handleTran(scope.row)"
+                >
+                  转工单
+                </el-button>
+                <el-button
+                  type="text"
+                  :class="[
+                    'operate-button',
+                    scope.row['status'] == 1  
+                    ? '' 
+                    : 'operate-button-active']"
+                  :disabled="
+                    scope.row['status'] == 1
+                    ? disabledFalse
+                    : disabledTrue"
+                  @click="handleClose(scope.row)"
+                >
+                  关闭
+                </el-button>
+                <el-button
+                  type="text"
+                  class="operate-button"
+                  @click="handleSee(scope.row)"
+                >
+                  查看
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
         <page
           :page-data="[30, 40, 50, 100]"
-          :total="400"
+          :total="eventListTotal"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
         ></page>
@@ -194,7 +241,9 @@ import ViewDetail from './ViewDetail.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('eventManagement');
+const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
+const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
+import {parseTime} from '@/utils/index';
 export default {
   name: 'EventManagement',
   components: {
@@ -207,7 +256,12 @@ export default {
     Operate
   },
   computed: {
-    ...mapState(['exceptionTypeData', 'eventList'])
+    ...eventState([
+      'exceptionTypeData',
+      'eventList',
+      'messageText',
+      'eventListTotal'
+    ])
   },
   data() {
     return {
@@ -216,6 +270,9 @@ export default {
 
       // 按状态筛选的状态内容
       statusList: ['全部', '待处理', '转工单', '已关闭'],
+
+      disabledTrue:true,
+      disabledFalse: false,
 
       // 显示内容（筛选/收起）
       screen: '筛选',
@@ -251,9 +308,6 @@ export default {
       // 是否显示提示消息弹窗
       dialogMessage: false,
 
-      // 提示消息
-      messageText: '',
-
       // 是否显示操作提示弹窗
       dialogOperate: false,
 
@@ -261,11 +315,32 @@ export default {
       operateType: '',
 
       // 操作提示文字
-      messageT: '请确认操作'
+      messageT: '请确认操作',
+
+      // 当前页数
+      currentPage: 1,
+
+      // 每页条数
+      pageSize: 30,
+
+      // 表格里点击关闭的id
+      closeId:'',
+      
+      // 是否是在表格点击的关闭
+      isRow: false
     }
   },
   methods: {
-    ...mapActions(['GetEventList', 'GetEventDetails', 'UpdateEvent']),
+    ...eventActions([
+      'GetEventList',
+      'GetEventDetails',
+      'UpdateEvent',
+      'setMessage'
+    ]),
+    ...xunjianActions([
+      'getOrganizationData',
+      'getRoleData'
+    ]),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentIndex = index;
@@ -296,10 +371,11 @@ export default {
 
     // 搜索
     search() {
+      let time = parseTime(this.submissionTime, '{y}-{m}-{d}');
       let param = {
         errorType: this.exceptionType,
         creationName: this.personInfo.trueName,
-        creationTime: this.submissionTime,
+        creationTime: time,
         pageIndex: 1,
         maxResultCount: 30,
       };
@@ -310,14 +386,12 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
-        this.messageText = '只能选择一行数据';
+        this.setMessage('只能选择一行数据');
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
         return false
       } else {
         return true;
@@ -326,10 +400,11 @@ export default {
 
     // 关闭
     close() {
+      this.isRow = false;
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].statusList == 3) {
+        if (this.multipleSelection[0].status != 1) {
           // 关闭任务只能对已暂停状态的任务进行
-          this.messageText = '该状态不能关闭';
+          this.setMessage('该状态不能关闭');
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -340,15 +415,48 @@ export default {
       }
     },
 
+    // 表格里的关闭
+    handleClose(row) {
+      this.isRow = true;
+      this.closeId = row.Id;
+      this.messageT = '确认要关闭事件类型的事件？';
+      this.operateType = 'close';
+      this.dialogOperate = true;
+    },
+
     // 转工单
     transfer() {
       if (this.onlyOne()) {
-        let param = {
-          Id: this.multipleSelection[0].id
-        };
-        this.GetEventDetails(param);
-        this.dialogTransfer = true;
+        if (this.multipleSelection[0].status != 1) {
+          this.setMessage('该状态无法转工单');
+          this.dialogMessage = true;
+        } else {
+          let param = {
+            Id: this.multipleSelection[0].id
+          };
+          this.GetEventDetails(param).then(res => {
+            if (res.success) {
+              this.dialogTransfer = true;
+            }
+          }).catch(() => {
+            this.dialogMessage = true;
+          });
+        }
       }
+    },
+
+    // 表格里的转工单
+    handleTran(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetEventDetails(param).then(res => {
+        if (res.success) {
+          this.dialogTransfer = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 查看
@@ -357,28 +465,51 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetEventDetails(param);
-        this.dialogView = true;
+        this.GetEventDetails(param).then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       }
+    },
+
+    // 表格里的查看
+    handleSee(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetEventDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 点击选择负责人按钮
     choosePerson() {
+      this.getOrganizationData();
+      this.getRoleData();
       this.dialogCharge = true;
     },
+
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
       console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
+
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       console.log(data);
       this.person = data.personinfo[0].trueName;
-      console.log(this.person);
       this.personInfo = data.personinfo;
       this.dialogCharge = data.dialogCharge;
     },
+
     // 异常类型选择
     selectType(val) {
       this.exceptionType = val;
@@ -389,19 +520,13 @@ export default {
       this.dialogOperate = data;
     },
 
-    // 关闭任务
-    handleClose(index, row) {
-      this.dialogTips = true
-      console.log(index, row);
-    },
-
     // 关闭转工单弹窗
     closeTransfer(data) {
       this.dialogTransfer = data.dialogTransfer;
     },
+
     // 确定转工单
     checkedTransfer(data) {
-      console.log(data);
       this.dialogTransfer = data;
     },
 
@@ -413,11 +538,14 @@ export default {
 
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      this.pageSize = data;
+      this.getData();
     },
+
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       this.currentPage = data;
+      this.getData();
     },
 
     // 关闭工单详情
@@ -432,25 +560,41 @@ export default {
 
     // 操作弹窗点击了确定
     determine(data) {
-      console.log(data);
       this.dialogOperate = data.flag;
       if (data.type == 'close') {
+        let id;
+        if (this.isRow) {
+          id = this.closeId;
+        } else {
+          id = this.multipleSelection[0].id;
+        }
         // 关闭
         let param = {
-          Id: this.multipleSelection[0].id,
+          Id: id,
           status: 3
         };
-        this.UpdateEvent(param);
+        this.UpdateEvent(param).then(res => {
+          if (res.success) {
+            this.dialogMessage = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       }
+    },
+    getData() {
+      let param = {
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize,
+        status: this.currentIndex
+      }
+      this.GetEventList(param).catch(() => {
+        this.dialogMessage = true;
+      });
     }
   },
   mounted() {
-    let param = {
-      pageIndex: 1,
-      maxResultCount: 30,
-      status: this.currentIndex
-    }
-    this.GetEventList(param);
+    this.getData();
   }
 }
 </script>
