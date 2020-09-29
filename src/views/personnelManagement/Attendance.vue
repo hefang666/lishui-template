@@ -13,7 +13,7 @@
           <div class="search-box">
             <el-date-picker
               v-model="searchWords"
-              type="date"
+              type="month"
               placeholder="选择日期"
             >
             </el-date-picker>
@@ -23,14 +23,12 @@
           </div>
           <div class="table-box">
             <el-table
-              ref="multipleTable"
-              :data="tableData"
+              :data="attendanceList"
               :stripe="true"
               tooltip-effect="dark"
               height="400"
               style="width: 100%"
               :highlight-current-row="true"
-              @row-click="clickRow"
             >
               <el-table-column prop="oneDay" label="日期"></el-table-column>
               <el-table-column
@@ -54,8 +52,8 @@
             </el-table>
           </div>
           <page
-            :page-data="[30, 40, 50, 100]"
-            :total="total"
+            :page-data="[10, 30, 50, 100]"
+            :total="attendanceTotal"
             @changePageSize="changePageSize"
             @changeCurrentPage="changeCurrentPage"
           ></page>
@@ -70,36 +68,49 @@
 
 <script>
 import Page from '@/components/page/Page.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState, mapActions} = createNamespacedHelpers('personManagement');
+import {parseTime} from '@/utils/index';
 export default {
   name: 'Attendance',
-  props: ['dialogAttend', 'tableData','total'],
+  props: ['dialogAttend', 'attendanceId'],
   components: {
     Page
   },
   data() {
     return {
+      // 搜索的关键字
       searchWords: '',
-      checkedName: ''
+
+      // 当前选中页数
+      currentPage: 1,
+
+      // 当前每页条数
+      pageSize: 10
     };
   },
+  computed: {
+    ...mapState(['attendanceList', 'attendanceTotal'])
+  },
   methods: {
+    ...mapActions(['GetByUserId']),
     //查询
     attenquery() {
-      let dates = this.searchWords;
-      let y = dates.getFullYear();
-      let m = (dates.getMonth() + 1 + '').padStart(2, '0');
-      let d = (dates.getDate() + '').padStart(2, '0');
-      this.searchWords = y + '-' + m + '-' + d;
-      console.log('object :>> ', this.searchWords);
-      this.$emit('attenquery',this.searchWords)
+      let date = parseTime(
+        this.searchWords,
+        '{y}-{m}'
+      )
+      let param = {
+        oneDay: date,
+        userId: this.ID,
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize
+      }
+      this.GetByUserId(param);
     },
+
     closeAttend() {
       this.$emit('getAttendData');
-    },
-    // 选中的行
-    clickRow(val) {
-      console.log(val);
-      this.checkedName = val.name;
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -111,8 +122,7 @@ export default {
     },
     // 查看
     handleSee() {}
-  },
-  mounted() {}
+  }
 };
 </script>
 

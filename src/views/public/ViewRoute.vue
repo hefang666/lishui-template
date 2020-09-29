@@ -1,22 +1,33 @@
 <template>
   <div class="viewRoute-box dialog-box button-box">
-    <el-dialog title="查看路线" :visible.sync="dialogRoute">
+    <el-dialog
+      title="查看路线"
+      :visible.sync="dialogRoute"
+      :before-close="closeRoute"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeRoute">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
+        <div class="map-box">
+          <map-route ref="map" :mapid="'ss_' + areaDetailsInfo.id"></map-route>
         </div>
-        <div class="map-box"></div>
         <div class="content-right-box">
           <div class="right-box">
-            <choose-equip ref="equipData"></choose-equip>
+            <choose-equip
+            @clickView="views"
+            :type-text="typestr"
+            ref="equipData"
+          ></choose-equip>
           </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeRoute">取 消</el-button>
-        <el-button v-if="type == 'optional'" type="primary" @click="determine"
-          >确 定</el-button
+        <el-button
+          v-if="typestr == 'choose'"
+          type="primary"
+          @click="determine"
         >
+          确 定
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -24,6 +35,9 @@
 
 <script>
 import ChooseEquip from '@/views/public/ChooseEquipment.vue';
+import MapRoute from '@/components/mapRoute/index.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState: areaState} = createNamespacedHelpers('area');
 export default {
   name: 'AddTask',
   props: {
@@ -31,13 +45,17 @@ export default {
       type: Boolean,
       default: false
     },
-    type: {
+    typestr: {
       type: String,
-      default: 'optional'
+      default: 'view'
     }
   },
   components: {
-    ChooseEquip
+    ChooseEquip,
+    MapRoute
+  },
+  computed: {
+    ...areaState(['areaDetailsInfo'])
   },
   data() {
     return {};
@@ -45,6 +63,7 @@ export default {
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
     closeRoute() {
+      console.log('点击了X');
       let data = {
         dialogRoute: false,
         data: []
@@ -62,14 +81,43 @@ export default {
     },
     // 点击确定
     determine() {
-      if (this.$refs.equipData.checkedInfo == '') {
-        alert('请选择设备');
-      } else {
+      // 判断是否选择有管道或者设备
+      if (
+        this.$refs.equipData.checkedEqui.length != 0 
+        ||
+        this.$refs.equipData.checkedCon.length != 0
+      ) {
         let data = {
           dialogRoute: false,
-          data: this.$refs.equipData.checkedInfo
+          equiData: this.$refs.equipData.checkedEqui,
+          conData: this.$refs.equipData.checkedCon
         };
         this.$emit('getRouteData', data);
+      } else {
+        alert('请选择设备或管道');
+      }
+      // if (this.$refs.equipData.checkedInfo == '') {
+      //   alert('请选择设备');
+      // } else {
+      //   let data = {
+      //     dialogRoute: false,
+      //     data: this.$refs.equipData.checkedInfo
+      //   };
+      //   this.$emit('getRouteData', data);
+      // }
+    },
+    // 点击了查看
+    views(data) {
+      console.log(data);
+      if (data.type == 1) {
+        // 设备
+        let str = data.deviceCode + ';' + data.deviceName;
+        console.log(str);
+        this.$refs.map.ShowPointFunc(str);
+      } else if (data.type == 2) {
+        // 管道
+        let str = data.deviceCode + ';' + data.deviceName;
+        this.$refs.map.ShowLineFunc(str);
       }
     }
   }
@@ -86,7 +134,7 @@ export default {
     .map-box {
       width: 100%;
       height: 100%;
-      background: rosybrown;
+      /* background: rosybrown; */
     }
     .content-right-box {
       position: absolute;
@@ -96,6 +144,7 @@ export default {
       width: 315px;
       background: #ffffff;
       overflow: hidden;
+      box-shadow: 2px 2px 20px rgb(196, 196, 196);
       border-radius: 5px;
       .right-box {
         width: 100%;

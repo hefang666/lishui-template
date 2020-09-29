@@ -1,10 +1,14 @@
 <template>
   <div class="promptMessage-box">
-    <el-dialog title="提示" :visible.sync="dialogMessage">
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogMessage"
+      :before-close="closeMessage"
+    >
       <div class="content-box">
-        <div class="cancel-box" @click="closeMessage">
+        <!-- <div class="cancel-box" @click="closeMessage">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="message-box">
           <div class="icon-box">
             <i class="el-icoon el-icon-warning-outline"></i>
@@ -34,35 +38,40 @@ export default {
 <style lang="scss">
 .promptMessage-box {
   /deep/ .el-dialog {
-    width: 280px;
-    margin-top: 40%;
+    width: 280px !important;
+    margin-top: 30% !important;
   }
   /deep/ .el-dialog__header {
-    padding: 0;
-    padding-bottom: 0;
-    height: 28px;
-    line-height: 28px;
-    background: #4b77be;
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    background: #4b77be !important;
+  }
+  /deep/ .el-dialog__headerbtn .el-dialog__close {
+    color: #ffffff;
   }
   /deep/ .el-dialog__title {
-    line-height: 28px;
-    font-size: 14px;
-    color: #ffffff;
-    padding-left: 15px;
+    line-height: 28px !important;
+    font-size: 14px !important;
+    color: #ffffff !important;
+    padding-left: 15px !important;
   }
   /deep/ .el-dialog__headerbtn {
-    top: 4px;
+    top: 4px !important;
   }
   /deep/ .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
+    height: 100px !important;
   }
   /deep/ .el-dialog__footer {
-    text-align: center;
-    padding: 0 15px 12px;
+    text-align: center !important;
+    padding: 0 15px 12px !important;
+    border-top: none !important;
   }
   .content-box {
-    position: relative;
-    .cancel-box {
+    position: relative !important;
+    /* .cancel-box {
       width: 20px;
       height: 20px;
       position: absolute;
@@ -73,7 +82,7 @@ export default {
       font-size: 16px;
       line-height: 20px;
       cursor: pointer;
-    }
+    } */
     .message-box {
       padding: 15px 15px 0;
       .icon-box {

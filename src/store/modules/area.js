@@ -35,7 +35,8 @@ let state = {
   lineList: [],
   // 复选框选中的管线和管点
   checkedPoint: [],
-  checkedLine: []
+  checkedLine: [],
+  areaDetailsInfo: {}
 };
 
 let mutations = {
@@ -72,6 +73,10 @@ let mutations = {
   },
   update_choose_id: function(state, data) {
     state.chooseAreaId = data;
+  },
+  set_areaDetailsInfo: function(state, data) {
+    state.areaDetailsInfo = data;
+    console.log(state.areaDetailsInfo);
   }
 };
 
@@ -236,10 +241,12 @@ let actions = {
   // 根据id获取当前当前区域详细信息
   getAreaDetailInfo({commit}, data) {
     console.log(commit);
+    console.log(data);
     return new Promise((resolve, reject) => {
       getAreaDetail(data)
         .then(response => {
           if (response.success) {
+            commit('set_areaDetailsInfo', response.result);
             resolve(response);
           } else {
             reject(response);

@@ -206,7 +206,10 @@
     ></choose-people>
 
     <!-- 新增 -->
-    <add-order :dialog-add="dialogAdd" @closeAdd="closeAdd"></add-order>
+    <add-order
+      :dialog-add="dialogAdd"
+      @closeAdd="closeAdd"
+    ></add-order>
 
     <!-- 提示消息弹窗 -->
     <message
@@ -225,15 +228,16 @@
     ></operate>
 
     <!-- 修改 -->
-    <edit-order :dialog-edit="dialogEdit"
+    <edit-order
+      :dialog-edit="dialogEdit"
       @closeEdit="closeEdit"
     ></edit-order>
 
     <!-- 查看 -->
     <order-detail
       :dialog-view="dialogView"
-      @closeView="closeView">
-    </order-detail>
+      @closeView="closeView"
+    ></order-detail>
   </div>
 </template>
 
@@ -246,7 +250,10 @@ import OrderDetail from './OrderDetail.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: orderState, mapActions: orderActions} = createNamespacedHelpers('workOrderManagement');
+const {
+  mapState: orderState,
+  mapActions: orderActions
+} = createNamespacedHelpers('workOrderManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 import {parseTime} from '@/utils/index';
 export default {
@@ -324,7 +331,7 @@ export default {
 
       // 操作提示文字
       messageT: '请确认操作',
-      
+
       // 多选后的数组
       multipleSelection: []
     };
@@ -333,14 +340,18 @@ export default {
     ...orderState(['orderTypeData', 'orderList', 'orderListTotal'])
   },
   methods: {
-    ...orderActions(['GetWorkOrderList', 'GetWorkOrderDetails', 'DeleteWorkOrder']),
+    ...orderActions([
+      'GetWorkOrderList',
+      'GetWorkOrderDetails',
+      'DeleteWorkOrder'
+    ]),
     ...xunjianActions(['getOrganizationData', 'getRoleData']),
     // // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentIndex = index;
       let param = {
         pageIndex: 1,
-        MaxResultCount:30,
+        MaxResultCount: 30,
         status: this.currentIndex
       };
       this.GetWorkOrderList(param);
@@ -370,7 +381,7 @@ export default {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
         console.log('只能选择一行数据');
-        return false
+        return false;
       } else {
         return true;
       }
@@ -379,7 +390,9 @@ export default {
     // 关闭工单
     close() {
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].status == 1 || this.multipleSelection[0].status == 2) {
+        if (
+          this.multipleSelection[0].status == 1 ||
+          this.multipleSelection[0].status == 2) {
           // 操作弹窗
           this.messageT = '请确认操作';
           this.operateType = 'close';
@@ -455,8 +468,8 @@ export default {
       this.dialogMessage = data;
     },
 
-     // 关闭操作提示弹窗
-     closeOperate(data) {
+    // 关闭操作提示弹窗
+    closeOperate(data) {
       this.dialogOperate = data;
     },
 
@@ -543,7 +556,7 @@ export default {
         status: this.currentIndex,
         pageIndex: this.currentPage,
         MaxResultCount: this.pagesize
-      }
+      };
       this.GetWorkOrderList(param);
     },
 
@@ -560,15 +573,9 @@ export default {
         ||
         (this.submissionStartTime == '' && this.submissionEndTime == '')
       ) {
-        if(this.submissionStartTime != '') {
-          subStartTime = parseTime(
-            this.submissionStartTime,
-            '{y}-{m}-{d} {h}:{i}'
-          );
-          subEndTime = parseTime(
-            this.submissionEndTime,
-            '{y}-{m}-{d} {h}:{i}'
-          );
+        if (this.submissionStartTime != '') {
+          subStartTime = parseTime(this.submissionStartTime, '{y}-{m}-{d} {h}:{i}');
+          subEndTime = parseTime(this.submissionEndTime, '{y}-{m}-{d} {h}:{i}');
         }
       } else {
         console.log('不满足条件');
@@ -577,23 +584,16 @@ export default {
         } else if (this.submissionEndTime == '') {
           alert('请选择工单提交的结束时间');
         }
-        return
+        return;
       }
       // 工单完成时间
       if (
-        (this.completionStartTime != '' && this.completionEndTime != '')
-        ||
+        (this.completionStartTime != '' && this.completionEndTime != '') ||
         (this.completionStartTime == '' && this.completionEndTime == '')
       ) {
-        if(this.completionStartTime != '') {
-          comStartTime = parseTime(
-            this.completionStartTime,
-            '{y}-{m}-{d} {h}:{i}'
-          );
-          comEndTime = parseTime(
-            this.completionEndTime,
-            '{y}-{m}-{d} {h}:{i}'
-          );
+        if (this.completionStartTime != '') {
+          comStartTime = parseTime(this.completionStartTime, '{y}-{m}-{d} {h}:{i}');
+          comEndTime = parseTime(this.completionEndTime, '{y}-{m}-{d} {h}:{i}');
         }
       } else {
         if (this.completionStartTime == '') {
@@ -601,7 +601,7 @@ export default {
         } else if (this.completionEndTime == '') {
           alert('请选择工单完成的结束时间');
         }
-        return
+        return;
       }
 
       let param = {
@@ -613,7 +613,7 @@ export default {
         beginCompleteTime: comStartTime,
         endCompleteTime: comEndTime,
         type: this.orderType
-      }
+      };
       this.GetWorkOrderList(param);
       this.isScreen = !this.isScreen;
     }

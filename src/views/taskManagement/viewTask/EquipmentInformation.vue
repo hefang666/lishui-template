@@ -1,10 +1,11 @@
 <template>
   <div class="equipment-Information-box dialog-box button-box">
-    <el-dialog title="设备点巡检任务详情" :visible.sync="dialogEqui">
+    <el-dialog
+      title="设备点巡检任务详情"
+      :visible.sync="dialogEqui"
+      :before-close="closeEqui"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeEqui">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="equip-box">
           <div class="list-item">
             <div class="list-items has-two-item">
@@ -49,7 +50,10 @@
             </div>
           </div>
           <div
-            :class="['list-item', pointDetails.status == 3 ? 'has-two-item' : '']">
+            :class="[
+              'list-item',
+              pointDetails.status == 3 ? 'has-two-item' : ''
+            ]">
             <div v-if="pointDetails.status == 3" class="list-items">
               <div class="item-title">异常类型：</div>
               <div class="item-content">
@@ -81,7 +85,8 @@
                   <div
                     v-for="(item, index) in pointDetails.resourcelist"
                     :key="index"
-                    class="enclosure-item">
+                    class="enclosure-item"
+                  >
                     <div class="enclosure-title">{{ item.fileName }}</div>
                     <div class="enclosure-download">下载</div>
                     <div class="enclosure-preview">预览</div>

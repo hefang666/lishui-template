@@ -1,4 +1,9 @@
-import {getPeopleList, getOrganizationData, getRoleData} from '@/api/other';
+import {
+  getPeopleList,
+  getOrganizationData,
+  getRoleData,
+  GetAreaLists
+} from '@/api/other';
 import {filterArray, addIcon, processingNodes} from '@/utils/index';
 // import { reject, resolve } from 'core-js/fn/promise';
 
@@ -85,7 +90,8 @@ var state = {
         deviceType: 1,
         id: 11340
       }
-    ]
+    ],
+    areaTotal: 1
   }
 };
 
@@ -111,6 +117,15 @@ var mutations = {
   // 设置提示消息
   set_message: function(state, data) {
     state.messageText = data;
+  },
+  // 设置片区列表信息
+  set_areaList: function(state, data) {
+    state.areaList = data;
+  },
+  // 设置片区页数信息
+  set_areaPagesInfo: function(state, data) {
+    state.areaTotal = data;
+    console.log(state.areaTotal);
   }
 };
 
@@ -192,6 +207,23 @@ var actions = {
             roles = processingNodes(roles);
             roles = addIcon(roles);
             commit('set_roleData', roles);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
+  // 获取片区列表
+  getAreaLists({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetAreaLists(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_areaList', response.result.items);
+            commit('set_areaPagesInfo', response.result.totalCount);
             resolve(response);
           }
         })

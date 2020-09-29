@@ -1,12 +1,13 @@
 <template>
   <div class="editTask-box dialog-box button-box">
-    <el-dialog title="修改任务" :visible.sync="dialogEdit">
+    <el-dialog
+      title="修改任务"
+      :visible.sync="dialogEdit"
+      :before-close="closeEdit"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeEdit">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
-          <div :model="taskDetail">
+          <div>
             <div class="list-item has-two-item">
               <div class="items-box">
                 <div class="title">
@@ -17,7 +18,7 @@
                   <div class="list-item-content-box">
                     <el-input
                       type="taskName"
-                      v-model="taskDetail.name"
+                      v-model="taskDetails.name"
                       autocomplete="off"
                     ></el-input>
                   </div>
@@ -33,9 +34,9 @@
                     class="choose-active"
                     type="primary"
                     plain
-                    v-if="taskDetail.person != ''"
-                    v-model="taskDetail.person"
-                    >{{ taskDetail.person }}</el-button
+                    v-if="taskDetails.person != ''"
+                    v-model="taskDetails.person"
+                    >{{ taskDetails.person }}</el-button
                   >
                   <el-button type="primary" plain @click="choosePerson"
                     >选择人员</el-button
@@ -51,17 +52,17 @@
                 </div>
                 <div class="content">
                   <div class="list-item-content-box">
-                    {{ taskDetail.statusStr }}
+                    {{ taskDetails.statusStr }}
                   </div>
                 </div>
               </div>
-              <div class="items-box">
+              <div v-if="taskDetails.type == 2" class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
                   <span>参与人：</span>
                 </div>
                 <div class="content">
-                  <span>{{ taskDetail.participant }}</span>
+                  <span>{{ taskDetails.participant }}</span>
                   <!-- <el-button
                     class="choose-active"
                     type="primary"
@@ -85,7 +86,7 @@
                 </div>
                 <div class="content">
                   <div class="list-item-content-box">
-                    {{ taskDetail.typeStr }}
+                    {{ taskDetails.typeStr }}
                   </div>
                 </div>
               </div>
@@ -94,7 +95,7 @@
                   <span>暂停时长：</span>
                 </div>
                 <div class="content">
-                  {{ taskDetail.pauseTime }}
+                  {{ taskDetails.pauseTime }}
                 </div>
               </div>
             </div>
@@ -107,10 +108,12 @@
                 <div class="content">
                   <div class="list-item-content-box">
                     <el-date-picker
-                      v-model="taskDetail.planStartTime"
+                      v-model="taskDetails.planStartTime"
                       type="datetime"
                       format="yyyy-MM-dd HH:mm"
+                      :picker-options="pickerOptions"
                       placeholder="预计任务开始时间"
+                      @change="editStartTime"
                     ></el-date-picker>
                   </div>
                 </div>
@@ -123,10 +126,12 @@
                 <div class="content">
                   <div class="list-item-content-box">
                     <el-date-picker
-                      v-model="taskDetail.planEndTime"
+                      v-model="taskDetails.planEndTime"
                       type="datetime"
                       format="yyyy-MM-dd HH:mm"
+                      :picker-options="pickerOptions"
                       placeholder="预计任务结束时间"
+                      @change="editEndTime"
                     ></el-date-picker>
                   </div>
                 </div>
@@ -139,27 +144,33 @@
                   <span>巡检片区：</span>
                 </div>
                 <div class="content">
-                  <div class="list-item-content-box">
-                    <!-- <el-input type="inspectionArea" v-model="taskDetail.areaName" autocomplete="off"></el-input> -->
-                    <el-button type="primary" plain @click="chooseArea"
-                      >选择片区</el-button
+                  {{ taskDetails.areaName }}
+                  <!-- <div class="list-item-content-box">
+                    <el-button
+                      class="choose-active"
+                      type="primary"
+                      plain
+                      v-if="taskDetail.areaName != ''"
+                      v-model="taskDetail.areaName"
+                      >{{ taskDetail.areaName }}</el-button
                     >
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
             <div class="list-item">
               <div class="items-box">
                 <div class="title">
+                  <span class="tips">*</span>
                   <span>备注：</span>
                 </div>
                 <div class="conten">
                   <el-input
                     type="textarea"
                     :rows="3"
-                    v-model="taskDetail.remark"
+                    v-model="taskDetails.remark"
                     autocomplete="off"
-                  ></el-input >
+                  ></el-input>
                 </div>
               </div>
             </div>
@@ -172,57 +183,85 @@
       </div>
     </el-dialog>
 
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
+    <!-- 选择人员 -->
     <choose-people
       :dialog-charge="dialogCharge"
       :select-type="selectType"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
-    <choose-area
+
+    <!-- 选择片区 -->
+    <!-- <choose-area
       :dialog-area="dialogArea"
+      :type="'view'"
       @closeChooseArea="closeChooseArea"
       @checkedArea="checkedArea"
-    ></choose-area>
+    ></choose-area> -->
   </div>
 </template>
 
 <script>
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
-import ChooseArea from '@/views/public/ChooseArea.vue';
+// import ChooseArea from '@/views/public/ChooseArea.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('taskManagement');
+const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
+import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditTask',
   props: ['dialogEdit'],
   components: {
     ChoosePeople,
-    ChooseArea
+    // ChooseArea,
+    Message
   },
   data() {
     return {
       // 负责人弹窗状态
       dialogCharge: false,
+
       // 巡检片区弹窗状态
-      dialogArea: false,
+      // dialogArea: false,
+
       // 选择任务类型（负责人（单选）、参与人（多选））
       selectType: '',
+
       // 负责人信息
       person: '',
+
       // 参与人
-      partData: []
+      partData: [],
+
+      // 是否显示消息提示弹窗
+      dialogMessage: false,
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   computed: {
-    ...mapState(['taskDetail'])
+    ...mapState(['taskDetails', 'messageText'])
   },
   methods: {
+    ...mapActions(['UpdateTask', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
-      let data = {
-        dialogEdit: false,
-        data: []
-      };
-      this.$emit('getEditData', data);
+      let data = false;
+      this.$emit('closeEdit', data);
     },
     // 点击选择负责人按钮
     choosePerson() {
@@ -245,41 +284,97 @@ export default {
       if (data.type == 'single') {
         // 负责人
         this.person = data.personinfo;
-        this.taskDetail.person = data.personinfo.trueName;
+        this.taskDetails.person = data.personinfo[0].trueName;
+        this.taskDetails.personId = data.personinfo[0].id;
       } else if (data.type == 'multiple') {
         // 参与人
         this.partData = data.personinfo;
-        this.taskDetail.participant = [];
+        this.taskDetails.participant = [];
         this.partData.forEach(item => {
-          this.taskDetail.participant.push(item.trueName);
-        })
+          this.taskDetails.participant.push(item.trueName);
+        });
       }
       this.dialogCharge = data.dialogCharge;
     },
     // 点击选择片区按钮
-    chooseArea() {
-      this.dialogArea = true;
-    },
+    // chooseArea() {
+    //   this.dialogArea = true;
+    // },
     // 关闭选择片区弹窗
-    closeChooseArea(data) {
-      this.dialogArea = data.dialogArea;
-    },
+    // closeChooseArea(data) {
+    //   this.dialogArea = data.dialogArea;
+    // },
     // 选择片区弹窗选择了片区并点击了确定按钮
-    checkedArea(data) {
-      this.dialogArea = data.dialogArea;
-      // this.editForm.inCharge = data.name;
+    // checkedArea(data) {
+    //   this.dialogArea = data.dialogArea;
+    // },
+    // 修改开始时间
+    editStartTime(val) {
+      this.taskDetails.planStartTime = parseTime(val, '{y}-{m}-{d} {h}:{i}');
+    },
+    // 修改结束时间
+    editEndTime(val) {
+      this.taskDetails.planEndTime = parseTime(val, '{y}-{m}-{d} {h}:{i}');
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
     },
     // 保存
     Edit() {
-      // let personId;
-      // if (this.person == '') {
-      //   personId = this.taskDetail.p
-      // }
-      // let param = {
-      //   id: this.taskDetail.id,
-      //   name: this.taskDetail.name,
-        // personId: 
-      // }
+      if (this.taskDetails.planStartTime == '') {
+        this.setMessage('开始时间不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.taskDetails.planEndTime == '') {
+        this.setMessage('结束时间不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      let now = new Date();
+      now = parseTime(now, '{y}-{m}-{d} {h}:{i}');
+
+      if (judgeTime(now, this.taskDetails.planStartTime)) {
+        if (!judgeTime(this.taskDetails.planStartTime, this.taskDetails.planEndTime)) {
+          this.setMessage('结束时间不能小于当前时间');
+          this.dialogMessage = true;
+          return;
+        }
+      }else {
+        this.setMessage('任务开始时间不能小于当前时间');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.taskDetails.name == '') {
+        this.setMessage('任务名称不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.taskDetails.remark == '' || this.taskDetails.remark == null) {
+        this.setMessage('任务备注不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      let param = {
+        Id: this.taskDetails.id,
+        name: this.taskDetails.name,
+        personId: this.taskDetails.personId,
+        person: this.taskDetails.person,
+        startTime: this.taskDetails.planStartTime,
+        endTime: this.taskDetails.planEndTime,
+        remark: this.taskDetails.remark,
+      }
+      this.UpdateTask(param);
+      
+      let data = false;
+      this.$emit('getEditData', data);
     }
   }
 };

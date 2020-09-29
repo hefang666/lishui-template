@@ -73,3 +73,12 @@ export function GetAreaByTaskId(data) {
     data
   });
 }
+
+// 修改任务
+export function UpdateTask(data) {
+  return request({
+    url: api + 'InspectionTaskService/UpdateTask',
+    method: 'post',
+    data
+  });
+}

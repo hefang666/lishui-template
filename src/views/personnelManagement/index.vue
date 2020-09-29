@@ -12,16 +12,15 @@
             <el-button type="primary" plain>出勤导出</el-button>
           </el-button-group>
           <el-date-picker
-              v-model="month"
-              type="month"
-              class="attendance-box"
-              :picker-options="pickerOptions"
-              placeholder="出勤导出"
-              @change="handechange"
-            >
-            </el-date-picker>
+            v-model="month"
+            type="month"
+            class="attendance-box"
+            :picker-options="pickerOptions"
+            placeholder="出勤导出"
+            @change="handechange"
+          >
+          </el-date-picker>
         </div>
-        
         <el-button type="primary" plain @click="handlexport">导出</el-button>
       </div>
     </div>
@@ -70,7 +69,7 @@
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="AttenadanceCheck(scope.$index, scope.row)"
+                  @click="AttenadanceCheck(scope.row)"
                   >出勤查看</el-button
                 >
               </div>
@@ -101,11 +100,9 @@
 
     <!-- 出勤查看弹窗 -->
     <attendance
-      :total="dialogAttendTOT"
-      :tableData="attendance"
       :dialog-attend="dialogAttend"
+      :attendance-id="dialogAttendID"
       @getAttendData="getAttendData"
-      @attenquery="attenquery"
     ></attendance>
   </div>
 </template>
@@ -119,7 +116,6 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('personManagement');
 
-import {GetByUserId} from '@/api/personnel';
 import {parseTime} from '@/utils/index';
 export default {
   name: 'TaskManagement',
@@ -136,14 +132,10 @@ export default {
   data() {
     return {
       searchWords: '',
-      // 初始化table
-      tableData: [],
+      
 
       // table选中
       multipleSelection: [],
-
-      // 出勤弹框table
-      attendance: [],
 
       // 输入框姓名
       userName: '',
@@ -185,13 +177,13 @@ export default {
             text: '今日',
             onClick(picker) {
               let date = new Date();
-              picker.$emit('pick', {date, script: '今日'})
+              picker.$emit('pick', {date, script: '今日'});
             }
           },
           {
             text: '清除',
             onClick(picker) {
-              picker.$emit('pick', {script: '清除'})
+              picker.$emit('pick', {script: '清除'});
             }
           }
         ]
@@ -202,7 +194,7 @@ export default {
     this.tableinfo();
   },
   methods: {
-    ...mapActions(['GetByDay']),
+    ...mapActions(['GetByDay', 'GetByUserId']),
     // 初始化table
     tableinfo(oneDay, userName) {
       let data = {
@@ -219,17 +211,17 @@ export default {
     },
     // 选择月(出勤导出)
     handechange() {
-      if(this.onlyOne()) {
+      if (this.onlyOne()) {
         // 时间
         let date;
 
-        if(this.month.script != undefined) {
-          if(this.month.script == '今日') {
+        if (this.month.script != undefined) {
+          if (this.month.script == '今日') {
             date = parseTime(this.month.date, '{y}-{m}-{d}');
-          }else if (this.month.script == '清除') {
-            return
+          } else if (this.month.script == '清除') {
+            return;
           }
-        }else {
+        } else {
           date = parseTime(this.month, '{y}-{m}');
         }
         console.log(this.month);
@@ -252,13 +244,13 @@ export default {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
         console.log('只能选择一行数据');
-        return false
+        return false;
       } else {
         return true;
       }
     },
 
-     // 关闭提示消息弹窗
+    // 关闭提示消息弹窗
     closeMessage(data) {
       this.dialogMessage = data;
     },
@@ -280,22 +272,14 @@ export default {
     },
 
     // 出勤查看
-    AttenadanceCheck(index, row) {
-      console.log(index, row);
+    AttenadanceCheck(row) {
       this.dialogAttendID = row.userId;
-      let data = {
+      let param = {
         userId: row.userId,
-        pageIndex: this.currentPage,
-        maxResultCount: this.maxResultCount
+        pageIndex: 1,
+        maxResultCount: 10
       };
-      GetByUserId(data).then(res => {
-        if (res.success) {
-          res.result.items.map(item => {
-            item.oneDay = item.oneDay.replace(/\//g, '-');
-          });
-          this.attendance = res.result.items;
-        }
-      });
+      this.GetByUserId(param);
       this.dialogAttend = true;
     },
 
@@ -303,28 +287,17 @@ export default {
     changePageSize(data) {
       console.log(data);
     },
+
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
     },
+
     // 关闭工作情况弹窗
     getWorkingData(data) {
       this.dialogWorking = data.dialogWorking;
     },
-    //出勤弹窗点击查询(emit)
-    attenquery(oneDay) {
-      let data = {
-        oneDay,
-        userId: this.dialogAttendID,
-        pageIndex: this.currentPage,
-        maxResultCount: this.maxResultCount
-      };
-      GetByUserId(data).then(res => {
-        console.log('res :>> ', res);
-        this.attendance = res.result.items
-        this.dialogAttendTOT = res.result.totalCount
-      });
-    },
+
     // 关闭出勤弹窗
     getAttendData() {
       this.dialogAttend = false;

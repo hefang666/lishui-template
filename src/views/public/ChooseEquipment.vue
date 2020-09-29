@@ -6,18 +6,22 @@
         <div class="inspection-info-box-top">
           <div class="inspection-item">
             <div class="item-left">路线名称：</div>
-            <div class="item-right">每月巡检路线</div>
+            <div class="item-right">{{ areaDetailsInfo.name }}</div>
           </div>
           <div class="inspection-item">
+            <div class="item-left">设备点：</div>
+            <div class="item-right">{{ areaDetailsInfo.pointCount }}</div>
+          </div>
+          <!-- <div class="inspection-item">
             <div class="item-left">起点：</div>
             <div class="item-right">104.1629,30.0214</div>
           </div>
           <div class="inspection-item">
             <div class="item-left">终点：</div>
             <div class="item-right">104.1629,30.0214</div>
-          </div>
+          </div> -->
         </div>
-        <div class="inspection-info-box-bottom">
+        <!-- <div class="inspection-info-box-bottom">
           <div class="inspection-item-box">
             <div class="inspection-item">
               <div class="item-left">预计时间：</div>
@@ -31,14 +35,14 @@
           <div class="inspection-item-box">
             <div class="inspection-item">
               <div class="item-left">设备点：</div>
-              <div class="item-right">51个</div>
+              <div class="item-right">{{ areaDetailsInfo.pointCount }}</div>
             </div>
             <div class="inspection-item">
               <div class="item-left">管线：</div>
               <div class="item-right">5183.89km</div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="equipment-pipeline-information-box">
@@ -46,17 +50,24 @@
         <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
           <el-tab-pane label="设备" name="equipment">
             <div class="equipment-box">
-              <div class="table-box-route">
+              <div class="table-box table-box-route">
                 <el-table
                   ref="multipleTable"
-                  :data="equipData.devDtos"
+                  :data="areaDetailsInfo.deviceLists"
                   :stripe="true"
+                  border
                   tooltip-effect="dark"
-                  height="420"
+                  max-height="420"
                   style="width: 100%"
                   :highlight-current-row="true"
-                  @row-click="clickRowEqui"
+                  @selection-change="clickRowEqui"
                 >
+                  <el-table-column
+                    v-if="typeText == 'choose'"
+                    type="selection"
+                    align="center"
+                    width="50"
+                  ></el-table-column>
                   <el-table-column
                     align="center"
                     prop="deviceCode"
@@ -67,12 +78,16 @@
                     prop="deviceName"
                     label="设备名称"
                   ></el-table-column>
-                  <el-table-column align="center" label="操作">
+                  <el-table-column
+                    align="center"
+                    label="操作"
+                    width="60"
+                  >
                     <template slot-scope="scope">
                       <el-button
                         type="text"
                         class="operate-button"
-                        @click="handleSeeEquipment(scope.$index, scope.row)"
+                        @click="handleSeeEquipment(scope.row)"
                         >查看</el-button
                       >
                     </template>
@@ -83,17 +98,24 @@
           </el-tab-pane>
           <el-tab-pane label="管道" name="theConduit">
             <div class="theConduit-box">
-              <div class="table-box-route">
+              <div class="table-box table-box-route">
                 <el-table
                   ref="multipleTable"
-                  :data="equipData.pipDtos"
+                  :data="areaDetailsInfo.pipelineLists"
                   :stripe="true"
                   tooltip-effect="dark"
-                  height="420"
                   style="width: 100%"
+                  max-height="420"
+                  border
                   :highlight-current-row="true"
-                  @row-click="clickRowConduit"
+                  @selection-change="clickRowConduit"
                 >
+                  <el-table-column
+                    v-if="typeText == 'choose'"
+                    type="selection"
+                    align="center"
+                    width="50"
+                  ></el-table-column>
                   <el-table-column
                     align="center"
                     prop="deviceCode"
@@ -104,12 +126,16 @@
                     prop="deviceName"
                     label="设备名称"
                   ></el-table-column>
-                  <el-table-column align="center" label="操作">
+                  <el-table-column
+                    align="center"
+                    label="操作"
+                    width="60"
+                  >
                     <template slot-scope="scope">
                       <el-button
                         type="text"
                         class="operate-button"
-                        @click="handleSeeConduit(scope.$index, scope.row)"
+                        @click="handleSeeConduit(scope.row)"
                         >查看</el-button
                       >
                     </template>
@@ -126,18 +152,23 @@
 
 <script>
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('xunjianPublic');
+// const {mapState: } = createNamespacedHelpers('xunjianPublic');
+const {mapState: areaState} = createNamespacedHelpers('area');
 export default {
   name: 'ChooseEquipment',
+  props: ['typeText'],
   data() {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'equipment',
-      checkedInfo: ''
+      // 选择的设备
+      checkedEqui: [],
+      // 选择的管道
+      checkedCon: []
     };
   },
   computed: {
-    ...mapState(['equipData'])
+    ...areaState(['areaDetailsInfo'])
   },
   methods: {
     // tabs切换时的点击事件
@@ -146,16 +177,22 @@ export default {
     },
     // 设备选中的行
     clickRowEqui(val) {
-      this.checkedInfo = val;
+      this.checkedEqui = val;
+      console.log(this.checkedEqui);
     },
     // 管道选中的行
     clickRowConduit(val) {
-      this.checkedInfo = val;
+      this.checkedCon = val;
+      console.log(this.checkedCon);
     },
     // 设备查看按钮
-    handleSeeEquipment() {},
+    handleSeeEquipment(row) {
+      this.$emit('clickView', row);
+    },
     // 管道查看按钮
-    handleSeeConduit() {}
+    handleSeeConduit(row) {
+      this.$emit('clickView', row);
+    }
   }
 };
 </script>
@@ -177,7 +214,7 @@ export default {
       padding: 0 6px;
       .inspection-info-box-top {
         padding: 10px 0;
-        border-bottom: 1px dashed #0099cc;
+        /* border-bottom: 1px dashed #0099cc; */
         .inspection-item {
           display: flex;
           line-height: 30px;
@@ -212,7 +249,7 @@ export default {
   }
 
   .equipment-pipeline-information-box {
-    height: 460px;
+    max-height: 460px;
     .tabs-box-route {
       .equipment-box,
       .theConduit-box {

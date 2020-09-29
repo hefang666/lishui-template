@@ -28,9 +28,7 @@ export default {
     MaintenanceGroup
   },
   data() {
-    return {
-
-    }
+    return {};
   },
   methods: {
     closeTable() {
@@ -44,37 +42,37 @@ export default {
 <style scoped lang="scss">
 .viewTable-box {
   /deep/ .el-dialog {
-		width: 1100px;
-	}
-	/deep/ .el-dialog__header {
-		padding: 0 80px 0 20px;
-		border-bottom: 1px solid #eee;
-		background: #4b77be;
-		height: 30px;
-		line-height: 30px;
-	}
-	/deep/ .el-dialog__title {
-		font-size: 14px;
-		color: #FFFFFF;
-	}
-	/deep/ .el-dialog__headerbtn {
-		top: 6px;
-	}
-	/deep/ .el-dialog__headerbtn .el-dialog__close {
-		color: #FFFFFF;
-	}
-	/deep/ .el-dialog__body {
-		padding:0;
-		height: 700px;
-	}
-	/deep/ .el-dialog__footer {
-		border-top: 1px solid #e5e5e5;
+    width: 1100px;
   }
-  
+  /deep/ .el-dialog__header {
+    padding: 0 80px 0 20px;
+    border-bottom: 1px solid #eee;
+    background: #4b77be;
+    height: 30px;
+    line-height: 30px;
+  }
+  /deep/ .el-dialog__title {
+    font-size: 14px;
+    color: #ffffff;
+  }
+  /deep/ .el-dialog__headerbtn {
+    top: 6px;
+  }
+  /deep/ .el-dialog__headerbtn .el-dialog__close {
+    color: #ffffff;
+  }
+  /deep/ .el-dialog__body {
+    padding: 0;
+    height: 700px;
+  }
+  /deep/ .el-dialog__footer {
+    border-top: 1px solid #e5e5e5;
+  }
+
   .content-box {
-		position: relative;
-		.cancel-box {
-			height: 28px;
+    position: relative;
+    .cancel-box {
+      height: 28px;
       line-height: 28px;
       background: #4b77be;
       position: absolute;
@@ -84,11 +82,11 @@ export default {
       color: #ffffff;
       font-size: 14px;
       cursor: pointer;
-		}
+    }
 
-		.content_box {
-			padding: 16px;
-		}
-	}
+    .content_box {
+      padding: 16px;
+    }
+  }
 }
 </style>
