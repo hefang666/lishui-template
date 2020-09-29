@@ -3,12 +3,12 @@
     <Map ref="map" />
     <div class="index-member">
       <div class="search-box">
-        <el-input placeholder="请输入人员名称" v-model="searchWords"></el-input>
-        <el-button class="search-button" type="primary">查询</el-button>
+        <el-input placeholder="请输入人员名称" @keyup.enter.native="searchMember" v-model="searchWords"></el-input>
+        <el-button class="search-button" @click="searchMember" type="primary">查询</el-button>
       </div>
-      <div class="border">
+      <div class="border index-member-box">
         <div class="index-menber-title">人员列表</div>
-        <el-menu>
+        <el-menu class="index-member-list">
           <el-menu-item
             :class="{active: currentIndex === index}"
             v-for="(item, index) in memberList"
@@ -17,21 +17,23 @@
           >
             <i class="el-icon-setting"></i>
             <span class="title">
-              <span>{{ item.name }}</span>
-              {{ item.phone }}
+              <span>{{ item.userName }}</span>
+              {{ item.mobile }}
             </span>
           </el-menu-item>
         </el-menu>
         <div class="index-pagination-box">
-          <el-pagination
-            class="index-pagination"
-            small
-            popper-class="index-popper"
-            layout="total, sizes, prev, jumper, next, ->"
-            :total="5"
+          <Page
+            layout="sizes,total,jump"
+            :total="pageTotal"
+            :pager-count="5"
+            :pageData="[5,10,15]"
+            :pageLength="pageCount"
+            :currentPage="pageNum"
+            @handleSizeChange="changePageSize"
+            @handleCurrentChange="changePageNum"
           >
-            <el-button>跳转</el-button>
-          </el-pagination>
+          </Page>
         </div>
       </div>
     </div>
@@ -40,6 +42,7 @@
 
 <script>
 import Map from './Map';
+import Page from "@/components/page/Page";
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('home');
 export default {
@@ -51,16 +54,37 @@ export default {
     };
   },
   computed: {
-    ...mapState(['memberList'])
+    ...mapState(['memberList', 'pageNum', 'pageCount', 'pageTotal'])
   },
   components: {
-    Map
+    Map,
+    Page
+  },
+  mounted() {
+    console.log(this.pageCount)
+    this.getMemberList();
   },
   methods: {
-    ...mapActions(['changeMenberList']),
+    ...mapActions(['getMemberList', 'changeSearchName', 'changePageCount', 'changePageNum']),
     changeMember(index) {
       this.currentIndex = index;
       this.$refs.map.focusOnCurrentMember(index);
+    },
+
+    // 输入框回车或点击搜索处理事件
+    searchMember() {
+      this.changeSearchName(this.searchWords);
+      this.getMemberList();
+    },
+
+    // 改变每页显示的数量
+    changePageSize(num) {
+      this.changePageCount(num);
+    },
+
+    // 改变显示的页数
+    changePageNum(page) {
+      this.changePageNum(page)
     }
   }
 };
@@ -80,8 +104,8 @@ export default {
   top: 10px;
   z-index: 999;
   width: 300px;
-  margin-left: 50px;
-  background: #fff;
+  bottom: 10px;
+  margin-left: 10px;
   .search-box {
     position: relative;
     .search-button {
@@ -91,14 +115,25 @@ export default {
       line-height: 1px;
     }
   }
+  .index-member-list {
+    position: absolute;
+    top: 40px;
+    bottom: 45px;
+    width: 100%;
+  }
+  .index-member-box {
+    position: absolute;
+    top: 38px;
+    bottom: 0;
+    background: #fff;
+    width: 100%;
+  }
   .index-menber-title {
     text-align: center;
     height: 40px;
     line-height: 40px;
     font-size: 12px;
     color: #4b77be;
-    margin-top: 10px;
-    border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
   }
   .el-menu-item {
@@ -120,7 +155,29 @@ export default {
     }
   }
   .index-pagination-box {
-    height: 25px;
+    height: 45px;
+    background: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    padding-left: 10px;
+    border-top: 1px solid #ddd;
+    .jump-button {
+      padding: 0 5px;
+      span {
+        line-height: 26px;
+      }
+    }
+    .jump-input {
+      width: 40px;
+      .el-input__inner {
+        width: 38px;
+      }
+    }
+    .pageTotal-box {
+      margin: 0 5px;
+    }
   }
   .index-pagination {
     /deep/ .el-pagination__jump {

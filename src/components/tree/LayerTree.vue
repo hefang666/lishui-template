@@ -13,9 +13,10 @@
       @node-click="nodeClick"
     >
       <span slot-scope="{data}" :class="data.disabled ? 'not-active' : 'ke-active'">
-        <span v-if="data.icon" :class="['iconfont', 'icon-box', data.icon]">
+        <span v-if="data.icon && data.icon.startsWith('icon-')" :class="['iconfont', 'icon-box', data.icon]">
           <!-- <img :src="data.icon" alt=""> -->
         </span>
+        <img v-else-if="data.icon" src="data.icon" />
         <span>{{ data[labelname] }}</span>
       </span>
     </el-tree>

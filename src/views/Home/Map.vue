@@ -2,53 +2,6 @@
   <div class="index-map-box">
     <div ref="map" id="map" class="index-map"></div>
     <div
-      class="task-container overlay-element"
-      v-for="(item, index) in memberList"
-      :key="index + 'overlay'"
-      :id="`overlay-element-${item.id}`"
-      @mouseenter="() => handleOverlayEnter(item)"
-      @mouseleave="() => handleOverlayLeave(item)"
-    >
-      <div class="task-title clearfix">
-        李四（2020-09-09 09:09:09）
-        <span class="fr">时长：6.3 h</span>
-      </div>
-      <el-tabs
-        tab-position="bottom"
-        type="card"
-        value="first"
-        class="snt-tabs-bottom"
-      >
-        <el-tab-pane label="任务" name="first">
-          <div @click="routePush('/plan')">
-            <p>任务名称：xxxxxxxx巡检任务<label class="m-l-5">进行中</label></p>
-            <p>
-              任务类别：临时任务
-            </p>
-            <p>
-              预计开始时间：2020-09-09 09:09:09
-            </p>
-            <p>
-              预计结束时间：2020-09-09 09:09:09
-            </p>
-            <p>巡检片区：重庆市渝中区渝中街道</p>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="工单" name="second">
-          <div @click="routePush('/plan')">
-            <p>工单类型：核查情况<label class="m-l-5">进行中</label></p>
-            <p>
-              <span class="order-title fl">工单内容：</span>
-              <span class="order-content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida
-                dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvin………
-              </span>
-            </p>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
-    <div
       v-for="(item, index) in memberList"
       :id="`img-${item.id}`"
       :key="index + 'img'"
@@ -57,10 +10,64 @@
     >
       <img
         alt
-        src="@/assets/logo.png"
+        src="@/assets/member.png"
         @mouseenter="() => handleAnchorEnter(item)"
         @mouseleave="() => handleAnchorLeave(item)"
       />
+    </div>
+    <div
+      class="task-container overlay-element"
+      v-for="(item, index) in memberList"
+      :key="index + 'overlay'"
+      :id="`overlay-element-${item.id}`"
+      @mouseenter="() => handleOverlayEnter(item)"
+      @mouseleave="() => handleOverlayLeave(item)"
+    >
+      <div class="task-title clearfix">
+        {{item.userName}}（{{item.onlineTime}}）
+        <span class="fr">时长：{{item.duration}} h</span>
+      </div>
+      <el-tabs
+        tab-position="bottom"
+        type="card"
+        value="first"
+        class="snt-tabs-bottom"
+      >
+        <el-tab-pane label="任务" name="first">
+          <el-carousel trigger="click" :autoplay="autoplay" height="145px">
+            <el-carousel-item v-for="(task, index) in item.taskLists" :key="'index_task_' + index">
+              <div class="bg-white">
+                <p>任务名称：{{task.taskName}}<label class="m-l-5">进行中</label></p>
+                <p>
+                  任务类别：{{task.type}}
+                </p>
+                <p>
+                  预计开始时间：{{task.planStartTime}}
+                </p>
+                <p>
+                  预计结束时间：{{task.planEndTime}}
+                </p>
+                <p>巡检片区：{{task.taskAreaName}}</p>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+        </el-tab-pane>
+        <el-tab-pane label="工单" name="second">
+          <el-carousel trigger="click" :autoplay="autoplay" height="145px">
+            <el-carousel-item  v-for="(order, index) in item.workOrderLists" :key="'index_order_' + index">
+              <div class="bg-white">
+                <p>工单类型：{{order.workTypeStr}}<label class="m-l-5">进行中</label></p>
+                <p>
+                  <span class="order-title fl">工单内容：</span>
+                  <span class="order-content">
+                   {{order.content}}
+                  </span>
+                </p>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -74,7 +81,8 @@ export default {
       map: {},
       zoomMap: '12',
       isOverlayEnter: false,
-      position: []
+      position: [],
+      autoplay: false
     };
   },
   computed: {
@@ -152,6 +160,7 @@ export default {
     },
     // 移除人员时删除人员信息
     handleAnchorLeave(member) {
+      console.log(member)
       setTimeout(() => {
         if (!this.isOverlayEnter) {
           this.map.removeOverlay(this.overlays[member.id]);
@@ -162,6 +171,7 @@ export default {
       this.isOverlayEnter = true;
     },
     handleOverlayLeave(member) {
+      console.log(member)
       this.isOverlayEnter = false;
       this.map.removeOverlay(this.overlays[member.id]);
     },

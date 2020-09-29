@@ -1,12 +1,14 @@
 <template>
   <div class="">
     <LayerTree
+      class="area-tree"
       :treedata="pointList"
       :showcheckbox="showcheckbox"
       title="管点图层"
       @checkedChange="changePoint"
     />
     <LayerTree
+      class="area-tree"
       :treedata="lineList"
       :showcheckbox="showcheckbox"
       title="管线图层"

@@ -23,10 +23,10 @@
 <script>
 export default {
   name: 'PageJump',
-  props: ['pagesNum'],
+  props: ['pagesNum', 'currentPage'],
   data() {
     return {
-      pageNum: 1
+      pageNum: this.currentPage
     };
   },
   watch: {

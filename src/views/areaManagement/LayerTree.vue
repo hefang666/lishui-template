@@ -13,7 +13,10 @@
       @check-change="checkChange"
     >
       <span slot-scope="{data}">
-        <span v-if="data.icon" class="el-icon-delete-solid"></span>
+        <span v-if="data.icon && data.icon.startsWith('el-icon')" class="el-icon-delete-solid"></span>
+        <span v-else-if="data.icon" class="tree-icon-img">
+          <img :src="host + data.icon"/>
+        </span>
         <span>{{ data[labelname] }}</span>
       </span>
     </el-tree>
@@ -21,6 +24,7 @@
 </template>
 
 <script>
+import {host} from '@/api/api';
 export default {
   props: {
     // 树数据
@@ -53,6 +57,7 @@ export default {
   },
   data() {
     return {
+      host,
       expandClickStatus: false,
       checkClickStatus: true
     };

@@ -104,7 +104,6 @@ let actions = {
   },
   // 改变选中区域中的信息
   changeAreaInfo({commit}, data) {
-    console.log(data)
     commit('update_area_info', data);
   },
 
@@ -243,7 +242,6 @@ let actions = {
           if (response.success) {
             resolve(response);
           } else {
-            console.log(response)
             reject(response);
             Message({
               type: 'error',

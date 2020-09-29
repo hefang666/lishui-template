@@ -52,14 +52,18 @@ export default {
     currentPage: {
       type: Number,
       default: 1
+    },
+    pageLength: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
       // 每页数据条数
-      pageSize: this.pageData[0],
+      pageSize: this.pageLength || this.pageData[0],
       // 当前页码
-      currentPageNum: 1,
+      currentPageNum: this.currentPage,
       // input输入的页码
       inputPage: 1,
       // 处理后的组件名称
