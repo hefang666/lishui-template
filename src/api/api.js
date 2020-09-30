@@ -14,4 +14,20 @@ const personApi = baseURL + '/api/services/app/';
 const mapwms = 'http://118.122.84.146:8595/geoserver/OpenGIS/wms';
 // const mapwms = 'https://www.rsxgps.com:9091/geoserver/OpenGIS/wms';
 const workSpace = 'http://www.OpenGIS.com/OpenGIS';
-export {api, mapwms, workSpace, gsApi, personApi, host};
+
+// 地图服务器地址
+const geoserverUrl = 'https://www.rsxgps.com:9091';
+// 获取具体区域内的管点 管线设备
+const geoserverUrlConstPoint = '/geoserver/OpenGIS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=OpenGIS%3AGetPointByName_Ins&outputFormat=application%2Fjson&viewparams=name:';
+const geoserverUrlConstLine = '/geoserver/OpenGIS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=OpenGIS%3AGetLineByName_Ins&outputFormat=application%2Fjson&viewparams=name:';
+export {
+  api,
+  mapwms,
+  workSpace,
+  gsApi,
+  personApi,
+  host,
+  geoserverUrlConstPoint,
+  geoserverUrlConstLine,
+  geoserverUrl
+};

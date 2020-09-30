@@ -7,7 +7,7 @@
     >
       <div class="content-box form-box">
         <div class="map-box">
-          <map-route ref="map" :mapid="'ss_' + areaDetailsInfo.id"></map-route>
+          <map-route :areaInfo="areaDetailsInfo" ref="map" :mapid="'ss_' + areaDetailsInfo.id"></map-route>
         </div>
         <div class="content-right-box">
           <div class="right-box">
@@ -57,12 +57,23 @@ export default {
   computed: {
     ...areaState(['areaDetailsInfo'])
   },
+  watch: {
+    areaDetailsInfo: function(areaInfo) {
+      if(!this.$refs.map) return false;
+      this.$refs.map.setAreaInfo({
+        areaPoint: areaInfo.areaPoint,
+        deviceLists: areaInfo.deviceLists,
+        pipelineLists: areaInfo.pipelineLists
+      })
+    }
+  },
   data() {
     return {};
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
     closeRoute() {
+      this.$refs.map.clearMapLayer();
       console.log('点击了X');
       let data = {
         dialogRoute: false,
@@ -108,17 +119,17 @@ export default {
     },
     // 点击了查看
     views(data) {
-      console.log(data);
-      if (data.type == 1) {
-        // 设备
-        let str = data.deviceCode + ';' + data.deviceName;
-        console.log(str);
-        this.$refs.map.ShowPointFunc(str);
-      } else if (data.type == 2) {
-        // 管道
-        let str = data.deviceCode + ';' + data.deviceName;
-        this.$refs.map.ShowLineFunc(str);
-      }
+      this.$refs.map.getDeviceTooltip(data);
+      // if (data.type == 1) {
+      //   // 设备
+      //   let str = data.deviceCode + ';' + data.deviceName;
+      //   console.log(str);
+      //   // this.$refs.map.ShowPointFunc(str);
+      // } else if (data.type == 2) {
+      //   // 管道
+      //   // let str = data.deviceCode + ';' + data.deviceName;
+      //   // this.$refs.map.ShowLineFunc(str);
+      // }
     }
   }
 };
