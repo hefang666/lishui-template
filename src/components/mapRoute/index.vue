@@ -39,6 +39,9 @@
  *  devicePoint 设备坐标位置
  *  address 设备地址中文
  * 
+ *  重置地图中的片区和管点管线
+ *  方法：clearMapLayer
+ * 
 */
 import {
     // mapwms,
