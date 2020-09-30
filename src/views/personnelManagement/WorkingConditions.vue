@@ -1,10 +1,10 @@
 <template>
   <div class="workingConditions-box dialog-box button-box">
-    <el-dialog title="任务详情" :visible.sync="dialogWorking" :before-close="closeWorking">
+    <el-dialog title="任务详情"
+      :visible.sync="dialogWorking"
+      :before-close="closeWorking"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeWorking">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="tabs-box">
           <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
             <el-tab-pane label="综合情况" name="generalSituation">
@@ -13,13 +13,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">当前负责巡检计划：</div>
                     <div class="item-content">
-                      <span>1件</span>
+                      <span>{{ details.currentPlanCount }}件</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">当前计划巡检设备：</div>
                     <div class="item-content">
-                      <span>408个</span>
+                      <span>{{ details.currentDeviceCount }}个</span>
                     </div>
                   </div>
                 </div>
@@ -27,13 +27,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年完成巡检任务：</div>
                     <div class="item-content">
-                      <span>0个</span>
+                      <span>{{ details.taskCount }}个</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">今年完成巡检设备：</div>
                     <div class="item-content">
-                      <span>0个</span>
+                      <span>{{ details.deviceCount }}个</span>
                     </div>
                   </div>
                 </div>
@@ -41,13 +41,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年累计巡检管道：</div>
                     <div class="item-content">
-                      <span>0公里</span>
+                      <span>{{ details.pipelineCount }}公里</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">今年累计上报事件：</div>
                     <div class="item-content">
-                      <span>0件</span>
+                      <span>{{ details.eventCount }}件</span>
                     </div>
                   </div>
                 </div>
@@ -55,13 +55,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年累计暂停时间：</div>
                     <div class="item-content">
-                      <span>0小时0分</span>
+                      <span>{{ details.suspendTimeStr }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
                     <div class="item-title">今年累计关闭任务：</div>
                     <div class="item-content">
-                      <span>1件</span>
+                      <span>{{ details.taskCloseCount }}件</span>
                     </div>
                   </div>
                 </div>
@@ -69,7 +69,7 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">今年累计完成工单：</div>
                     <div class="item-content">
-                      <span>1件</span>
+                      <span>{{ details.workOrderCount }}件</span>
                     </div>
                   </div>
                 </div>
@@ -128,8 +128,8 @@
                 <page
                   :page-data="[30, 40, 50, 100]"
                   :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
+                  @changePageSize="changePlanPageSize"
+                  @changeCurrentPage="changePlanCurrentPage"
                 ></page>
               </div>
             </el-tab-pane>
@@ -192,8 +192,8 @@
                 <page
                   :page-data="[30, 40, 50, 100]"
                   :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
+                  @changePageSize="changeTaskPageSize"
+                  @changeCurrentPage="changeTaskCurrentPage"
                 ></page>
               </div>
             </el-tab-pane>
@@ -250,8 +250,8 @@
                 <page
                   :page-data="[30, 40, 50, 100]"
                   :total="400"
-                  @changePageSize="changePageSize"
-                  @changeCurrentPage="changeCurrentPage"
+                  @changePageSize="changeOrderPageSize"
+                  @changeCurrentPage="changeOrderCurrentPage"
                 ></page>
               </div>
             </el-tab-pane>
@@ -283,6 +283,8 @@ import Page from '@/components/page/Page.vue';
 import PlanDetail from './PlanDetail.vue';
 import OrderDetail from './OrderDetail.vue';
 import ViewTask from './viewTask/ViewTask.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState: personState} = createNamespacedHelpers('personManagement');
 export default {
   name: 'AddTask',
   props: ['dialogWorking'],
@@ -292,19 +294,14 @@ export default {
     ViewTask,
     OrderDetail
   },
+  computed: {
+    ...personState(['details'])
+  },
   data() {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'generalSituation',
-      addForm: {
-        taskName: '巡检任务1',
-        inCharge: '测试人员',
-        estimatedStartTime: '2020-09-23 23:00:00',
-        estimatedEndTime: '2020-09-24 23:00:00',
-        taskType: '普通任务',
-        inspectionArea: '巡检片区1',
-        remarks: '这里是备注内容'
-      },
+
       plainningData: [
         {
           planName: '巡检任务',
@@ -334,12 +331,27 @@ export default {
         }
       ],
       checkedName: '',
+
       // 是否显示计划详情弹窗
       dialogPlanDetail: false,
+
       // 是否显示工单详情弹窗
       dialogOrderDetail: false,
+
       // 是否显示任务详情弹窗
-      dialogView: false
+      dialogView: false,
+
+      // 计划数据
+      planCurrentPage: 1,
+      planPageSize: 30,
+
+      // 任务数据
+      taskCurrentPage:1,
+      taskPageSize: 30,
+
+      // 工单数据
+      orderCurrentPage: 1,
+      orderPageSize: 30
     };
   },
   methods: {
@@ -357,17 +369,82 @@ export default {
     },
 
     // tabs切换时的点击事件
-    handleClick(tab, event) {
-      console.log(tab, event);
+    handleClick(tab) {
+      if (tab.name == 'planning') {
+        // 负责计划
+
+      } else if (tab.name == 'task') {
+        // 负责任务
+
+      } else if (tab.name == 'workOrder') {
+        // 负责工单
+
+      }
     },
-    // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
+
+    // 获取计划列表
+    getPlanList() {
+      let param = {
+        userId: this.details.id,
+        pageIndex: this.planCurrentPage,
+        maxResultCount:this.planPageSize
+      };
+      console.log(param);
+    },
+
+    // 获取任务列表
+    getTaskList() {
+      let param = {
+        userId: this.details.id,
+        pageIndex: this.taskCurrentPage,
+        maxResultCount:this.taskPageSize
+      };
+      console.log(param);
+    },
+
+    // 获取工单列表
+    getOrderList() {
+      let param = {
+        userId: this.details.id,
+        pageIndex: this.taskCurrentPage,
+        maxResultCount:this.taskPageSize
+      };
+      console.log(param);
+    },
+
+    // 获取计划从分页传过来的每页多少条数据
+    changePlanPageSize(data) {
       console.log(data);
+      this.planPageSize = data;
     },
-    // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
+    // 获取计划从分页传过来的当前页数
+    changePlanCurrentPage(data) {
       console.log(data);
+      this.planCurrentPage = data;
     },
+
+    // 获取任务从分页传过来的每页多少条数据
+    changeTaskPageSize(data) {
+      console.log(data);
+      this.taskPageSize = data;
+    },
+    // 获取任务从分页传过来的当前页数
+    changeTaskCurrentPage(data) {
+      console.log(data);
+      this.taskCurrentPage = data;
+    },
+
+    // 获取工单从分页传过来的每页多少条数据
+    changeOrderPageSize(data) {
+      console.log(data);
+      this.orderPageSize = data;
+    },
+    // 获取工单从分页传过来的当前页数
+    changeOrderCurrentPage(data) {
+      console.log(data);
+      this.orderCurrentPage = data;
+    },
+
     // 查看计划按钮
     SeePlan() {
       this.dialogPlanDetail = true;

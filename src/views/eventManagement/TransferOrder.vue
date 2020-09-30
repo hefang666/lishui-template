@@ -1,11 +1,12 @@
 <template>
   <div class="addTask-box">
     <div class="dialog-box dialog_box button-box">
-      <el-dialog title="转工单" :visible.sync="dialogTransfer">
+      <el-dialog
+        title="转工单"
+        :visible.sync="dialogTransfer"
+        :before-close="closeTransfer"
+      >
         <div class="content-box form-box">
-          <div class="cancel-box" @click="closeTransfer">
-            <i class="el-dialog__close el-icon el-icon-close"></i>
-          </div>
           <div class="content_box select_box">
             <div>
               <div class="list-item">
@@ -241,7 +242,9 @@ import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('eventManagement');
+const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
+const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
+import {parseTime} from '@/utils/index';
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
   name: 'TransferOrder',
@@ -252,14 +255,14 @@ export default {
     Preview
   },
   computed: {
-    ...mapState(['orderTypeData', 'eventDetails'])
+    ...eventState(['orderTypeData', 'eventDetails'])
   },
   data() {
     return {
       // 人员
       inCharge: '',
       // 人员信息
-      personInfo: '',
+      personInfo: {},
 
       // 备注
       remarks: '',
@@ -280,7 +283,11 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['UpdateEvent']),
+    ...eventActions(['UpdateEvent']),
+    ...xunjianActions([
+      'getOrganizationData',
+      'getRoleData'
+    ]),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       console.log('点击了取消');
@@ -292,12 +299,13 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
+      this.getOrganizationData();
+      this.getRoleData();
       this.dialogCharge = true;
     },
     
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
@@ -318,7 +326,6 @@ export default {
     },
     // 选择工单类型
     selectType(val) {
-      console.log(val);
       this.orderType = val;
     },
     // 点击确定，进行转工单操作
@@ -329,14 +336,16 @@ export default {
         alert('请选择负责人');
         return;
       }
-      console.log(this.eventDetails.id);
+
+      let time = parseTime(this.endTime, '{y}-{m}-{d} {h}:{i}');
+
       let param = {
         Id: this.eventDetails.id,
         status: 2,
         type: this.orderType,
         personId: this.personInfo.id,
         person: this.personInfo.trueName,
-        planCompleteTime: this.endTime,
+        planCompleteTime: time,
         content: this.remarks
       };
       this.UpdateEvent(param);

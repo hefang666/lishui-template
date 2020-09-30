@@ -1,10 +1,11 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="新增任务" :visible.sync="dialogAdd">
+    <el-dialog
+      title="新增任务"
+      :visible.sync="dialogAdd"
+      :before-close="closeAdd"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeAdd">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
           <div>
             <div class="list-item has-two-item">
@@ -34,8 +35,9 @@
                     plain
                     v-if="inCharge != ''"
                     v-model="inCharge"
-                    >{{ inCharge }}</el-button
                   >
+                    {{ inCharge }}
+                  </el-button>
                   <el-button type="primary" plain @click="choosePerson"
                     >选择人员</el-button
                   >
@@ -50,7 +52,15 @@
                 </div>
                 <div class="content">
                   <div class="list-item-content-box">
-                    <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
+                    <el-button
+                      class="choose-active"
+                      type="primary"
+                      plain
+                      v-if="areaInfo.name != ''"
+                      v-model="areaInfo.name"
+                    >
+                      {{ areaInfo.name }}
+                    </el-button>
                     <el-button
                       type="primary"
                       plain
@@ -150,9 +160,10 @@
                             <div class="item-content-box">
                               <div class="time-box">
                                 <el-date-picker
-                                  v-model="customDate[index].begintTme"
+                                  v-model="customDate[index].beginTime"
                                   type="datetime"
                                   format="yyyy-MM-dd HH:mm"
+                                  :picker-options="pickerOptions"
                                   placeholder="开始时间"
                                 ></el-date-picker>
                               </div>
@@ -162,6 +173,7 @@
                                   v-model="customDate[index].endTime"
                                   type="datetime"
                                   format="yyyy-MM-dd HH:mm"
+                                  :picker-options="pickerOptions"
                                   placeholder="结束时间"
                                 ></el-date-picker>
                               </div>
@@ -204,6 +216,7 @@
                     v-model="timeLimit"
                     type="date"
                     format="yyyy-MM-dd"
+                    :picker-options="pickerOptions"
                     placeholder="请选择日期"
                   ></el-date-picker>
                 </div>
@@ -217,6 +230,13 @@
         <el-button type="primary" @click="determine">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
 
     <!-- 选择负责人 -->
     <choose-people
@@ -237,6 +257,7 @@
     <!-- 选择片区 -->
     <choose-area
       :dialog-area="dialogArea"
+      :type="'view'"
       @closeChooseArea="closeChooseArea"
       @checkedArea="checkedArea"
     ></choose-area>
@@ -247,6 +268,7 @@
 import '@/fonts/iconfont.css';
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {
   mapState: planState,
@@ -255,14 +277,15 @@ const {
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 import {judgeTime, parseTime, mGetDate} from '@/utils/index';
 export default {
-  name: 'AddTask',
+  name: 'AddPlan',
   props: ['dialogAdd'],
   components: {
     ChoosePeople,
-    ChooseArea
+    ChooseArea,
+    Message
   },
   computed: {
-    ...planState(['weeklyData', 'monthlyData'])
+    ...planState(['weeklyData', 'monthlyData', 'messageText'])
   },
   data() {
     return {
@@ -272,6 +295,9 @@ export default {
       // 巡检片区弹窗状态
       dialogArea: false,
 
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
+
       // 计划名称
       planName: '',
 
@@ -279,7 +305,7 @@ export default {
       inCharge: '',
 
       // 负责人信息
-      inChargeInfo: '',
+      inChargeInfo: {},
 
       // 是否显示参与人弹窗
       dialogPar: false,
@@ -287,8 +313,13 @@ export default {
       // 参与人
       participants: [],
 
+      // 片区信息
+      areaInfo: {
+        name: ''
+      },
+
       // tab当前显示在哪个上面
-      activeName: 'custom',
+      activeName: 'weekly',
 
       // 每周下拉框选择的数据
       selectWeek: '',
@@ -302,50 +333,69 @@ export default {
       // 自定义时间集合
       customDate: [
         {
-          begintTme: '',
+          beginTime: '',
           endTime: ''
         }
       ],
 
       // 计划时效
-      timeLimit: ''
+      timeLimit: '',
+
+       // 日期限制
+       pickerOptions: {
+        disabledDate(time) {
+          // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   methods: {
-    ...xunjianActions(['getOrganizationData', 'getRoleData']),
-    ...planActions(['addPlan']),
+    ...xunjianActions(['getOrganizationData', 'getRoleData', 'getAreaLists']),
+    ...planActions(['addPlan', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       let data = false;
-      this.$emit('getAddData', data);
+      this.$emit('closeAdd', data);
     },
+
     // 点击选择负责人按钮
     choosePerson() {
       this.getOrganizationData();
       this.getRoleData();
       this.dialogCharge = true;
     },
+
     // 点击选择参与人
     choosePar() {
       this.getOrganizationData();
       this.getRoleData();
       this.dialogPar = true;
     },
+
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
       this.dialogCharge = data.dialogCharge;
     },
+
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.inCharge = data.personinfo[0].trueName;
-      this.inChargeInfo = data.personinfo;
+      this.inChargeInfo = data.personinfo[0];
+      console.log(this.inChargeInfo);
     },
+
     // 关闭选择参与人弹窗
     closePar(data) {
       console.log(data);
       this.dialogPar = data.dialogCharge;
+    },
+
+    // 关闭消息提示弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
     },
 
     // 选择了参与人并点击了确定
@@ -358,28 +408,40 @@ export default {
 
     // 点击选择片区按钮
     chooseArea() {
+      let param = {
+        pageIndex: 1,
+        maxResultCount: 30
+      }
+      this.getAreaLists(param);
       this.dialogArea = true;
     },
+
     // 关闭选择片区弹窗
     closeChooseArea(data) {
       this.dialogArea = data.dialogArea;
     },
+
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {
       console.log(data);
       this.dialogArea = data.dialogArea;
+      this.areaInfo = data.areaInfo;
       // this.addForm.inCharge = data.name;
     },
+
     // 每周选择
     getSelectWeek(val) {
       this.selectWeek = val;
     },
+
     //每月选择
     getSelectMonth(val) {
       this.selectMonth = val;
     },
+
     // tab切换
     handleClick() {},
+
     // 点击自定义每行后面的操作
     operate() {
       var ev = ev || window.event,
@@ -390,7 +452,7 @@ export default {
       if (opStr == 'jia') {
         if (this.customNum < 12) {
           this.customDate.push({
-            startTime: '',
+            beginTime: '',
             endTime: ''
           });
           this.customNum++;
@@ -402,17 +464,44 @@ export default {
         this.customNum--;
       }
     },
+
+    // 清除所填信息
+    clearData() {
+      this.activeName = 'weekly';
+      this.planName = '';
+      this.inCharge = '';
+      this.inChargeInfo = {};
+      this.areaInfo = {
+        name: ''
+      };
+      this.participants = [];
+      this.selectWeek = '';
+      this.selectMonth = '';
+      this.customNum = 1,
+      this.customDate = [
+        {
+          beginTime: '',
+          endTime: ''
+        }
+      ];
+      this.timeLimit = '';
+    },
+
     // 点击确定
     determine() {
-      let day;
-      let user = [];
+      let dayStr = '';
+      let user = [],
+        timeList = [],
+        cycle;
       if (this.inCharge == '') {
-        alert('请选择负责人');
+        this.setMessage('请选择负责人');
+        this.dialogMessage = true;
         return;
       }
 
       if (this.participants.length == 0) {
-        alert('请选择参与人');
+        this.setMessage('请选择参与人');
+        this.dialogMessage = true;
         return;
       } else {
         this.participants.forEach(item => {
@@ -424,37 +513,46 @@ export default {
       }
 
       if (this.planName == '') {
-        alert('请输入计划名称');
+        this.setMessage('请输入计划名称');
+        this.dialogMessage = true;
         return;
       }
 
       if (this.activeName == 'weekly') {
+        cycle = 1;
         if (this.selectWeek == '') {
-          alert('请选择每周时间');
+          this.setMessage('请选择每周时间');
+          this.dialogMessage = true;
           return;
         } else {
           if (this.timeLimit == '') {
-            alert('请选择计划时效');
+            this.setMessage('请选择计划时效');
+            this.dialogMessage = true;
             return;
           }
         }
       } else if (this.activeName == 'monthly') {
+        cycle = 2;
         if (this.selectMonth == '') {
-          alert('请选择每月时间');
+          this.setMessage('请选择每月时间');
+          this.dialogMessage = true;
           return;
         } else {
           if (this.timeLimit == '') {
-            alert('请选择计划时效');
+            this.setMessage('请选择计划时效');
+            this.dialogMessage = true;
             return;
           }
         }
       } else if (this.activeName == 'custom') {
+        cycle = 3;
         this.customDate.forEach(item => {
-          if (item.startTime == '' || item.endTime == '') {
-            alert('请选择自定义时间');
+          if (item.beginTime == '' || item.endTime == '') {
+            this.setMessage('请选择自定义时间');
+            this.dialogMessage = true;
             return;
           } else {
-            item.startTime = parseTime(item.startTime, '{y}-{m}-{d} {h}:{i}');
+            item.beginTime = parseTime(item.beginTime, '{y}-{m}-{d} {h}:{i}');
             item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
           }
         });
@@ -471,18 +569,22 @@ export default {
         // 计划时效超过当前日期一周以上
         let interval = 7 * 24;
         if (judgeTime(start, limitTime, interval)) {
-          console.log('符合条件');
+          dayStr = this.selectWeek;
         } else {
-          alert('时效日期必须超过当前日期一周');
+          this.setMessage('时效日期必须超过当前日期一周');
+          this.dialogMessage = true;
+          return;
         }
       } else if (this.activeName == 'monthly') {
         // 计划时效必须大于等于一个月
         let day = mGetDate();
         let interval = day * 24;
         if (judgeTime(start, limitTime, interval)) {
-          console.log('符合条件');
+          dayStr = this.selectMonth;
         } else {
-          alert('时效日期必须超过当前日期一个月');
+          this.setMessage('时效日期必须超过当前日期一个月');
+          this.dialogMessage = true;
+          return;
         };
       } else if (this.activeName == 'custom') {
         // 每次时间均需要大于当前时间，每次结束时间需大于开始时间，后一次开始时间需大于前一次结束时间
@@ -491,22 +593,24 @@ export default {
           if (i == 0) {
             let myDate = new Date();
             myDate = parseTime(myDate, '{y}-{m}-{d} {h}:{i}');
-            if (judgeTime(this.customDate[i].startTime, myDate)) {
+            if (judgeTime(myDate, this.customDate[i].beginTime)) {
               console.log('符合条件');
               if (
                 judgeTime(
-                  this.customDate[i].startTime,
+                  this.customDate[i].beginTime,
                   this.customDate[i].endTime,
                   24
                 )
               ) {
                 console.log('符合');
               } else {
-                alert('第' + i + '次结束时间未大于开始时间24小时');
+                this.setMessage('第' + (i + 1) + '次结束时间未大于开始时间24小时');
+                this.dialogMessage = true;
                 return;
               }
             } else {
-              alert('第' + i + '次的开始时间未大于当前时间');
+              this.setMessage('第' + (i + 1) + '次的开始时间未大于当前时间');
+              this.dialogMessage = true;
               return;
             }
           } else {
@@ -514,49 +618,58 @@ export default {
             // 判断开始时间是否大于前一次的结束时间
             if (
               judgeTime(
-                this.customDate[i].startTime,
-                this.customDate[i - 1].endTime
+                this.customDate[i - 1].endTime,
+                this.customDate[i].beginTime
               )
             ) {
               console.log('符合');
               // 判断结束时间是否大于开始时间
               if (
                 judgeTime(
-                  this.customDate[i].startTime,
+                  this.customDate[i].beginTime,
                   this.customDate[i].endTime,
                   24
                 )
               ) {
                 console.log('符合');
               } else {
-                alert('第' + i + '次的开始时间未大于当前时间');
+                this.setMessage('第' + (i + 1) + '次的开始时间未大于当前时间');
+                this.dialogMessage = true;
                 return;
               }
             } else {
-              alert('第' + i + '次的开始时间未大于第' + (i - 1) + '次的结束时间');
+              this.setMessage('第' + (i + 1) + '次的开始时间未大于第' + i + '次的结束时间');
+              this.dialogMessage = true;
               return;
             }
-
           }
         }
+        let length = this.customDate.length - 1;
+        limitTime = parseTime(this.customDate[length].endTime, '{y}-{m}-{d}');
+        timeList = this.customDate;
       }
-
 
       let param = {
         name: this.planName,
-        cycle: this.activeName,
+        cycle: cycle,
         personId: this.inChargeInfo.id,
         person: this.inCharge,
-        areaId: '',
+        areaId: this.areaInfo.id,
         status: 1,
         endTime: limitTime,
-        day: day,
-        dateTimeLists: this.customDate,
+        day: dayStr,
+        dateTimeLists: timeList,
         user: user
       };
-
       console.log(param);
-      this.addPlan(param);
+      this.addPlan(param).then(res => {
+        console.log(res);
+        if (res.success) {
+          let data = false;
+          this.$emit('getAddData', data);
+          this.clearData();
+        }
+      });
     }
   }
 };

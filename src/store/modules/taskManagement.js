@@ -169,15 +169,19 @@ var actions = {
           if (response.success) {
             if (response.result.items.length != 0) {
               response.result.items.forEach(item => {
-                item.planStartTime = parseTime(
-                  item.planStartTime,
-                  '{y}-{m}-{d} {h}:{i}'
-                );
-                item.planEndTime = parseTime(
-                  item.planEndTime,
-                  '{y}-{m}-{d} {h}:{i}'
-                );
-                if (item.endTime != null) {
+                if (item.planStartTime != null || item.planStartTime != '') {
+                  item.planStartTime = parseTime(
+                    item.planStartTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+                if (item.planEndTime != null || item.planEndTime != '') {
+                  item.planEndTime = parseTime(
+                    item.planEndTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+                if (item.endTime != null || item.endTime != '') {
                   item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
                 }
               });
@@ -206,9 +210,28 @@ var actions = {
     return new Promise((resolve, reject) => {
       getTaskList(data)
         .then(response => {
-          if (response.code) {
-            commit('set_task_list', response);
-            console.log(state.taskList);
+          if (response.success) {
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.planEndTime != null || item.planEndTimeTime != '') {
+                  item.planEndTime = parseTime(
+                    item.planEndTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+                if (item.planStartTime != null || item.planStartTime != '') {
+                  item.planStartTime = parseTime(
+                    item.planStartTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+                if (item.endTime != null || item.endTime != '') {
+                  item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+                }
+              });
+            }
+            commit('set_task_list', response.result.items);
+            commit('set_listTotal', response.result.totalCount);
             resolve(response);
           }
         })
@@ -227,8 +250,6 @@ var actions = {
           if (response.success) {
             commit('set_message', '新增任务成功！');
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -245,18 +266,24 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
-            response.result.planStartTime = parseTime(
-              response.result.planStartTime,
-              '{y}-{m}-{d} {h}:{i}'
-            );
-            response.result.planEndTime = parseTime(
-              response.result.planEndTime,
-              '{y}-{m}-{d} {h}:{i}'
-            );
-            commit('set_taskDetail', response.result);
+            let data = response.result;
+            if (data.planStartTime != null || data.planStartTime != '') {
+              data.planStartTime = parseTime(
+                data.planStartTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+            if (data.planEndTime != null || data.planEndTime != '') {
+              data.planEndTime = parseTime(
+                data.planStartTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+            if (data.endTime != null || data.endTime != '') {
+              data.endTime = parseTime(data.endTime, '{y}-{m}-{d} {h}:{i}');
+            }
+            commit('set_taskDetail', data);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -310,8 +337,6 @@ var actions = {
           if (response.success) {
             commit('set_inspectionPointList', response.result.items);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {

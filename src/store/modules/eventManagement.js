@@ -118,26 +118,28 @@ var actions = {
         maxResultCount: param.maxResultCount
       };
     }
-    console.log(data);
     return new Promise((resolve, reject) => {
       GetEventList(data)
         .then(response => {
           console.log(response);
           if (response.success) {
-            response.result.items.forEach(item => {
-              item.creationTime = parseTime(
-                item.creationTime,
-                '{y}-{m}-{d} {h}:{i}'
-              );
-            });
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.creationTime != null || item.creationTime != '') {
+                  item.creationTime = parseTime(
+                    item.creationTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+              });
+            }
             commit('set_eventList', response.result.items);
             commit('set_eventListTotal', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -149,13 +151,28 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
+            let data = response.result;
+            if (data.creationTime != null || data.creationTime != '') {
+              data.creationTime = parseTime(
+                data.creationTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+            if (data.planCompleteTime != null || data.planCompleteTime != '') {
+              data.planCompleteTime = parseTime(
+                data.planCompleteTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+            if (data.time != null || data.time != '') {
+              data.time = parseTime(data.time, '{y}-{m}-{d} {h}:{i}');
+            }
             commit('set_eventDetails', response.result);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -169,14 +186,17 @@ var actions = {
           if (response.success) {
             commit('set_message', '操作成功！');
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message);
           reject(error);
         });
     });
+  },
+  // 改变消息内容
+  setMessage({commit}, data) {
+    commit('set_message', data);
   }
 };
 

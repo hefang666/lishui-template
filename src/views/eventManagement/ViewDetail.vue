@@ -1,10 +1,11 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="事件详情" :visible.sync="dialogView">
+    <el-dialog
+      title="事件详情"
+      :visible.sync="dialogView"
+      :before-close="closeView"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeView">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="list-box">
           <div class="list-item">
             <div class="list-items has-two-item">
