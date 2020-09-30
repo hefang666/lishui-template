@@ -304,7 +304,7 @@ export default {
       let param = {
         Id: this.taskDetail.areaId
       }
-      this.getAreaDetailInfo(param);
+      this.getAreaDetailInfo(param)
       this.dialogRoute = true;
     },
 
