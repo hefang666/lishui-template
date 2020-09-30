@@ -80,7 +80,7 @@
                 <div class="table-box">
                   <el-table
                     ref="multipleTable"
-                    :data="plainningData"
+                    :data="planList"
                     :stripe="true"
                     tooltip-effect="dark"
                     height="400"
@@ -90,27 +90,27 @@
                   >
                     <el-table-column
                       align="center"
-                      prop="planName"
+                      prop="name"
                       label="计划名称"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="inspectionCycle"
+                      prop="cycleStr"
                       label="巡检周期"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="inCharge"
+                      prop="person"
                       label="负责人"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="expectedMaturity"
+                      prop="endTime"
                       label="预计到期时间"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="planningStatus"
+                      prop="statusStr"
                       label="计划状态"
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
@@ -118,7 +118,7 @@
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="SeePlan(scope.$index, scope.row)"
+                          @click="SeePlan(scope.row)"
                           >查看</el-button
                         >
                       </template>
@@ -127,7 +127,7 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :total="planTotal"
                   @changePageSize="changePlanPageSize"
                   @changeCurrentPage="changePlanCurrentPage"
                 ></page>
@@ -138,7 +138,7 @@
                 <div class="table-box">
                   <el-table
                     ref="multipleTable"
-                    :data="taskData"
+                    :data="taskList"
                     :stripe="true"
                     tooltip-effect="dark"
                     height="400"
@@ -148,33 +148,33 @@
                   >
                     <el-table-column
                       align="center"
-                      prop="taskName"
+                      prop="name"
                       label="任务名称"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="taskCategory"
+                      prop="typeStr"
                       label="任务类别"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="inCharge"
+                      prop="person"
                       label="负责人"
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       min-width="120"
-                      prop="completionTime"
+                      prop="endTime"
                       label="实际完成时间"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="duration"
+                      prop="suspendTimeStr"
                       label="暂停时长"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="taskStatus"
+                      prop="statusStr"
                       label="任务状态"
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
@@ -182,7 +182,7 @@
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="SeeTask(scope.$index, scope.row)"
+                          @click="SeeTask(scope.row)"
                           >查看</el-button
                         >
                       </template>
@@ -191,7 +191,7 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :total="taskTotal"
                   @changePageSize="changeTaskPageSize"
                   @changeCurrentPage="changeTaskCurrentPage"
                 ></page>
@@ -202,7 +202,7 @@
                 <div class="table-box">
                   <el-table
                     ref="multipleTable"
-                    :data="workOrderData"
+                    :data="orderList"
                     :stripe="true"
                     tooltip-effect="dark"
                     height="400"
@@ -212,27 +212,27 @@
                   >
                     <el-table-column
                       align="center"
-                      prop="orderType"
+                      prop="typeStr"
                       label="工单类型"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="inCharge"
+                      prop="person"
                       label="负责人"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="submissionTime"
+                      prop="createTime"
                       label="提交时间"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="completionTime"
+                      prop="completeTime"
                       label="完成时间"
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="orderStatus"
+                      prop="statusStr"
                       label="工单状态"
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
@@ -240,16 +240,17 @@
                         <el-button
                           type="text"
                           class="operate-button"
-                          @click="SeeOrder(scope.$index, scope.row)"
-                          >查看</el-button
+                          @click="SeeOrder(scope.row)"
                         >
+                          查看
+                        </el-button>
                       </template>
                     </el-table-column>
                   </el-table>
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :total="orderTotal"
                   @changePageSize="changeOrderPageSize"
                   @changeCurrentPage="changeOrderCurrentPage"
                 ></page>
@@ -284,7 +285,10 @@ import PlanDetail from './PlanDetail.vue';
 import OrderDetail from './OrderDetail.vue';
 import ViewTask from './viewTask/ViewTask.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: personState} = createNamespacedHelpers('personManagement');
+const {mapState: personState, mapActions: personActions} = createNamespacedHelpers('personManagement');
+const {mapActions: planActions} = createNamespacedHelpers('planManagement');
+const {mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapActions: orderActions} = createNamespacedHelpers('workOrderManagement');
 export default {
   name: 'AddTask',
   props: ['dialogWorking'],
@@ -295,48 +299,29 @@ export default {
     OrderDetail
   },
   computed: {
-    ...personState(['details'])
+    ...personState([
+      'details',
+      'checkedId',
+      'taskList',
+      'planList',
+      'orderList',
+      'taskTotal',
+      'planTotal',
+      'orderTotal'
+    ])
   },
   data() {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'generalSituation',
 
-      plainningData: [
-        {
-          planName: '巡检任务',
-          inspectionCycle: '每月一次',
-          inCharge: '张三',
-          expectedMaturity: '2019-12-3 18:00:00',
-          planningStatus: '进行中'
-        }
-      ],
-      taskData: [
-        {
-          taskName: '巡检任务',
-          taskCategory: '每月一次',
-          inCharge: '张三',
-          completionTime: '2019-12-3 18:00:00',
-          duration: '3小时',
-          taskStatus: '进行中'
-        }
-      ],
-      workOrderData: [
-        {
-          orderType: '巡检任务',
-          inCharge: '张三',
-          submissionTime: '2019-12-3 18:00:00',
-          completionTime: '2019-12-3 18:00:00',
-          orderStatus: '进行中'
-        }
-      ],
       checkedName: '',
 
       // 是否显示计划详情弹窗
       dialogPlanDetail: false,
 
       // 是否显示工单详情弹窗
-      dialogOrderDetail: false,
+      dialogOrderDetail: true,
 
       // 是否显示任务详情弹窗
       dialogView: false,
@@ -355,6 +340,10 @@ export default {
     };
   },
   methods: {
+    ...personActions(['getPlan', 'getTask', 'getOrder']),
+    ...planActions(['getPlanDetails']),
+    ...taskActions(['GetTaskDetails']),
+    ...orderActions(['GetWorkOrderDetails']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeWorking() {
       let data = {
@@ -372,44 +361,47 @@ export default {
     handleClick(tab) {
       if (tab.name == 'planning') {
         // 负责计划
-
+        this.getPlanList();
       } else if (tab.name == 'task') {
         // 负责任务
-
+        this.getTaskList();
       } else if (tab.name == 'workOrder') {
         // 负责工单
-
+        this.getOrderList();
       }
     },
 
     // 获取计划列表
     getPlanList() {
       let param = {
-        userId: this.details.id,
+        userId: this.checkedId,
         pageIndex: this.planCurrentPage,
         maxResultCount:this.planPageSize
       };
       console.log(param);
+      this.getPlan(param);
     },
 
     // 获取任务列表
     getTaskList() {
       let param = {
-        userId: this.details.id,
+        userId: this.checkedId,
         pageIndex: this.taskCurrentPage,
         maxResultCount:this.taskPageSize
       };
       console.log(param);
+      this.getTask(param);
     },
 
     // 获取工单列表
     getOrderList() {
       let param = {
-        userId: this.details.id,
+        userId: this.checkedId,
         pageIndex: this.taskCurrentPage,
         maxResultCount:this.taskPageSize
       };
       console.log(param);
+      this.getOrder(param);
     },
 
     // 获取计划从分页传过来的每页多少条数据
@@ -446,30 +438,63 @@ export default {
     },
 
     // 查看计划按钮
-    SeePlan() {
-      this.dialogPlanDetail = true;
+    SeePlan(row) {
+      let param = {
+        id: row.id
+      };
+      this.getPlanDetails(param).then(res => {
+        if (res.success) {
+          this.dialogPlanDetail = true;
+        }
+      }).catch(() => {
+        console.log('获取失败了');
+      });
     },
+
     // 查看任务
-    SeeTask() {
-      this.dialogView = true;
+    SeeTask(row) {
+      let param = {
+        id: row.id
+      };
+      this.GetTaskDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(() => {
+        console.log('获取失败');
+      });
     },
+
     // 查看工单
-    SeeOrder() {
-      this.dialogOrderDetail = true;
+    SeeOrder(row) {
+      let param = {
+        id: row.id
+      };
+      this.GetWorkOrderDetails(param).then(res => {
+        if (res.success) {
+          this.dialogOrderDetail = true;
+        }
+      }).catch(() => {
+        console.log('获取失败');
+      });
     },
+
     // 选中的行
     clickPlanRow(val) {
       console.log(val);
       this.checkedName = val.name;
     },
+
     // 关闭计划详情弹窗
     getPlanDetailData(data) {
       this.dialogPlanDetail = data.dialogPlanDetail
     },
+
     // 关闭计划详情弹窗
     getOrderDetailData(data) {
       this.dialogOrderDetail = data.dialogOrderDetail
     },
+
     // 关闭查看弹窗
     getViewData(data) {
       this.dialogView = data.dialogView;
@@ -541,6 +566,7 @@ export default {
           margin: 0 0 10px 0;
           border: 1px solid #ddd;
           box-sizing: border-box;
+          border-bottom: none;
         }
       }
     }

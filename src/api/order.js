@@ -27,3 +27,12 @@ export function DeleteWorkOrder(data) {
     data
   });
 }
+
+// 关闭工单
+export function CloseWorkOrder(data) {
+  return request({
+    url: api + 'WorkOrderService/CloseWorkOrder',
+    method: 'post',
+    data
+  });
+}

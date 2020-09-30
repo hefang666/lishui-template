@@ -1,10 +1,11 @@
 <template>
   <div class="planDetail-box dialog-box button-box">
-    <el-dialog title="工单详情" :visible.sync="dialogOrderDetail">
+    <el-dialog
+      title="工单详情"
+      :visible.sync="dialogOrderDetail"
+      :before-close="closeOrder"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeOrder">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="plan-content-box">
           <div class="list-item">
             <div class="list-items has-two-item">

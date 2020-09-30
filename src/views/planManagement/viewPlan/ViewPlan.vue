@@ -1,10 +1,11 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="查看计划" :visible.sync="dialogView">
+    <el-dialog
+      title="查看计划"
+      :visible.sync="dialogView"
+      :before-close="closeView"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeView">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="details-box">
           <div class="list-item">
             <div class="list-items has-two-item">
@@ -24,7 +25,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">巡检片区：</div>
               <div class="item-content">
-                <span>{{ planDetails.areaId }}</span>
+                <span>{{ planDetails.areaName }}</span>
+                <el-button
+                  @click="viewRoute"
+                  class="view-button"
+                >
+                  查看路线
+                </el-button>
               </div>
             </div>
             <div class="list-items has-two-item">

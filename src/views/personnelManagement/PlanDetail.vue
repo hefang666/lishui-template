@@ -1,57 +1,64 @@
 <template>
   <div class="planDetail-box dialog-box button-box">
-    <el-dialog title="计划详情" :visible.sync="dialogPlanDetail">
+    <el-dialog
+      title="计划详情"
+      :visible.sync="dialogPlanDetail"
+      :before-close="closePlan"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closePlan">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="plan-content-box">
           <div class="list-item">
             <div class="list-items has-two-item">
-              <div class="item-title">实际结束时间：</div>
+              <div class="item-title">计划名称：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ planDetails.name }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
-              <div class="item-title">开始时间：</div>
+              <div class="item-title">负责人：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ planDetails.person }}</span>
               </div>
             </div>
           </div>
           <div class="list-item">
             <div class="list-items has-two-item">
-              <div class="item-title">暂停时间：</div>
+              <div class="item-title">巡检片区：</div>
               <div class="item-content">
-                <span>3小时20分</span>
+                <span>{{ planDetails.areaName }}</span>
+                <el-button
+                  @click="viewRoute"
+                  class="view-button"
+                >
+                  查看路线
+                </el-button>
               </div>
             </div>
             <div class="list-items has-two-item">
-              <div class="item-title">巡检片区：</div>
+              <div class="item-title">参与人：</div>
               <div class="item-content">
-                <span>*****路线</span>
-                <el-button @click="viewRoute" class="view-button"
-                  >查看路线</el-button
-                >
+                <span>{{ planDetails.participant }}</span>
               </div>
             </div>
           </div>
-          <div class="time-box">
-            <div class="list-item">
-              <div class="list-items has-two-item">
-                <div>2020-04-23 17:40—2020-04-27 00:00</div>
-              </div>
-              <div class="list-items has-two-item">
-                <div>2020-04-23 17:40—2020-04-27 00:00</div>
+          <div class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">计划时效：</div>
+              <div class="item-content">
+                <span>{{ planDetails.endTime }}</span>
               </div>
             </div>
-            <div class="list-item">
-              <div class="list-items has-two-item">
-                <div>2020-04-23 17:40—2020-04-27 00:00</div>
-              </div>
-              <div class="list-items has-two-item">
-                <div>2020-04-23 17:40—2020-04-27 00:00</div>
+          </div>
+          <div class="list-item">
+            <div class="list-items">
+              <div class="item-title">计划周期：</div>
+              <div class="item-content">
+                <div
+                  v-for="(item, index) in planDetails.taskLists"
+                  :key="index"
+                  class="cycle-box">
+                  {{ item.beginTime }}——{{ item.endTime }}
+                </div>
               </div>
             </div>
           </div>
@@ -72,11 +79,16 @@
 
 <script>
 import ViewRoute from '@/views/public/ViewRoute.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState: planState} = createNamespacedHelpers('planManagement');
 export default {
   name: 'PlanDetail',
   props: ['dialogPlanDetail'],
   components: {
     ViewRoute
+  },
+  computed: {
+    ...planState(['planDetails'])
   },
   data() {
     return {

@@ -74,7 +74,7 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="statuStr"
+            prop="statusStr"
             label="计划状态"
             show-overflow-tooltip
           ></el-table-column>

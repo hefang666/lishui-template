@@ -111,7 +111,7 @@
       </div>
       <div class="button-group-box">
         <el-button type="primary" plain @click="search">搜索</el-button>
-        <el-button type="primary" plain>清空</el-button>
+        <el-button type="primary" plain @click="clearSearch">清空</el-button>
       </div>
     </div>
     <div class="content-box">
@@ -121,6 +121,7 @@
           :data="orderList"
           :stripe="true"
           tooltip-effect="dark"
+          border
           height="830"
           style="width: 100%"
           @selection-change="handleSelectionChange"
@@ -162,30 +163,52 @@
             label="工单状态"
             show-overflow-tooltip
           ></el-table-column>
-          <!-- <el-table-column label="操作" width="180">
+          <el-table-column label="操作" width="130">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
                   type="text"
-                  class="operate-button"
-                  @click="handleClose(scope.$index, scope.row)"
+                  :class="[
+                    'operate-button',
+                    (scope.row['status'] == 1 ||
+                    scope.row['status'] == 2)
+                    ? ''
+                    : 'operate-button-active'
+                  ]"
+                  :disabled="
+                    (scope.row['status'] == 1 ||
+                    scope.row['status'] == 2)
+                    ? disabledFalse
+                    : disabledTrue
+                  "
+                  @click="handleClose(scope.row)"
                   >关闭</el-button
                 >
                 <el-button
                   type="text"
-                  class="operate-button"
-                  @click="handleEdit(scope.$index, scope.row)"
+                  :class="[
+                    'operate-button',
+                    scope.row['status'] == 1
+                    ? ''
+                    : 'operate-button-active'
+                  ]"
+                  :disabled="
+                    scope.row['status'] == 1
+                    ? disabledFalse
+                    : disabledTrue
+                  "
+                  @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
                 <el-button
                   type="text"
                   class="operate-button"
-                  @click="handleSee(scope.$index, scope.row)"
+                  @click="handleSee(scope.row)"
                   >查看</el-button
                 >
               </div>
             </template>
-          </el-table-column> -->
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
@@ -238,6 +261,13 @@
       :dialog-view="dialogView"
       @closeView="closeView"
     ></order-detail>
+
+    <!-- 关闭工单 -->
+    <close-order
+      :dialog-close="dialogClose"
+      :order-id="checkedId"
+      @closeOrder="closeOrder"
+    ></close-order>
   </div>
 </template>
 
@@ -247,6 +277,7 @@ import Page from '@/components/page/Page.vue';
 import AddOrder from './Add.vue';
 import EditOrder from './EditOrder.vue';
 import OrderDetail from './OrderDetail.vue';
+import CloseOrder from './CloseOrder.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
@@ -264,6 +295,7 @@ export default {
     AddOrder,
     EditOrder,
     OrderDetail,
+    CloseOrder,
     Message,
     Operate
   },
@@ -273,6 +305,9 @@ export default {
       currentIndex: 0,
       // 按状态筛选的状态内容
       statusList: ['全部', '待接收', '进行中', '已关闭', '已完成'],
+
+      disabledTrue: true,
+      disabledFalse: false,
 
       // 显示内容（筛选/收起）
       screen: '筛选',
@@ -289,7 +324,7 @@ export default {
       // 人员信息
       personInfo: '',
       // 异常类型
-      orderType: 0,
+      orderType: '',
       // 提交开始时间
       submissionStartTime: '',
 
@@ -320,11 +355,11 @@ export default {
       // 是否显示消息提示弹窗
       dialogMessage: false,
 
-      // 提示消息
-      messageText: '',
-
       // 是否显示操作提示弹窗
       dialogOperate: false,
+
+      // 是否显示关闭工单弹窗
+      dialogClose: false,
 
       // 操作类型
       operateType: '',
@@ -333,17 +368,26 @@ export default {
       messageT: '请确认操作',
 
       // 多选后的数组
-      multipleSelection: []
+      multipleSelection: [],
+
+      // 点击表格中的操作选中的行
+      checkedId: '',
     };
   },
   computed: {
-    ...orderState(['orderTypeData', 'orderList', 'orderListTotal'])
+    ...orderState([
+      'orderTypeData',
+      'orderList',
+      'orderListTotal',
+      'messageText'
+    ])
   },
   methods: {
     ...orderActions([
       'GetWorkOrderList',
       'GetWorkOrderDetails',
-      'DeleteWorkOrder'
+      'DeleteWorkOrder',
+      'setMessage'
     ]),
     ...xunjianActions(['getOrganizationData', 'getRoleData']),
     // // 按状态筛选则并为input添加样式
@@ -373,20 +417,22 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
-        this.messageText = '只能选择一行数据';
+        this.setMessage('只能选择一行数据');
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
         return false;
       } else {
         return true;
       }
     },
 
+    // 关闭关闭工单弹窗
+    closeOrder(data) {
+      this.dialogClose = data;
+    },
     // 关闭工单
     close() {
       if (this.onlyOne()) {
@@ -394,15 +440,20 @@ export default {
           this.multipleSelection[0].status == 1 ||
           this.multipleSelection[0].status == 2) {
           // 操作弹窗
-          this.messageT = '请确认操作';
-          this.operateType = 'close';
-          this.dialogOperate = true;
+          this.dialogClose = true;
+          this.checkedId = this.multipleSelection[0].id;
         } else {
           // 关闭任务只能对已暂停状态的任务进行
-          this.messageText = '该状态不能关闭';
+          this.setMessage('该状态不能关闭');
           this.dialogMessage = true;
         }
       }
+    },
+
+    // 表格里的关闭
+    handleClose(row) {
+      this.checkedId = row.id;
+      this.dialogClose = true;
     },
 
     // 修改工单
@@ -414,13 +465,32 @@ export default {
           let param = {
             Id: this.multipleSelection[0].id
           };
-          this.GetWorkOrderDetails(param);
-          this.dialogEdit = true;
+          this.GetWorkOrderDetails(param).then(res => {
+            if (res.success) {
+              this.dialogEdit = true;
+            }
+          }).catch(() => {
+            this.dialogMessage = true;
+          });
         } else {
-          this.messageText = '该状态不能修改';
+          this.setMessage('该状态不能修改');
           this.dialogMessage = true;
         }
       }
+    },
+
+    // 表格里的修改
+    handleEdit(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetWorkOrderDetails(param).then(res => {
+        if (res.success) {
+          this.dialogEdit = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 查看工单
@@ -430,15 +500,34 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetWorkOrderDetails(param);
-        this.dialogView = true;
+        this.GetWorkOrderDetails(param).then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
       }
+    },
+
+    // 表格里的查看
+    handleSee(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetWorkOrderDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 删除任务
     del() {
       if (this.multipleSelection.length == 0) {
-        this.messageText = '请选择要操作数据';
+        this.setMessage('请选择要操作数据');
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -449,7 +538,7 @@ export default {
             flag = true;
           } else {
             flag = false;
-            this.messageText = '只允许删除已暂停和已关闭的任务';
+            this.setMessage('只允许删除已暂停和已关闭的任务');
             this.dialogMessage = true;
           }
         });
@@ -484,9 +573,7 @@ export default {
           param = {
             id: item.id
           };
-          console.log(param);
           this.DeleteWorkOrder(param);
-          // this.deleteTask(param);
         });
       }
     },
@@ -557,7 +644,9 @@ export default {
         pageIndex: this.currentPage,
         MaxResultCount: this.pagesize
       };
-      this.GetWorkOrderList(param);
+      this.GetWorkOrderList(param).catch(() => {
+        this.dialogMessage = true;
+      });
     },
 
     // 搜索
@@ -567,6 +656,11 @@ export default {
         subEndTime = '',
         comStartTime = '',
         comEndTime = '';
+      
+      // 工单类型
+      if (this.orderType == '') {
+        return;
+      }
       // 工单提交时间
       if (
         (this.submissionStartTime != '' && this.submissionEndTime != '')
@@ -578,11 +672,12 @@ export default {
           subEndTime = parseTime(this.submissionEndTime, '{y}-{m}-{d} {h}:{i}');
         }
       } else {
-        console.log('不满足条件');
         if (this.submissionStartTime == '') {
-          alert('请选择工单提交的开始时间');
+          this.setMessage('请选择工单提交的开始时间');
+          this.dialogMessage = true;
         } else if (this.submissionEndTime == '') {
-          alert('请选择工单提交的结束时间');
+          this.setMessage('请选择工单提交的结束时间');
+          this.dialogMessage = true;
         }
         return;
       }
@@ -597,9 +692,11 @@ export default {
         }
       } else {
         if (this.completionStartTime == '') {
-          alert('请选择工单完成的开始时间');
+          this.setMessage('请选择工单完成的开始时间');
+          this.dialogMessage = true;
         } else if (this.completionEndTime == '') {
-          alert('请选择工单完成的结束时间');
+          this.setMessage('请选择工单完成的结束时间');
+          this.dialogMessage = true;
         }
         return;
       }
@@ -614,8 +711,22 @@ export default {
         endCompleteTime: comEndTime,
         type: this.orderType
       };
-      this.GetWorkOrderList(param);
+      this.GetWorkOrderList(param).catch(() => {
+        this.dialogMessage = true;
+      });
+      this.clearSearch();
+    },
+
+    // 清空
+    clearSearch() {
+      this.person = '';
+      this.submissionStartTime = '';
+      this.submissionEndTime = '';
+      this.completionStartTime = '';
+      this.completionEndTime = '';
+      this.orderType = '';
       this.isScreen = !this.isScreen;
+      this.screen = '筛选';
     }
   },
   mounted() {
@@ -686,7 +797,7 @@ export default {
     margin-top: 10px;
 
     .table-box {
-      border: 1px solid #ddd;
+      /* border: 1px solid #ddd; */
       box-sizing: border-box;
     }
 

@@ -6,9 +6,6 @@
       :before-close="closeAttend"
     >
       <div class="content-box">
-        <div class="cancel-box" @click="closeAttend">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
           <div class="search-box">
             <el-date-picker
@@ -146,7 +143,7 @@ export default {
     margin: 10px 0;
     border: 1px solid #ddd;
     box-sizing: border-box;
-
+    border-bottom: none;
     .el-table--striped
       .el-table__body
       tr.el-table__row--striped.el-table__row--striped.el-table__row--striped
