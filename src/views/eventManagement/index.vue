@@ -96,6 +96,7 @@
           ref="multipleTable"
           :data="eventList"
           :stripe="true"
+          border
           tooltip-effect="dark"
           height="830"
           style="width: 100%"
@@ -105,13 +106,12 @@
           <el-table-column
             prop="typeStr"
             label="事件类型"
-            min-width="120"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
             prop="creationName"
             label="报告人"
-            width="120"
+            show-overflow-tooltip
           ></el-table-column>
           <el-table-column
             prop="creationTime"
@@ -133,7 +133,7 @@
             label="事件状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="操作" width="180">
+          <el-table-column label="操作" width="150">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
@@ -243,7 +243,7 @@ import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-import {parseTime} from '@/utils/index';
+import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'EventManagement',
   components: {
@@ -582,6 +582,7 @@ export default {
         });
       }
     },
+
     getData() {
       let param = {
         pageIndex: this.currentPage,
@@ -591,6 +592,40 @@ export default {
       this.GetEventList(param).catch(() => {
         this.dialogMessage = true;
       });
+    },
+
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '任务名称',
+        '任务类别',
+        '负责人',
+        '参与人',
+        '预计开始时间',
+        '预计完成时间',
+        '实际完成时间',
+        '暂停时长',
+        '任务状态'
+      ];
+      let TextName = [
+        'name',
+        'typeStr',
+        'person',
+        'participants',
+        'planStartTime',
+        'planEndTime',
+        'endTime',
+        'suspendTimeStr',
+        'statusStr'
+      ]
+      let tableData;
+      let tableName = '任务列表';
+      if (this.multipleSelection.length == 0) {
+        tableData = this.taskList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   },
   mounted() {

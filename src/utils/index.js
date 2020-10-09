@@ -483,3 +483,29 @@ export function mGetDate() {
   let d = new Date(year, month, 0);
   return d.getDate();
 }
+
+/**
+ * 导出
+ * @param {Array} header 表头信息
+ * @param {Array} fieldName 表头对应字段名
+ * @param {Array} data 需要导出的数据
+ * @param {String} tableName 表格导出的名字
+ */
+export function exportExcel(header, fieldName, data, tableName) {
+  require.ensure([], () => {
+    const {export_json_to_excel} = require('@/excel/Export2Excel');
+    let tHeader = header;
+    let filterVal = fieldName;
+    let list = data;
+    let tableData = formatJson(filterVal, list);
+
+    export_json_to_excel(tHeader, tableData, tableName);
+  });
+}
+
+/**
+ * 格式转换
+ */
+export function formatJson(filterVal, jsonData) {
+  return jsonData.map(v => filterVal.map(j => v[j]));
+}

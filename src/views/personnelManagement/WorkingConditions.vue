@@ -321,7 +321,7 @@ export default {
       dialogPlanDetail: false,
 
       // 是否显示工单详情弹窗
-      dialogOrderDetail: true,
+      dialogOrderDetail: false,
 
       // 是否显示任务详情弹窗
       dialogView: false,
