@@ -76,7 +76,14 @@ let mutations = {
   },
   set_areaDetailsInfo: function(state, data) {
     state.areaDetailsInfo = data;
-    console.log(state.areaDetailsInfo);
+  },
+  delete_device_single: function(state, index) {
+    state.areaInfo.selectPoint.splice(index, 1);
+    state.selectPoint.splice(index, 1);
+  },
+  delete_Line_single: function(state, index) {
+    state.areaInfo.selectLine.splice(index, 1);
+    state.selectLine.splice(index, 1);
   }
 };
 
@@ -278,6 +285,15 @@ let actions = {
   // 翻页
   changeCurrentPage({commit}, data) {
     commit('update_current_page', data);
+  },
+
+  // 删除设备触发
+  deleteDeviceSigle({commit}, data) {
+    if (data.type == 1) {
+      commit('delete_device_single', data.index);
+    } else {
+      commit('delete_Line_single', data.index);
+    }
   }
 };
 

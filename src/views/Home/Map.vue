@@ -3,14 +3,13 @@
     <div ref="map" id="map" class="index-map"></div>
     <div
       v-for="(item, index) in memberList"
-      :id="`img-${item.id}`"
+      :id="`img-${item.userId}`"
       :key="index + 'img'"
       style="min-width: 20px; cursor: pointer;"
       class="index-map-archor-img"
+      v-show="item.isOnline"
     >
-      <img
-        alt
-        src="@/assets/member.png"
+      <img src="@/assets/icon-location-gray.png"
         @mouseenter="() => handleAnchorEnter(item)"
         @mouseleave="() => handleAnchorLeave(item)"
       />
@@ -19,12 +18,13 @@
       class="task-container overlay-element"
       v-for="(item, index) in memberList"
       :key="index + 'overlay'"
-      :id="`overlay-element-${item.id}`"
+      :id="`overlay-element-${item.userId}`"
+      v-show="item.isOnline"
       @mouseenter="() => handleOverlayEnter(item)"
       @mouseleave="() => handleOverlayLeave(item)"
     >
       <div class="task-title clearfix">
-        {{item.userName}}（{{item.onlineTime}}）
+        {{item.userName}}（{{item.onlineTime || ''}}）
         <span class="fr">时长：{{item.duration}} h</span>
       </div>
       <el-tabs
@@ -82,7 +82,8 @@ export default {
       zoomMap: '12',
       isOverlayEnter: false,
       position: [],
-      autoplay: false
+      autoplay: false,
+      memberIndex: -1
     };
   },
   computed: {
@@ -179,6 +180,7 @@ export default {
     // 将地图聚焦到选中人选的位置
     focusOnCurrentMember (index) {
       this.map.getView().setCenter(this.position[index]);
+      this.memberIndex = index;
     }
   }
 };

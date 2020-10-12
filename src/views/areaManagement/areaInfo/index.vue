@@ -2,7 +2,7 @@
   <div class="area-handle-btn">
     <div class="button-box">
       <el-button @click="addArea">新增片区</el-button>
-      <el-button @click="deleteArea">删除片区</el-button>
+      <el-button :loading="deleteLoading" @click="deleteArea">删除片区</el-button>
     </div>
     <div v-show="handleStatus === 1 || handleStatus === 2" class="area-manage right">
       <div  class="area-tabs">
@@ -35,15 +35,15 @@
             </div>
             <el-tabs v-model="activeName" class="snt-card-tabs mt-10" type="card">
               <el-tab-pane label="设备" name="area">
-                <DeviceTable @showInfo="showPointInfo" table-cc="123" :tabledata="selectPoint"></DeviceTable>
+                <DeviceTable :type="1" @deleteDevice="deleteDeviceFunc" @showInfo="showPointInfo" table-cc="123" :tabledata="selectPoint"></DeviceTable>
               </el-tab-pane>
               <el-tab-pane label="管道" name="layer">
-                <DeviceTable @showInfo="showLineInfo" table-cc="123" :tabledata="selectLine"></DeviceTable>
+                <DeviceTable :type="2" @deleteDevice="deleteDeviceFunc" @showInfo="showLineInfo" table-cc="123" :tabledata="selectLine"></DeviceTable>
               </el-tab-pane>
             </el-tabs>
           </div>
           <div class="page-box button-box text-right">
-            <el-button @click="saveArea" type="primary">保存</el-button>
+            <el-button :loading="submitLoading" @click="saveArea" type="primary">保存</el-button>
             <el-button @click="cancelUpdate">取消</el-button>
           </div>
         </div>
@@ -68,7 +68,11 @@ export default {
         name: [
           { required: true, message: '请输入片区名', trigger: 'blur' }
         ]
-      }
+      },
+      // 新增和编辑区域的loading
+      submitLoading: false,
+      // 删除区域loading
+      deleteLoading: false
     };
   },
   computed: {
@@ -82,10 +86,15 @@ export default {
     DeviceTable
   },
   methods: {
-    ...mapActions(['changeAreaInfo', 'changeHandleStatus', 'addAreaFunc', 'updataAreaFunc', 'deleteAreaFunc']),
+    ...mapActions(['changeAreaInfo', 'changeHandleStatus', 'addAreaFunc', 'updataAreaFunc', 'deleteAreaFunc', 'deleteDeviceSigle']),
     // 改变操作的方式
     changeStatus(status) {
       this.changeHandleStatus(status)
+    },
+
+    // 删除设备
+    deleteDeviceFunc(data) {
+      this.deleteDeviceSigle(data);
     },
 
     // 新增片区
@@ -96,6 +105,7 @@ export default {
         });
         return false;
       }
+      this.changeAreaInfo({})
       this.changeStatus(1);
     },
 
@@ -110,8 +120,13 @@ export default {
         })
         return false;
       }
+      this.deleteLoading = true;
       this.deleteAreaFunc({
         id: chooseAreaId
+      }).then(() => {
+        this.deleteLoading = false;
+      }).catch(() => {
+        this.deleteLoading = false;
       });
     },
 
@@ -171,6 +186,7 @@ export default {
           })
           return false;
         }
+        this.submitLoading = true;
         let areaDetail = {
           name: _this.ruleForm.name,
           pipelineLength: _this.areaInfo.lineLength || 0,
@@ -182,8 +198,12 @@ export default {
         if(_this.handleStatus === 1) {
           this.addAreaFunc(areaDetail)    
           .then(resp => {
-            console.log(resp);
+            console.log(resp)
             this.resetArea();
+            this.submitLoading = false; 
+          })
+          .catch(() => {
+            this.submitLoading = false; 
           })
         } else {
           var id = this.areaInfo.id || '';
@@ -200,6 +220,10 @@ export default {
           .then(resp => {
             console.log(resp);
             this.resetArea();
+            this.submitLoading = false; 
+          })
+          .catch(() => {
+            this.submitLoading = false; 
           })
         }
       })

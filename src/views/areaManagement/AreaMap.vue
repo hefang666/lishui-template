@@ -64,7 +64,19 @@
         currentDeviceInfo: {},
 
         pointInArea: [],
-        lineInArea: []
+        lineInArea: [],
+
+        // 选中的管点、管线图层
+        selectPointSource: {},
+        selectPointLayer: {},
+        selectLineSource: {},
+        selectLineLayer: {},
+
+        // 查看显示片区管点管线图层
+        checkPointSource: {},
+        checkPointLayer: {},
+        checkLineSource: {},
+        checkLineLayer: {}
       };
     },
     computed: {
@@ -74,6 +86,7 @@
       this.initMap();
     },
     methods: {
+      // 初始化地图
       initMap() {
         var SNTGIS = window.SNTGIS;
         var pointLayer = new SNTGIS.layer.TileWMS({
@@ -114,8 +127,13 @@
           this.featureSelectComp();
           this.initMenuOverLay();
           this.initMapOverlay();
+          this.initSelectPointLayer();
+          this.initSelelctLineLayer();
+          this.initCheckPointLayer();
+          this.initCheckLineLayer();
         });
       },
+      
       // 初始化绘制区域图层
       initDrawMap() {
         let _this = this;
@@ -131,6 +149,7 @@
         this.drawMapAreaLayer = drawMapAreaLayer;
         this.map.addLayer(drawMapAreaLayer);
       },
+      
       // 初始化区域图层
       drawAreaLayerFunc() {
         let SNTGIS = window.ol;
@@ -198,6 +217,95 @@
         this.map.addOverlay(overlay);
       },
 
+      // 初始化选中管点图层
+      initSelectPointLayer() {
+        let selectPointStyle = new window.ol.style.Style({
+          fill: new window.ol.style.Fill({
+            color: 'rgba(196, 211, 231, 0.5)'
+          }),
+          stroke: new window.ol.style.Stroke({
+            color: 'rgba(252, 7, 7, 1)',
+            width: 3
+          })
+        })
+        let selectPointSource = new window.ol.source.Vector({});
+        this.selectPointSource = selectPointSource;
+        var selectPointLayer = new window.ol.layer.Vector({
+          source: selectPointSource,
+          updateWhileInteracting: true,
+          style: selectPointStyle
+        });
+        this.selectPointLayer = selectPointLayer;
+        this.map.addLayer(selectPointLayer);
+      },
+
+      // 初始化选中管线图层
+      initSelelctLineLayer() {
+        let selectLineStyle = new window.ol.style.Style({
+          fill: new window.ol.style.Fill({
+            color: 'rgba(252, 7, 7, 0.5)'
+          }),
+          stroke: new window.ol.style.Stroke({
+            color: 'rgba(48, 99, 181, 0.5)',
+            width: 4
+          }),
+        })
+        let selectLineSource = new window.ol.source.Vector({});
+        this.selectLineSource = selectLineSource;
+
+        var selectLineLayer = new window.ol.layer.Vector({
+          source: selectLineSource,
+          updateWhileInteracting: true,
+          style: selectLineStyle
+        });
+        this.selectLineLayer = selectLineLayer;
+        this.map.addLayer(selectLineLayer);
+      },
+
+      // 初始化查看显示片区管点管线图层
+      initCheckPointLayer() {
+        let checkPointStyle = new window.ol.style.Style({
+          fill: new window.ol.style.Fill({
+            color: 'rgba(196, 211, 231, 0.5)'
+          }),
+          stroke: new window.ol.style.Stroke({
+            color: 'rgba(252, 7, 7, 1)',
+            width: 3
+          })
+        })
+        let checkPointSource = new window.ol.source.Vector({});
+        this.checkPointSource = checkPointSource;
+        var checkPointLayer = new window.ol.layer.Vector({
+          source: checkPointSource,
+          updateWhileInteracting: true,
+          style: checkPointStyle
+        });
+        this.checkPointLayer = checkPointLayer;
+        this.map.addLayer(checkPointLayer);
+      },
+
+      initCheckLineLayer() {
+        let checkLineStyle = new window.ol.style.Style({
+          fill: new window.ol.style.Fill({
+            color: 'rgba(252, 7, 7, 0.5)'
+          }),
+          stroke: new window.ol.style.Stroke({
+            color: 'rgba(48, 99, 181, 0.5)',
+            width: 4
+          }),
+        })
+        let checkLineSource = new window.ol.source.Vector({});
+        this.checkLineSource = checkLineSource;
+
+        var checkLineLayer = new window.ol.layer.Vector({
+          source: checkLineSource,
+          updateWhileInteracting: true,
+          style: checkLineStyle
+        });
+        this.checkLineLayer = checkLineLayer;
+        this.map.addLayer(checkLineLayer);
+      },
+
       // 显示地图上管点管线的设备信息
       setMapOverLayInfo(deviceInfo) {
         this.currentDeviceInfo = deviceInfo;
@@ -218,7 +326,6 @@
 
       // 根据选中的列表展示图层或者关闭图层
       showOrCloseRouteLayer(routeData, isShow) {
-        console.log(routeData)
         if (isShow) {
           this.showRouteLayer(routeData, 1);
         } else {
@@ -243,7 +350,6 @@
           var areaFeatyre = new window.ol.Feature({
             geometry: new window.ol.geom.Polygon([pointsArray])
           });
-          console.log('ccc')
           if (status === 1) {
             this.drawAreaSource.addFeature(areaFeatyre);
           } else {
@@ -256,6 +362,9 @@
           var ymax = Math.max.apply(null, yArray);
           var ymin = Math.min.apply(null, yArray);
           this.map.getView().fit([xmin, ymin, xmax, ymax]);
+
+          // 选中管点管线
+          // this.getCommonEle(routeData, 2)
         }
       },
 
@@ -275,8 +384,11 @@
           });
           //drawAreaSoure1.removeFeature(areaFeatyre);
           this.delFeatureFromSource(this.drawAreaSource, areaFeatyre);
+          this.checkPointLayer.getSource().clear();
+          this.checkLineLayer.getSource().clear();
         }
       },
+      
       // 删除区域  source 删除的图层   feature: 删除的区域
       delFeatureFromSource(source, feature) {
         var sourceArray = source.getFeatures();
@@ -289,6 +401,7 @@
           }
         }
       },
+      
       // 画区域实现调用的方式
       drawAreaFunc() {
         let _this = this;
@@ -297,6 +410,7 @@
         });
         this.drawMapAreaSource = drawMapAreaSource;
         this.drawMapAreaLayer.setSource(drawMapAreaSource);
+        this.clearMapLayer();
 
         // 开始画区域
         let drawArea = new window.ol.interaction.Draw({
@@ -307,6 +421,15 @@
         this.map.addInteraction(drawArea);
 
         drawArea.on('drawend', function (evt) {
+          if (_this.checkedLine.length <= 0 && _this.checkedPoint.length <= 0) {
+            _this.$message({
+              type: 'error',
+              message: '未选中任何管道或者设备图层！',
+              duration: 2000
+            })
+            _this.resetDrawArea();
+            return false;
+          }
           let areaObj = _this.areaObj;
           areaObj.area = '';
 
@@ -317,16 +440,16 @@
             areaObj.area += flats[i + 1] + ";";
           }
           _this.map.removeInteraction(drawArea);
-          _this.getCommonEle(areaObj.area);
+          _this.getCommonEle({areaPoint: areaObj.area});
 
         });
       },
 
       // 根据区域得出与区域相交的元素
-      getCommonEle(areaPoint) {
+      getCommonEle(deviceInfo, type) {
         let _this = this;
         // 获取选中的图层边界点
-        let areaExtent = areaPoint.split(';').join(' ');
+        let areaExtent = deviceInfo.areaPoint.split(';').join(' ');
         areaExtent = areaExtent.substring(0, areaExtent.length - 1)
         window.SNTGIS.workSpace = workSpace;
 
@@ -334,11 +457,21 @@
         window.SNTGIS.NetWork.getFeaturesByCoords(_this.lineLayer, areaExtent, function (data) {
           // _this.getSelectLineList(data)
           _this.lineInArea = data;
+          if (type) {
+            // console.log(deviceInfo.selectLine)
+            // _this.drawLineSelect(deviceInfo.selectLine)
+            _this.getLineListInArea(data, deviceInfo.selectLine, type);
+
+          }
         })
         // 获取区域与管点图层相交的所有元素
         window.SNTGIS.NetWork.getFeaturesByCoords(_this.pointLayer, areaExtent, function (data) {
           _this.pointInArea = data;
           // _this.getSelectPointList(data)
+          if (type) {
+            // _this.drawPointSelect(deviceInfo.selectPoint)
+            _this.getPointListInArea(data, deviceInfo.selectPoint, type);
+          }
         })
       },
 
@@ -346,7 +479,7 @@
       drawEditMapArea(routeData) {
         this.resetDrawArea();
         this.showRouteLayer(routeData, 2);
-        this.getCommonEle(routeData.areaPoint);
+        this.getCommonEle(routeData, 1);
       },
 
       // 获取地图中所有的GIS图层
@@ -364,22 +497,85 @@
       // 选中绘制区域内的管点管线
       selectByArea() {
         let _this = this;
+        if (_this.checkedLine.length <= 0 && _this.checkedPoint.length <= 0) {
+          _this.$message({
+            type: 'error',
+            message: '未选中任何管道或者设备图层！',
+            duration: 2000
+          })
+          _this.resetDrawArea();
+          this.menuOverlay.setPosition('');
+          return false;
+        }
         if (_this.drawMapAreaSource.getFeatures().length > 0) {
           if (this.checkedLine.length < 0 && this.checkedPoint.length < 0) {
             this.$message.error('请选择管点或者管线');
             return false;
           }
           this.menuOverlay.setPosition('');
-          _this.getSelectLineList(_this.lineInArea);
-          _this.getSelectPointList(_this.pointInArea);
+          _this.getSelectLineList(_this.lineInArea, _this.checkedLine);
+          _this.getSelectPointList(_this.pointInArea, _this.checkedPoint);
+        }
+      },
+      
+      // 根据数据返回的管线 判断是否在传入的区域内 并绘制在区域内的管线
+      getLineListInArea(allLineList, checkedLine, type) {
+        var lineList = [], lineLength = 0;
+        for(let i = 0; i < checkedLine.length; i++) {
+          for(let j = 0; j < allLineList.length; j++) {
+            if(checkedLine[i].deviceCode ==allLineList[j].properties.LineNumber) {
+              let x = (allLineList[j].geometry.coordinates[0][0] + allLineList[j].geometry.coordinates[1][0]) / 2;
+              let y = (allLineList[j].geometry.coordinates[0][1] + allLineList[j].geometry.coordinates[1][1]) / 2;
+              lineLength += allLineList[i].properties.LineLength;
+              lineList.push({
+                deviceCode: allLineList[j].properties.LineNumber,
+                deviceName: allLineList[j].properties.Material,
+                devicePoint: x + ',' + y,
+                address: allLineList[j].properties.Location,
+                deviceLoaction: allLineList[j].geometry.coordinates,
+                lineLength: allLineList[j].properties.LineLength
+              });
+              break;
+            }
+          }
+        }
+        if(type == 1) {
+          this.areaObj.lineLength = lineLength;
+          this.areaObj.lineList = lineList;
+          this.drawLineSelect(lineList);
+        }else if(type == 2) {
+          this.drawLineCheckFunc(lineList);
+        }
+      },
+      
+      // 根据数据返回的管点 判断是否在传入的区域内 并绘制在区域内的管点
+      getPointListInArea(allPointList, checkedPoint, type) {
+        var pointList = [];
+        for(let i = 0; i < checkedPoint.length; i++) {
+          for(let j = 0; j < allPointList.length; j++) {
+            if(checkedPoint[i].deviceCode ==allPointList[j].properties.PointNumbe) {
+              pointList.push({
+                deviceCode: allPointList[j].properties.PointNumbe,
+                deviceName: allPointList[j].properties.PointName,
+                devicePoint: allPointList[j].geometry.coordinates.join(','),
+                address: allPointList[j].properties.Location,
+                deviceLoaction: allPointList[j].geometry.coordinates
+              });
+              break;
+            }
+          }
+        }
+        if(type == 1) {
+          this.areaObj.selectPoint = pointList;
+          this.drawPointSelect(pointList);
+        } else if(type == 2) {
+          this.drawPointCheckFunc(pointList);
         }
       },
 
       // 获取选中区域内所有的管线列表信息
-      getSelectLineList(allLineList) {
-        let _this = this;
+      getSelectLineList(allLineList, checkedLine) {
         let selectLine = [];
-        let checkedLine = _this.checkedLine;
         let lineLength = 0;
         for (let i = 0; i < allLineList.length; i++) {
           for (let j = 0; j < checkedLine.length; j++) {
@@ -392,6 +588,7 @@
                 deviceName: allLineList[i].properties.Material,
                 devicePoint: x + ',' + y,
                 address: allLineList[i].properties.Location,
+                deviceLoaction: allLineList[i].geometry.coordinates,
                 lineLength: allLineList[i].properties.LineLength
               });
             }
@@ -399,13 +596,12 @@
         }
         this.areaObj.lineLength = lineLength;
         this.areaObj.selectLine = selectLine;
+        this.drawLineSelect(selectLine)
       },
 
       // 获取选中区域内所有的管点列表信息
-      getSelectPointList(allPointList) {
-        let _this = this;
+      getSelectPointList(allPointList, checkedPoint) {
         let selectPoint = [];
-        let checkedPoint = _this.checkedPoint;
         for (let i = 0; i < allPointList.length; i++) {
           for (let j = 0; j < checkedPoint.length; j++) {
             if (allPointList[i].properties.PointName == checkedPoint[j].label) {
@@ -414,11 +610,52 @@
                 deviceName: allPointList[i].properties.PointName,
                 devicePoint: allPointList[i].geometry.coordinates.join(','),
                 address: allPointList[i].properties.Location,
+                deviceLoaction: allPointList[i].geometry.coordinates
               });
             }
           }
         }
         this.areaObj.selectPoint = selectPoint;
+        this.drawPointSelect(selectPoint)
+      },
+
+      // 选中管线
+      drawLineSelect(selectLineList) {
+        for(let i = 0; i< selectLineList.length; i++) {
+          let lineFeatype = new window.ol.Feature({
+            geometry: new window.ol.geom.Polygon([selectLineList[i].deviceLoaction])
+          })
+          this.selectLineSource.addFeature(lineFeatype);
+        }
+      },
+
+      // 选中管点
+      drawPointSelect(selectPointList) {
+        for(let i = 0; i< selectPointList.length; i++) {
+          let pointFeatype = new window.ol.Feature({
+            geometry: new window.ol.geom.Circle(selectPointList[i].deviceLoaction, 0.00005)
+          })
+          this.selectPointSource.addFeature(pointFeatype);
+        }
+      },
+
+      // 查看片区选择管点管线
+      drawPointCheckFunc(pointList) {
+        for(let i = 0; i< pointList.length; i++) {
+          let pointFeatype = new window.ol.Feature({
+            geometry: new window.ol.geom.Circle(pointList[i].deviceLoaction, 0.00005)
+          })
+          this.checkPointSource.addFeature(pointFeatype);
+        }
+      },
+
+      drawLineCheckFunc(lineList) {
+        for(let i = 0; i< lineList.length; i++) {
+          let lineFeatype = new window.ol.Feature({
+            geometry: new window.ol.geom.Polygon([lineList[i].deviceLoaction])
+          })
+          this.checkLineSource.addFeature(lineFeatype);
+        }
       },
 
       // 设置区域信息
@@ -438,6 +675,12 @@
         return false;
       },
 
+      // 关闭管点管线图层
+      clearMapLayer() {
+        this.selectPointLayer.getSource().clear();
+        this.selectLineLayer.getSource().clear();
+      },
+
       // 重置区域图层
       resetDrawArea() {
         let _this = this;
@@ -454,6 +697,7 @@
         // 清空面区域
         _this.drawMapAreaSource = new window.ol.source.Vector({});
         _this.drawMapAreaLayer.setSource(_this.drawMapAreaSource);
+        _this.clearMapLayer();
         _this.closeOverlay();
       }
 

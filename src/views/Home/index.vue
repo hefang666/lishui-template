@@ -15,10 +15,10 @@
             :key="index"
             @click="changeMember(index)"
           >
-            <i class="el-icon-setting"></i>
+            <img class="mr-5" :src="item.isOnline ? memberActive : memberGray" />
             <span class="title">
-              <span>{{ item.userName }}</span>
-              {{ item.mobile }}
+              <span class="mr-5">{{ item.userName }}</span>
+              <span>{{ item.mobile }}</span>
             </span>
           </el-menu-item>
         </el-menu>
@@ -43,6 +43,8 @@
 <script>
 import Map from './Map';
 import Page from "@/components/page/Page";
+import memberActive from '@/assets/icon-member-active.png';
+import memberGray from '@/assets/icon-member-gray.png';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('home');
 export default {
@@ -50,7 +52,9 @@ export default {
   data() {
     return {
       searchWords: '',
-      currentIndex: 0
+      currentIndex: -1,
+      memberGray,
+      memberActive
     };
   },
   computed: {
@@ -148,9 +152,12 @@ export default {
       }
     }
     .title {
+      vertical-align: middle;
       span {
         display: inline-block;
-        width: 52px;
+        width: 84px;
+        overflow: hidden;
+        vertical-align: middle;
       }
     }
   }
