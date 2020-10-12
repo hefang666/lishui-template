@@ -92,9 +92,30 @@ export default {
     },
     // 显示或者关闭图层
     changeSwitchStatus(index, status) {
+      let _this = this;
       let routeData = this.areaList[index];
+      console.log(routeData)
       let map = this.$parent.$parent.$parent.$parent.$refs.map;
-      map.showOrCloseRouteLayer(routeData, status);
+      if(status) {
+        this.getAreaDetailInfo({
+          id: routeData.id
+        }).then(response => {
+          let result = response.result;
+          // 显示地图中的片区
+          let map = _this.$parent.$parent.$parent.$parent.$refs.map;
+          // map.showOrCloseRouteLayer(result, true);
+          let areaInfo = {
+            lineLength: result.pipelineLength,
+            areaPoint: result.areaPoint,
+            selectLine: result.pipelineLists,
+            selectPoint: result.deviceLists,
+            id: result.id
+          }
+          map.showOrCloseRouteLayer(areaInfo, status);
+        })
+      } else {
+        map.showOrCloseRouteLayer(routeData, status);
+      }
     },
 
     // 点击修改按钮修改当前的
@@ -109,7 +130,11 @@ export default {
         // 显示地图中的片区
         let map = _this.$parent.$parent.$parent.$parent.$refs.map;
         // map.showOrCloseRouteLayer(result, true);
-        map.drawEditMapArea({areaPoint: result.areaPoint});
+        map.drawEditMapArea({
+          areaPoint: result.areaPoint,
+          selectLine: result.pipelineLists,
+          selectPoint: result.deviceLists,
+        });
         let areaInfo = {
           lineLength: result.pipelineLength,
           area: result.areaPoint,

@@ -4,7 +4,7 @@ import {api} from '@/api/api';
 // 获取人员列表,包含人员信息 任务 工单
 export function getMemberList(data) {
   return request({
-    url: api + 'WorkOrderService/GetWorkOrderList',
+    url: api + 'PersonService/GetAllLocationAndTaskAndWorkOrderLists',
     method: 'post',
     data
   });
