@@ -338,6 +338,7 @@ export default {
       'setMessage'
     ]),
     ...xunjianActions([
+      
       'getOrganizationData',
       'getRoleData'
     ]),
@@ -597,31 +598,25 @@ export default {
     // 导出
     exportData() {
       let HeaderData = [
-        '任务名称',
-        '任务类别',
-        '负责人',
-        '参与人',
-        '预计开始时间',
-        '预计完成时间',
-        '实际完成时间',
-        '暂停时长',
-        '任务状态'
+        '事件类型',
+        '报告人',
+        '事件提交时间',
+        '异常类型',
+        '预估损失水量',
+        '事件状态'
       ];
       let TextName = [
-        'name',
         'typeStr',
         'person',
-        'participants',
-        'planStartTime',
-        'planEndTime',
-        'endTime',
-        'suspendTimeStr',
+        'creationTime',
+        'errorType',
+        'predictWaterLoss',
         'statusStr'
       ]
       let tableData;
-      let tableName = '任务列表';
+      let tableName = '事件列表';
       if (this.multipleSelection.length == 0) {
-        tableData = this.taskList;
+        tableData = this.eventList;
       } else {
         tableData = this.multipleSelection;
       }
@@ -691,11 +686,6 @@ export default {
 
   .content-box {
     margin-top: 10px;
-
-    .table-box {
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
 
     .page-box {
       margin-top: 10px;

@@ -4,9 +4,11 @@ import {
   GetGeneralSituation,
   GetTaskList,
   GetPlanByUserId,
-  GetWorkOrderByUserId
+  GetWorkOrderByUserId,
+  ExportMonthList
 } from '@/api/personnel';
 import {parseTime} from '@/utils/index';
+import {downloadApi} from '@/api/api.js';
 
 var state = {
   // 人员列表
@@ -37,7 +39,10 @@ var state = {
   orderTotal: 1,
 
   // 选择的人员id
-  checkedId: ''
+  checkedId: '',
+
+  // 下载文件地址
+  httpUrl: 'http://192.168.9.44:9090/'
 };
 
 var mutations = {
@@ -114,6 +119,7 @@ var actions = {
         });
     });
   },
+  // 通过人员获取
   GetByUserId({commit}, data) {
     return new Promise((resolve, reject) => {
       GetByUserId(data)
@@ -235,6 +241,24 @@ var actions = {
   // 设置选择人员的id
   setCheckedId({commit}, data) {
     commit('set_checkedId', data);
+  },
+  // 导出某人某月的出勤记录
+  ExportMonthList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      ExportMonthList(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            var downLoadUrl = downloadApi + response.result.dataUrl;
+            window.open(downLoadUrl);
+          }
+          resolve(response);
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
   }
 };
 

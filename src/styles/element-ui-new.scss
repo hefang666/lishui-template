@@ -151,7 +151,8 @@
 		color: #FFFFFF;
 	}
 	/deep/ .el-table td {
-		padding: 3px 5px;
+		// padding: 3px 5px;
+		padding: 0;
 	}
 	/deep/ .el-table--border td {
 		border-right: 1px solid transparent;
