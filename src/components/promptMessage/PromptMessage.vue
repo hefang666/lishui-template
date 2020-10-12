@@ -62,7 +62,7 @@ export default {
   }
   /deep/ .el-dialog__body {
     padding: 0 !important;
-    height: 100px !important;
+    height: 110px !important;
   }
   /deep/ .el-dialog__footer {
     text-align: center !important;
@@ -93,7 +93,8 @@ export default {
       .message {
         text-align: center;
         font-size: 12px;
-        line-height: 34px;
+        line-height: 20px;
+        padding: 5px 0;
       }
     }
   }

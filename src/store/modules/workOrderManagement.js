@@ -1,4 +1,9 @@
-import {GetWorkOrderList, GetWorkOrderDetails, DeleteWorkOrder} from '@/api/order';
+import {
+  GetWorkOrderList,
+  GetWorkOrderDetails,
+  DeleteWorkOrder,
+  CloseWorkOrder
+} from '@/api/order';
 import {parseTime} from '@/utils/index.js';
 
 var state = {
@@ -11,8 +16,8 @@ var state = {
       creationTime: '2019-01-01 9:00',
       planCompleteTime: '2019-01-01 17:00',
       completeTime: '2019-01-01 17:00',
-      status: '待完成',
-      statusStr: '任务状态文本'
+      status: 3,
+      statusStr: '已关闭'
     }
   ],
   // 工单总数
@@ -46,8 +51,15 @@ var state = {
   ],
   // 提示消息
   messageText: '',
+
+  // 修改工单详情
+  orderDetails: {
+    eventDetails: {}
+  },
   // 工单详情
-  orderDetails: ''
+  orderDetail: {
+    eventDetails: {}
+  }
 };
 
 var mutations = {
@@ -67,6 +79,7 @@ var mutations = {
   // 设置工单详情
   set_orderDetails: function(state, data) {
     state.orderDetails = data;
+    state.orderDetail = data;
   }
 };
 
@@ -103,11 +116,10 @@ var actions = {
             commit('set_orderList', response.result.items);
             commit('set_orderListTotal', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
@@ -143,16 +155,15 @@ var actions = {
             // });
             commit('set_orderDetails', response.result);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
   },
-  DeleteWorkOrder(data) {
+  DeleteWorkOrder({commit}, data) {
     return new Promise((resolve, reject) => {
       DeleteWorkOrder(data)
         .then(response => {
@@ -160,9 +171,28 @@ var actions = {
           resolve(response);
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
+  },
+  // 关闭工单 CloseWorkOrder
+  closeOrder({commit}, data) {
+    return new Promise((resolve, reject) => {
+      CloseWorkOrder(data)
+        .then(response => {
+          console.log(response);
+          resolve(response);
+        })
+        .catch(error => {
+          commit('set_message', error.message || error);
+          reject(error);
+        });
+    });
+  },
+  // 设置提示消息
+  setMessage({commit}, data) {
+    commit('set_message', data);
   }
 };
 

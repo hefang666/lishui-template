@@ -1,22 +1,23 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="事件详情" :visible.sync="dialogView">
+    <el-dialog
+      title="事件详情"
+      :visible.sync="dialogView"
+      :before-close="closeView"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeView">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="list-box">
           <div class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">工单类型：</div>
               <div class="item-content">
-                <span>{{ orderDetails.typeStr }}</span>
+                <span>{{ orderDetail.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">负责人：</div>
               <div class="item-content">
-                <span>{{ orderDetails.person }}</span>
+                <span>{{ orderDetail.person }}</span>
               </div>
             </div>
           </div>
@@ -24,13 +25,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">工单状态：</div>
               <div class="item-content">
-                <span>{{ orderDetails.typeStr }}</span>
+                <span>{{ orderDetail.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">工单提交时间：</div>
               <div class="item-content">
-                <span>{{ orderDetails.person }}</span>
+                <span>{{ orderDetail.person }}</span>
               </div>
             </div>
           </div>
@@ -38,13 +39,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">完成时间：</div>
               <div class="item-content">
-                <span>{{ orderDetails.typeStr }}</span>
+                <span>{{ orderDetail.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">预计完成时间：</div>
               <div class="item-content">
-                <span>{{ orderDetails.person }}</span>
+                <span>{{ orderDetail.person }}</span>
               </div>
             </div>
           </div>
@@ -52,7 +53,7 @@
             <div class="list-items">
               <div class="item-title">工单内容：</div>
               <div class="item-content">
-                <span>{{ orderDetails.content }}</span>
+                <span>{{ orderDetail.content }}</span>
               </div>
             </div>
           </div>
@@ -73,7 +74,7 @@
           <div class="workOrder-back-box">
             <!-- 查漏、查漏延伸 -->
             <div
-              v-if="orderDetails.type == 1 || orderDetails.type == 2"
+              v-if="orderDetail.type == 1 || orderDetail.type == 2"
               class="workOrder-box"
             >
               <!-- 查漏 -->
@@ -120,9 +121,9 @@
             <!-- 维修管道、维修管道延伸、贫水区改造 -->
             <div
               v-if="
-                orderDetails.type == 3 ||
-                orderDetails.type == 4 ||
-                orderDetails.type == 6
+                orderDetail.type == 3 ||
+                orderDetail.type == 4 ||
+                orderDetail.type == 6
               "
               class="workOrder-box"
             >
@@ -194,7 +195,7 @@
             </div>
 
             <!-- 违章罚款 -->
-            <div v-if="orderDetails.type == 5" class="workOrder-box">
+            <div v-if="orderDetail.type == 5" class="workOrder-box">
               <!-- 违章单位 -->
               <div class="back-box">
                 <div class="back-title">违章单位：</div>
@@ -226,7 +227,7 @@ export default {
   name: 'OrderDetail',
   props: ['dialogView'],
   computed: {
-    ...mapState(['orderDetails'])
+    ...mapState(['orderDetail'])
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗

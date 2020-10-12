@@ -31,6 +31,7 @@
           :data="personList"
           :stripe="true"
           tooltip-effect="dark"
+          border
           height="830"
           style="width: 100%"
           @selection-change="handleSelectionChange"
@@ -194,7 +195,7 @@ export default {
     this.tableinfo();
   },
   methods: {
-    ...mapActions(['GetByDay', 'GetByUserId', 'getDetails']),
+    ...mapActions(['GetByDay', 'GetByUserId', 'getDetails', 'setCheckedId']),
     // 初始化table
     tableinfo(oneDay, userName) {
       let data = {
@@ -271,7 +272,7 @@ export default {
     // 查看
     See() {
       if (this.onlyOne()) {
-        console.log('符合条件');
+        this.setCheckedId(this.multipleSelection[0].userId);
         let param = {
           id: this.multipleSelection[0].userId
         };
@@ -287,7 +288,7 @@ export default {
 
     // 点击表格里查看
     handleSee(row) {
-      console.log(row);
+      this.setCheckedId(row.userId);
       let param = {
         id: row.userId
       };
@@ -386,11 +387,10 @@ export default {
     margin-top: 10px;
 
     .table-box {
-      border: 1px solid #ddd;
       box-sizing: border-box;
     }
 
-    .page-box {
+    .page_box {
       margin-top: 10px;
     }
   }

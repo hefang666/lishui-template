@@ -617,6 +617,7 @@ export default {
       this.startTime = '';
       this.endTime = '';
       this.taskName = '';
+      this.screen = '筛选';
     },
 
     // 打开新增弹窗

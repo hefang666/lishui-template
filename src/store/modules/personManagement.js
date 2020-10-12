@@ -34,7 +34,10 @@ var state = {
 
   // 工单
   orderList: [],
-  orderTotal: 1
+  orderTotal: 1,
+
+  // 选择的人员id
+  checkedId: ''
 };
 
 var mutations = {
@@ -85,6 +88,10 @@ var mutations = {
   // 设置工单信息
   set_orderInfo: function(state, data) {
     state.orderTotal = data;
+  },
+  // 设置选中的人员id
+  set_checkedId: function(state, data) {
+    state.checkedId = data;
   }
 };
 
@@ -186,7 +193,7 @@ var actions = {
           }
         })
         .catch(error => {
-          commit('set_message', error.message);
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
@@ -224,6 +231,10 @@ var actions = {
           reject(error);
         });
     });
+  },
+  // 设置选择人员的id
+  setCheckedId({commit}, data) {
+    commit('set_checkedId', data);
   }
 };
 

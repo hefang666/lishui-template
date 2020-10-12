@@ -1,11 +1,12 @@
 <template>
   <div class="addTask-box">
     <div class="dialog-box dialog_box button-box">
-      <el-dialog title="转工单" :visible.sync="dialogEdit">
+      <el-dialog
+        title="转工单"
+        :visible.sync="dialogEdit"
+        :before-close="closeEdit"
+      >
         <div class="content-box form-box">
-          <div class="cancel-box" @click="closeEdit">
-            <i class="el-dialog__close el-icon el-icon-close"></i>
-          </div>
           <div class="content_box select_box">
             <el-form :model="addForm">
               <div class="list-item">
@@ -16,7 +17,7 @@
                 >
                   <div class="list-item-content-box">
                     <el-select
-                      v-model="orderType"
+                      v-model="orderDetails.type"
                       placeholder="请选择工单类型"
                       @change="selectType"
                     >
@@ -38,9 +39,9 @@
                     class="choose-active"
                     type="primary"
                     plain
-                    v-if="addForm.inCharge != ''"
-                    v-model="addForm.inCharge"
-                    >{{ addForm.inCharge }}</el-button
+                    v-if="orderDetails.person != ''"
+                    v-model="orderDetails.person"
+                    >{{ orderDetails.person }}</el-button
                   >
                   <el-button type="primary" plain @click="choosePerson"
                     >选择人员</el-button
@@ -51,7 +52,7 @@
                 ><el-input
                   type="textarea"
                   :rows="3"
-                  v-model="addForm.remarks"
+                  v-model="orderDetails.content"
                   autocomplete="off"
                 ></el-input
               ></el-form-item>

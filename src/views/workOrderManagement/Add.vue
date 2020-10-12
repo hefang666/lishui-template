@@ -1,10 +1,11 @@
 <template>
   <div class="addOrder-box dialog-box">
-    <el-dialog title="新增工单" :visible.sync="dialogAdd">
+    <el-dialog
+      title="新增工单"
+      :visible.sync="dialogAdd"
+      :before-close="closeAdd"
+    >
       <div class="content-box  form-box">
-        <div class="cancel-box" @click="closeAdd">
-          <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
         <div class="content_box">
           <el-form>
             <div class="list-item has-two-item">
@@ -131,6 +132,13 @@
       :file-data="fileData"
       @closePreview="closePreview"
     ></preview>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
@@ -139,16 +147,18 @@ import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
 import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('workOrderManagement');
+const {mapState, mapActions} = createNamespacedHelpers('workOrderManagement');
 export default {
-  name: 'addOrder',
+  name: 'AddOrder',
   props: ['dialogAdd'],
   components: {
     ChoosePeople,
     ChooseArea,
     Upload,
-    Preview
+    Preview,
+    Message
   },
   data() {
     return {
@@ -169,13 +179,16 @@ export default {
       // 巡检片区弹窗状态
       dialogArea: false,
       // 片区信息
-      areaInfo: ''
+      areaInfo: {},
+      // 是否显示提示消息弹窗
+      dialogMessage: false
     };
   },
   computed: {
-    ...mapState(['orderTypeData'])
+    ...mapState(['orderTypeData', 'messageText'])
   },
   methods: {
+    ...mapActions(['setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       console.log('点击了取消');
@@ -197,12 +210,10 @@ export default {
 
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.inCharge = data.personinfo[0].trueName;
       this.personInfo = data.personinfo;
@@ -229,25 +240,33 @@ export default {
       console.log(data);
       this.dialogArea = data.dialogArea;
     },
+    // 关闭消息提示弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
     // 点击确定新增工单
     determine() {
       if (this.orderType == '') {
-        alert('请选择工单类型');
+        this.setMessage('请选择工单类型');
+        this.dialogMessage = true;
         return;
       }
 
       if (this.inCharge == '') {
-        alert('请选择负责人');
+        this.setMessage('请选择负责人');
+        this.dialogMessage = true;
         return;
       }
 
       if (this.remarks == '') {
-        alert('请输入工单内容');
+        this.setMessage('请输入工单内容');
+        this.dialogMessage = true;
         return;
       }
 
       if (this.areaInfo == '') {
-        alert('请选择巡检片区');
+        this.setMessage('请选择巡检片区');
+        this.dialogMessage = true;
         return;
       }
 
