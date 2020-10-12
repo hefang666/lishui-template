@@ -221,6 +221,13 @@
       </el-dialog>
     </div>
 
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
     <choose-people
       :dialog-charge="dialogCharge"
       :select-type="'single'"
@@ -241,6 +248,7 @@
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
@@ -252,10 +260,11 @@ export default {
   components: {
     ChoosePeople,
     Upload,
-    Preview
+    Preview,
+    Message
   },
   computed: {
-    ...eventState(['orderTypeData', 'eventDetails'])
+    ...eventState(['orderTypeData', 'eventDetails', 'messageText'])
   },
   data() {
     return {
@@ -278,6 +287,10 @@ export default {
 
       // 选中要预览的文件
       fileData: '',
+
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
+
       // 预计完成时间
       endTime: ''
     };
@@ -286,7 +299,8 @@ export default {
     ...eventActions(['UpdateEvent']),
     ...xunjianActions([
       'getOrganizationData',
-      'getRoleData'
+      'getRoleData',
+      'setMessage'
     ]),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
@@ -315,6 +329,10 @@ export default {
       this.inCharge = data.personinfo[0].trueName;
       this.personInfo = data.personinfo[0];
     },
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
     // 打开预览弹窗
     showPreview(data) {
       this.dialogPreview = data.flag;
@@ -333,7 +351,20 @@ export default {
       console.log(this.orderType);
       console.log(this.inCharge);
       if (this.inCharge == '') {
-        alert('请选择负责人');
+        this.setMessage('请选择负责人');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.orderType == '') {
+        this.setMessage('请选择工单类型');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.endTime == '') {
+        this.setMessage('请选择预计完成时间');
+        this.dialogMessage = true;
         return;
       }
 
@@ -348,7 +379,10 @@ export default {
         planCompleteTime: time,
         content: this.remarks
       };
-      this.UpdateEvent(param);
+      this.UpdateEvent(param).catch(() => {
+        this.dialogMessage = true;
+      });
+
       this.$emit('checkedTransfer', false);
     }
   }

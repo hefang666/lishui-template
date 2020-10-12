@@ -21,7 +21,7 @@
           >
           </el-date-picker>
         </div>
-        <el-button type="primary" plain @click="handlexport">导出</el-button>
+        <el-button type="primary" plain @click="exportData">导出</el-button>
       </div>
     </div>
     <div class="content-box">
@@ -42,7 +42,11 @@
             label="人员姓名"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column prop="location" label="所属部门"></el-table-column>
+          <el-table-column
+            prop="orgName"
+            label="所属部门"
+            show-overflow-tooltip
+          ></el-table-column>
           <el-table-column
             prop="mobile"
             label="联系方式"
@@ -117,7 +121,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('personManagement');
 
-import {parseTime} from '@/utils/index';
+import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'TaskManagement',
   components: {
@@ -128,7 +132,7 @@ export default {
     Message
   },
   computed: {
-    ...mapState(['personList']),
+    ...mapState(['personList', 'attendanceList']),
   },
   data() {
     return {
@@ -195,7 +199,13 @@ export default {
     this.tableinfo();
   },
   methods: {
-    ...mapActions(['GetByDay', 'GetByUserId', 'getDetails', 'setCheckedId']),
+    ...mapActions([
+      'GetByDay',
+      'GetByUserId',
+      'getDetails',
+      'setCheckedId',
+      'ExportMonthList'
+    ]),
     // 初始化table
     tableinfo(oneDay, userName) {
       let data = {
@@ -230,7 +240,9 @@ export default {
           oneMonth: date,
           userId: this.multipleSelection[0].userId
         };
-        console.log(param);
+        this.ExportMonthList(param).catch(() => {
+          this.dialogMessage = true;
+        });
       }
     },
 
@@ -255,9 +267,6 @@ export default {
     closeMessage(data) {
       this.dialogMessage = data;
     },
-
-    // 导出
-    handlexport() {},
 
     // table选择
     handleSelectionChange(val) {
@@ -335,6 +344,33 @@ export default {
     // 关闭出勤弹窗
     getAttendData() {
       this.dialogAttend = false;
+    },
+
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '人员姓名',
+        '所属部门',
+        '联系方式',
+        '今日上线时间',
+        '今日离线时间'
+      ];
+      let TextName = [
+        'userName',
+        'orgName',
+        'mobile',
+        'onlineTime',
+        'offlineTime'
+      ]
+      let tableData;
+      let tableName = '人员列表';
+
+      if (this.multipleSelection.length == 0) {
+        tableData = this.planList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   }
 };

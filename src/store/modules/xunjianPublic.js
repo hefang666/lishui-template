@@ -129,6 +129,7 @@ var mutations = {
 };
 
 var actions = {
+  // 获取人员
   getPeopleList({commit}, data) {
     return new Promise((resolve, reject) => {
       getPeopleList(data)
@@ -148,6 +149,7 @@ var actions = {
         });
     });
   },
+  // 获取组织树数据
   getOrganizationData({commit}) {
     return new Promise((resolve, reject) => {
       getOrganizationData()
@@ -165,6 +167,7 @@ var actions = {
         });
     });
   },
+  // 获取角色树数据
   getRoleData({commit}) {
     return new Promise((resolve, reject) => {
       getRoleData()

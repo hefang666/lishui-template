@@ -315,10 +315,12 @@ export default {
         if (!judgeTime(this.estimatedStartTime, this.estimatedEndTime)) {
           this.setMessage('任务结束时间必须大于等于开始时间');
           this.dialogMessage = true;
+          return;
         }
       } else {
         this.setMessage('任务开始时间必须大于当前时间');
         this.dialogMessage = true;
+        return;
       }
 
       if (this.taskType == '') {
@@ -346,14 +348,17 @@ export default {
         endTime: this.estimatedEndTime,
         areaId: this.areaInfo.id,
         type: this.taskType,
-        person: this.inCharge
+        person: this.inCharge,
+        remark: this.remarks
       }
 
-      this.addTask(param);
-
-      let data = false;
-
-      this.$emit('closeAdd', data);
+      this.addTask(param).then(res => {
+        if (res.success) {
+          let data = false;
+          console.log(data);
+          this.$emit('getAddData', data);
+        }
+      });
     },
     // 点击选择片区按钮
     chooseArea() {

@@ -32,7 +32,7 @@
           <el-button type="primary" plain @click="del">删除</el-button>
           <el-button type="primary" plain @click="suspend">暂停</el-button>
 
-          <el-button type="primary" plain>导出</el-button>
+          <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
     </div>
@@ -162,6 +162,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('planManagement');
+import {exportExcel} from '@/utils/index';
 export default {
   components: {
     'snt-search': Search,
@@ -478,6 +479,33 @@ export default {
           this.dialogMessage = true;
         });
       }
+    },
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '计划名称',
+        '巡检周期',
+        '负责人',
+        '参与人',
+        '预计到期时间',
+        '计划状态'
+      ];
+      let TextName = [
+        'name',
+        'cycleStr',
+        'person',
+        'participant',
+        'endTime',
+        'statusStr'
+      ]
+      let tableData;
+      let tableName = '计划列表';
+      if (this.multipleSelection.length == 0) {
+        tableData = this.planList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   }
 };

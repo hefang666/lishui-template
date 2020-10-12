@@ -17,6 +17,7 @@
           ref="multipleTable"
           :data="equipmentList"
           :stripe="true"
+          border
           tooltip-effect="dark"
           height="830"
           style="width: 100%"
@@ -205,11 +206,6 @@ export default {
   .content-box {
     margin-top: 10px;
 
-    .table-box {
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
-
     .page-box {
       margin-top: 10px;
       display: flex;
@@ -217,4 +213,5 @@ export default {
     }
   }
 }
+
 </style>

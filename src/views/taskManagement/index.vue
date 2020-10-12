@@ -35,7 +35,7 @@
           <el-button type="primary" plain @click="modify">修改</el-button>
           <el-button type="primary" plain @click="See">查看</el-button>
 
-          <el-button type="primary" plain>导出</el-button>
+          <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
     </div>
@@ -143,7 +143,7 @@
             label="任务状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="操作" width="180">
+          <el-table-column label="操作" width="165">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
@@ -233,6 +233,7 @@
     <add-task
       :dialog-add="dialogAdd"
       @closeAdd="closeAdd"
+      @getAddData="getAddData"
     ></add-task>
 
     <!-- 查看任务弹窗 -->
@@ -255,7 +256,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
-import {parseTime} from '@/utils/index';
+import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'TaskManagement',
   components: {
@@ -631,8 +632,10 @@ export default {
     },
     // 执行新增后的操作
     getAddData(data) {
+      console.log(data);
       this.dialogAdd = data;
       this.dialogMessage = true;
+      this.getData();
     },
     // 关闭查看弹窗
     getViewData(data) {
@@ -699,6 +702,8 @@ export default {
     },
     // 获取数据
     getData() {
+      
+      console.log(this.currentPage);
       let param = {
         currentPage: this.currentPage,
         maxResultCount: this.pageSize,
@@ -707,9 +712,44 @@ export default {
       this.getTaskList(param).catch(() => {
         this.dialogMessage = true;
       });
+    },
+
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '任务名称',
+        '任务类别',
+        '负责人',
+        '参与人',
+        '预计开始时间',
+        '预计完成时间',
+        '实际完成时间',
+        '暂停时长',
+        '任务状态'
+      ];
+      let TextName = [
+        'name',
+        'typeStr',
+        'person',
+        'participants',
+        'planStartTime',
+        'planEndTime',
+        'endTime',
+        'suspendTimeStr',
+        'statusStr'
+      ]
+      let tableData;
+      let tableName = '任务列表';
+      if (this.multipleSelection.length == 0) {
+        tableData = this.taskList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   },
   mounted() {
+    console.log(this.currentPage);
     this.getData();
   }
 };

@@ -29,7 +29,7 @@
           <el-button type="primary" plain @click="modify">修改</el-button>
           <el-button type="primary" plain @click="See">查看</el-button>
           <el-button type="primary" plain @click="del">删除</el-button>
-          <el-button type="primary" plain>导出</el-button>
+          <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
     </div>
@@ -286,7 +286,7 @@ const {
   mapActions: orderActions
 } = createNamespacedHelpers('workOrderManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-import {parseTime} from '@/utils/index';
+import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'workOrder',
   components: {
@@ -727,6 +727,33 @@ export default {
       this.orderType = '';
       this.isScreen = !this.isScreen;
       this.screen = '筛选';
+    },
+
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '人员姓名',
+        '所属部门',
+        '联系方式',
+        '今日上线时间',
+        '今日离线时间'
+      ];
+      let TextName = [
+        'userName',
+        'orgName',
+        'mobile',
+        'onlineTime',
+        'offlineTime'
+      ]
+      let tableData;
+      let tableName = '人员列表';
+
+      if (this.multipleSelection.length == 0) {
+        tableData = this.orderList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   },
   mounted() {

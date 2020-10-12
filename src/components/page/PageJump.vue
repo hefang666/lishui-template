@@ -32,9 +32,13 @@ export default {
   watch: {
     pagesNum() {
       console.log(this.pagesNum)
-      if(this.pageNum > this.pagesNum)
+      if (this.pagesNum == 0) {
+        return
+      } else {
+        if(this.pageNum > this.pagesNum)
         this.pageNum = this.pagesNum;
-      this.$emit('handleCurrentChange', this.pageNum);
+        this.$emit('handleCurrentChange', this.pageNum);
+      } 
     }
   },
   methods: {
