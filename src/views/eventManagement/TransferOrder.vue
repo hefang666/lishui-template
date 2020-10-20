@@ -61,6 +61,7 @@
                     <el-date-picker
                       v-model="endTime"
                       type="datetime"
+                      :picker-options="pickerOptions"
                       format="yyyy-MM-dd HH:mm"
                       placeholder="预计完成时间"
                     ></el-date-picker>
@@ -225,6 +226,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :close-on-click-modal="false"
       @closeMessage="closeMessage"
     ></message>
 
@@ -252,7 +254,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-import {parseTime} from '@/utils/index';
+import {parseTime, judgeTime} from '@/utils/index';
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
   name: 'TransferOrder',
@@ -292,15 +294,22 @@ export default {
       dialogMessage: false,
 
       // 预计完成时间
-      endTime: ''
+      endTime: '',
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          // return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   methods: {
-    ...eventActions(['UpdateEvent']),
+    ...eventActions(['UpdateEvent', 'setMessage']),
     ...xunjianActions([
       'getOrganizationData',
-      'getRoleData',
-      'setMessage'
+      'getRoleData'
     ]),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
@@ -369,6 +378,13 @@ export default {
       }
 
       let time = parseTime(this.endTime, '{y}-{m}-{d} {h}:{i}');
+      let nowDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}');
+
+      if (!judgeTime(nowDate, time)) {
+        this.setMessage('预计完成时间不能小于当前时间');
+        this.dialogMessage = true;
+        return;
+      }
 
       let param = {
         Id: this.eventDetails.id,
@@ -383,7 +399,8 @@ export default {
         this.dialogMessage = true;
       });
 
-      this.$emit('checkedTransfer', false);
+      let data = false;
+      this.$emit('checkedTransfer', data);
     }
   }
 };

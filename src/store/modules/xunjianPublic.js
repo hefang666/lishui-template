@@ -52,6 +52,11 @@ var state = {
   personList: [],
   persontotalCount: 1, // 人员总数据条数
   persontotalPages: 1, // 人员总页数
+  // 人员列表分页设置
+  personPageData: [30, 40, 50, 100],
+
+  // 请求列表时的加载状态
+  loading: false,
 
   // message提示消息
   messageText: '',
@@ -125,12 +130,17 @@ var mutations = {
   set_areaPagesInfo: function(state, data) {
     state.areaTotal = data;
     console.log(state.areaTotal);
+  },
+  // 改变加载状态
+  set_loading: function(state, data) {
+    state.loading = data;
   }
 };
 
 var actions = {
   // 获取人员
   getPeopleList({commit}, data) {
+    commit('set_loading', true);
     return new Promise((resolve, reject) => {
       getPeopleList(data)
         .then(response => {
@@ -142,9 +152,11 @@ var actions = {
               totalPages: response.result.totalPages
             });
             resolve(response);
+            commit('set_loading', false);
           }
         })
         .catch(error => {
+          commit('set_loading', false);
           reject(error);
         });
     });
@@ -233,6 +245,10 @@ var actions = {
           reject(error);
         });
     });
+  },
+  // 设置提示语
+  setMessage({commit}, data) {
+    commit('set_message', data);
   }
 };
 

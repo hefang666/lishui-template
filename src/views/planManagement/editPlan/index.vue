@@ -1,10 +1,15 @@
 <template>
   <div class="editTask-box dialog-box button-box">
-    <el-dialog title="修改任务" :visible.sync="dialogEdit">
+    <el-dialog
+      title="修改任务"
+      :visible.sync="dialogEdit"
+      :close-on-click-modal="false"
+      :before-close="closeEdit"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeEdit">
+        <!-- <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="content_box">
           <div>
             <div class="list-item has-two-item">
@@ -53,10 +58,12 @@
                     <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
                     <el-button
                       type="primary"
+                      class="choose-active"
+                      v-if="editPlanDetails.areaName != ''"
+                      v-model="editPlanDetails.areaName"
                       plain
-                      @click="chooseArea"
                     >
-                      选择片区
+                      {{ editPlanDetails.areaName }}
                     </el-button>
                   </div>
                 </div>
@@ -93,6 +100,7 @@
                   <span>计划周期：</span>
                 </div>
                 <div class="content">
+                  {{ editPlanDetails.cycleStr }}
                 </div>
               </div>
             </div>
@@ -122,11 +130,19 @@
         <el-button type="primary" @click="determine">保存</el-button>
       </div>
     </el-dialog>
-
+    
+    <!-- 负责人 -->
     <choose-people
       :dialog-charge="dialogCharge"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
+    ></choose-people>
+    <!-- 参与人弹窗 -->
+    <choose-people
+      :dialog-charge="dialogPar"
+      :select-type="'multiple'"
+      @closeChoosePeople="closePar"
+      @checkedPerson="checkedPar"
     ></choose-people>
     <choose-area
       :dialog-area="dialogArea"
@@ -137,8 +153,8 @@
 </template>
 
 <script>
-import ChoosePeople from '../public/ChoosePeople.vue';
-import ChooseArea from '../public/ChooseArea.vue';
+import ChoosePeople from '@/views/public/ChoosePeople.vue';
+import ChooseArea from '@/views/public/ChooseArea.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 const {mapState: planState} = createNamespacedHelpers('planManagement');
@@ -154,7 +170,9 @@ export default {
       // 负责人弹窗状态
       dialogCharge: false,
       // 巡检片区弹窗状态
-      dialogArea: false
+      dialogArea: false,
+      // 参与人弹窗
+      dialogPar: false
     };
   },
   computed: {
@@ -190,6 +208,14 @@ export default {
       this.getOrganizationData();
       this.getRoleData();
       this.dialogPar = true;
+    },
+    // 关闭参与人弹窗
+    closePar(data) {
+      this.dialogPar = data.dialogCharge;
+    },
+    // 参与人
+    checkedPar(data) {
+      console.log(data);
     },
     // 关闭选择片区弹窗
     closeChooseArea(data) {

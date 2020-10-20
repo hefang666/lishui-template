@@ -40,6 +40,7 @@
       <div class="table-box">
         <el-table
           ref="multipleTable"
+          v-loading="loading"
           :data="planList"
           :stripe="true"
           tooltip-effect="dark"
@@ -230,7 +231,7 @@ export default {
     this.getData();
   },
   computed: {
-    ...mapState(['planList', 'planDetails', 'messageText', 'planTotal'])
+    ...mapState(['planList', 'planDetails', 'messageText', 'planTotal', 'loading'])
   },
   methods: {
     ...mapActions([

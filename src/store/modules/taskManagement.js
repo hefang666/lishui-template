@@ -35,6 +35,7 @@ var state = {
   searchText: '',
   currentPage: 1,
   listTotalCount: 1, // 数据总数
+  pageData: [30, 40, 50, 100], // 分页的数据
 
   messageText: '', // 提示信息
 
@@ -91,10 +92,17 @@ var state = {
   },
   // 设备点巡检信息列表
   inspectionPointList: [],
+  // 设备点巡检列表总数
+  inspectionPointTotal: 1,
+  // 设备点巡检page
+  inspectionPointPage: [30, 40, 50, 100],
   // 设备点详情
   pointDetails: {},
   // 任务详情中的巡检路线信息
-  areaDetail: {}
+  areaDetail: {},
+
+  // 请求列表时的加载状态
+  loading: true
 };
 
 var mutations = {
@@ -133,6 +141,10 @@ var mutations = {
     state.inspectionPointList = data;
     console.log(state.inspectionPointList);
   },
+  // 设置设备点巡检列表总数
+  set_inspectionPointTotal: function(state, data) {
+    state.inspectionPointTotal = data;
+  },
   // 设置设备点详情
   set_pointDetails: function(state, data) {
     state.pointDetails = data;
@@ -142,12 +154,17 @@ var mutations = {
   set_areaDetail: function(state, data) {
     state.areaDetail = data;
     console.log(state.areaDetail);
+  },
+  // 改变加载状态
+  set_loading: function(state, data) {
+    state.loading = data;
   }
 };
 
 var actions = {
   // 获取数据
   getTaskList({commit}, param) {
+    commit('set_loading', true);
     let data = '';
     console.log(param);
     if (param.status == 0) {
@@ -188,11 +205,16 @@ var actions = {
             }
             commit('set_task_list', response.result.items);
             commit('set_listTotal', response.result.totalCount);
+            // setTimeout(() => {
+            //   commit('set_loading', false);
+            // }, 3000);
+            commit('set_loading', false);
             resolve(response);
           }
         })
         .catch(error => {
           commit('set_message', error.message);
+          commit('set_loading', false);
           reject(error);
         });
     });
@@ -336,6 +358,7 @@ var actions = {
           console.log(response);
           if (response.success) {
             commit('set_inspectionPointList', response.result.items);
+            commit('set_inspectionPointTotal', response.result.totalCount);
             resolve(response);
           }
         })
@@ -356,8 +379,6 @@ var actions = {
               commit('set_pointDetails', response.result);
             }
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {

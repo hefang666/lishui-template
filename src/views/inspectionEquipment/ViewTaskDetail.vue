@@ -1,10 +1,15 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="任务详情" :visible.sync="dialogViewDetail">
+    <el-dialog
+      title="任务详情"
+      :visible.sync="dialogViewDetail"
+      :close-on-click-modal="false"
+      :before-close="closeViewDetail"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeViewDetail">
+        <!-- <div class="cancel-box" @click="closeViewDetail">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="tabs-box">
           <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
             <el-tab-pane label="基础信息" name="basicInfo">

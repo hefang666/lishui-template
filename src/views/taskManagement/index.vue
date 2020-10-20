@@ -84,6 +84,7 @@
     <div class="content-box">
       <div class="table-box">
         <el-table
+          v-loading="loading"
           ref="multipleTable"
           :data="taskList"
           :stripe="true"
@@ -205,7 +206,7 @@
       </div>
       <div class="page-box">
         <page
-          :page-data="[30, 40, 50, 100]"
+          :page-data="pageData"
           :total="listTotalCount"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
@@ -268,7 +269,7 @@ export default {
     Operate
   },
   computed: {
-    ...taskState(['taskList', 'listTotalCount', 'messageText'])
+    ...taskState(['taskList', 'listTotalCount', 'messageText', 'pageData', 'loading'])
   },
   data() {
     return {
@@ -288,7 +289,7 @@ export default {
       currentPage: 1,
 
       // 当前页的页数
-      pageSize: 30,
+      pageSize: 1,
 
       // 传入store的page的信息
       // pageInfo: {
@@ -750,6 +751,7 @@ export default {
   },
   mounted() {
     console.log(this.currentPage);
+    this.pageSize = this.pageData[0];
     this.getData();
   }
 };

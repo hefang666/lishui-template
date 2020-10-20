@@ -3,6 +3,7 @@
     <el-dialog
       title="查看计划"
       :visible.sync="dialogView"
+      :close-on-click-modal="false"
       :before-close="closeView"
     >
       <div class="content-box form-box">
@@ -37,7 +38,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">参与人：</div>
               <div class="item-content">
-                <span>{{ planDetails.participant }}</span>
+                <span
+                  v-for="(item, index) in planDetails.participant"
+                  :key="index"
+                >
+                  <span v-if="index != 0">、</span>
+                  {{ item.trueName }}
+                </span>
               </div>
             </div>
           </div>

@@ -61,9 +61,10 @@
                   style="width: 100%"
                   :highlight-current-row="true"
                   @selection-change="clickRowEqui"
+                  @row-click="clickEqui"
                 >
                   <el-table-column
-                    v-if="typeText == 'choose'"
+                    v-if="typeText == 'choose'  && typeStr == 'multiple'"
                     type="selection"
                     align="center"
                     width="50"
@@ -109,9 +110,10 @@
                   border
                   :highlight-current-row="true"
                   @selection-change="clickRowConduit"
+                  @row-click="clickConduit"
                 >
                   <el-table-column
-                    v-if="typeText == 'choose'"
+                    v-if="typeText == 'choose' && typeStr == 'multiple'"
                     type="selection"
                     align="center"
                     width="50"
@@ -156,7 +158,7 @@ import {createNamespacedHelpers} from 'vuex';
 const {mapState: areaState} = createNamespacedHelpers('area');
 export default {
   name: 'ChooseEquipment',
-  props: ['typeText'],
+  props: ['typeText', 'typeStr'],
   data() {
     return {
       // tabs当前聚焦在那一个上面
@@ -164,7 +166,10 @@ export default {
       // 选择的设备
       checkedEqui: [],
       // 选择的管道
-      checkedCon: []
+      checkedCon: [],
+
+      // 单选设备(设备或管道，只能选一个)
+      devInfo: ''
     };
   },
   computed: {
@@ -175,15 +180,25 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    // 设备选中的行
+    // 设备选中的行（多选）
     clickRowEqui(val) {
       this.checkedEqui = val;
       console.log(this.checkedEqui);
     },
-    // 管道选中的行
+    // 设备选择的行（单选）
+    clickEqui(val) {
+      console.log(val);
+      this.devInfo = val;
+    },
+    // 管道选中的行（多选）
     clickRowConduit(val) {
       this.checkedCon = val;
       console.log(this.checkedCon);
+    },
+    // 管道选中的行（单选）
+    clickConduit(val) {
+      console.log(val);
+      this.devInfo = val;
     },
     // 设备查看按钮
     handleSeeEquipment(row) {

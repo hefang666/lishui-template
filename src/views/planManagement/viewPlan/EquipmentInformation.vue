@@ -1,6 +1,11 @@
 <template>
   <div class="equipment-Information-box dialog-box button-box">
-    <el-dialog title="设备点巡检任务详情" :visible.sync="dialogEqui">
+    <el-dialog
+      title="设备点巡检任务详情"
+      :visible.sync="dialogEqui"
+      :close-on-click-modal="false"
+      :before-close="closeEqui"
+    >
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeEqui">
           <i class="el-dialog__close el-icon el-icon-close"></i>

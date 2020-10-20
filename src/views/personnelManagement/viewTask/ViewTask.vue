@@ -3,6 +3,7 @@
     <el-dialog
       title="任务详情"
       :visible.sync="dialogView"
+      :close-on-click-modal="false"
       :before-close="closeView"
     >
       <div class="content-box form-box">

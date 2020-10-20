@@ -1,14 +1,16 @@
 // 根据开发环境或者生产环境判断使用的地址  地址不定
 // const baseURL = 'http://192.168.9.44:9090/'
+
 const host = 'http://192.168.9.44:9090/';
-const baseURL = '/api';
+const baseURL = process.env.NODE_ENV === 'development' ? '/api' : host;
+
+const baseURLS = process.env.NODE_ENV == 'development' ? baseURL : baseURL;
+console.log(baseURLS);
 const api = baseURL + '/api/services/Inspection/';
 
 // 下载文件
 const downloadApi = baseURL;
-// process.env.NODE_ENV == 'development'
-//   ? 'http://192.168.9.101:3000/mock/105/'
-//   : 'http://192.168.9.44:9090/';
+
 const gsApi = baseURL + '/api/services/SNTGIS/';
 // 获取人员（云平台）
 const personApi = baseURL + '/api/services/app/';

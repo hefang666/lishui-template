@@ -3,6 +3,7 @@
     <el-dialog
       title="新增任务"
       :visible.sync="dialogAdd"
+      :close-on-click-modal="false"
       :before-close="closeAdd"
     >
       <div class="content-box form-box">
@@ -110,8 +111,9 @@
                     plain
                     v-if="areaInfo.name != ''"
                     v-model="areaInfo.name"
-                    >{{ areaInfo.name }}</el-button
                   >
+                    {{ areaInfo.name }}
+                  </el-button>
                   <el-button
                     type="primary"
                     plain
@@ -259,6 +261,7 @@ export default {
       let data = false;
       console.log(data);
       this.$emit('closeAdd', data);
+      this.clearData();
     },
     // 点击选择负责人按钮
     choosePerson() {
@@ -329,7 +332,7 @@ export default {
         return;
       }
 
-      if (this.areaInfo.name == '') {
+      if (this.areaInfo.id == '') {
         this.setMessage('请选择任务片区');
         this.dialogMessage = true;
         return;
@@ -357,9 +360,31 @@ export default {
           let data = false;
           console.log(data);
           this.$emit('getAddData', data);
+          this.clearData();
         }
+      }).catch(() => {
+        this.dialogMessage = true;
       });
     },
+
+    // 清除数据
+    clearData() {
+      this.taskName = '';
+      this.personId = '';
+      this.estimatedStartTime = '';
+      this.estimatedEndTime = '';
+      this.areaInfo = {
+        areaPoint: '',
+        id: '',
+        name: '',
+        pipelineLength: 0,
+        pointCount: 0,
+      };
+      this.taskType = '';
+      this.inCharge = '';
+      this.remarks = '';
+    },
+
     // 点击选择片区按钮
     chooseArea() {
       let param = {

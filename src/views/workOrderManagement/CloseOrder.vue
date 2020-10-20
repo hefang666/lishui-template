@@ -4,6 +4,7 @@
       <el-dialog
         title="关闭工单"
         :visible.sync="dialogClose"
+        :close-on-click-modal="false"
         :before-close="closeOrder"
       >
         <div class="content-box form-box">

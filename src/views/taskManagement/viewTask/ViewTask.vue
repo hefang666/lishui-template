@@ -3,6 +3,7 @@
     <el-dialog
       title="任务详情"
       :visible.sync="dialogView"
+      :close-on-click-modal="false"
       :before-close="closeView"
     >
       <div class="content-box form-box">
@@ -138,8 +139,8 @@
                   </el-table>
                 </div>
                 <page
-                  :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :page-data="inspectionPointPage"
+                  :total="inspectionPointTotal"
                   @changePageSize="changePageSize"
                   @changeCurrentPage="changeCurrentPage"
                 ></page>
@@ -148,7 +149,7 @@
             <el-tab-pane label="巡检路径" name="inspectionPath">
               <div class="inspectionPath-box">
                 <div class="map-box">
-                  <map-route ref="map" :mapid="'ss_' + taskDetail.areaId"></map-route>
+                  <map-route ref="map" :mapid="'ss_' + taskDetail.id"></map-route>
                 </div>
                 <div class="inspectionPath-info-box button-box">
                   <div class="inspectionPath-info-item">
@@ -247,6 +248,13 @@
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
     ></view-route>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
@@ -255,17 +263,19 @@ import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 import MapRoute from '@/components/mapRoute/index.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
-  name: 'AddTask',
+  name: 'ViewTask',
   props: ['dialogView'],
   components: {
     Page,
     EquipmentInfo,
     ViewRoute,
-    MapRoute
+    MapRoute,
+    Message
   },
   data() {
     return {
@@ -278,24 +288,43 @@ export default {
       dialogEqui: false,
 
       // 是否显示查看路线弹窗
-      dialogRoute: false
+      dialogRoute: false,
+      // 当前页数
+      currentPage: 1,
+
+      // 当前每页多少条
+      pageSize: 1,
+
+      // 是否显示提示弹窗
+      dialogMessage: false
     };
   },
   computed: {
-    ...taskState(['taskDetail', 'inspectionPointList', 'areaDetail'])
+    ...taskState([
+      'taskDetail',
+      'inspectionPointList',
+      'inspectionPointTotal',
+      'inspectionPointPage',
+      'areaDetail',
+      'messageText'
+    ])
+  },
+  mounted() {
+    console.log(this.inspectionPointPage);
+    this.pageSize = this.inspectionPointPage[0];
   },
   methods: {
     ...taskActions([
       'GetInspectionPointList',
       'GetPointDetails',
-      'GetAreaByTaskId'
+      'GetAreaByTaskId',
+      'setMessage'
     ]),
     ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
       let data = {
-        dialogView: false,
-        data: []
+        dialogView: false
       };
       this.$emit('getViewData', data);
     },
@@ -313,12 +342,7 @@ export default {
       console.log(tab, event);
       if (tab.name == 'equipmentInfo') {
         // 获取设备点详情
-        let param = {
-          Id: this.taskDetail.id,
-          pageIndex: 1,
-          maxResultCount: 30
-        };
-        this.GetInspectionPointList(param);
+        this.getData();
       } else if (tab.name == 'inspectionPath') {
         // 巡检路径信息
         let param = {
@@ -326,6 +350,21 @@ export default {
         };
         this.GetAreaByTaskId(param);
       }
+    },
+    
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
+
+    // 获取设备点列表
+    getData() {
+      let param = {
+        Id: this.taskDetail.id,
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize
+      };
+      this.GetInspectionPointList(param);
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -337,12 +376,21 @@ export default {
     },
     // 查看按钮
     handleSee(row) {
+      console.log(row);
       let param = {
-        id: row.id,
-        status: row.status
+        deviceId: row.id,
+        status: row.status,
+        inspectionStatus: row.inspectionStatus,
+        taskId: this.taskDetail.id
       };
-      this.GetPointDetails(param);
-      this.dialogEqui = true;
+      this.GetPointDetails(param).then(res => {
+        if (res.success) {
+          this.dialogEqui = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
+      
     },
     // 获取从设备点详细信息弹窗传来的值
     getEquiData(data) {

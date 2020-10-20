@@ -70,8 +70,8 @@ export default {
     margin-left: 5px;
   }
   .el-input__inner {
-    height: 32px;
-    line-height: 32px;
+    height: 28px;
+    line-height: 28px;
     border: 1px solid #4b77be;
   }
   .el-input__icon {

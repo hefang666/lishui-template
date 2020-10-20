@@ -19,10 +19,10 @@ var state = {
   ],
   // 异常类型
   exceptionTypeData: [
-    {
-      value: 0,
-      label: '全部'
-    },
+    // {
+    //   value: 0,
+    //   label: '全部'
+    // },
     {
       value: 1,
       label: '外观损坏'
@@ -80,7 +80,11 @@ var state = {
   // 提示消息
   messageText: '',
   // 事件总数
-  eventListTotal: 1
+  eventListTotal: 1,
+  // 请求列表时的加载状态
+  loading: false,
+  // 事件page
+  eventPageData: [30, 40, 50, 100]
 };
 
 var mutations = {
@@ -96,28 +100,20 @@ var mutations = {
   set_message: function(state, data) {
     state.messageText = data;
   },
+  // 设置数据总量
   set_eventListTotal: function(state, data) {
     state.eventListTotal = data;
+  },
+  // 改变加载状态
+  set_loading: function(state, data) {
+    state.loading = data;
   }
 };
 
 var actions = {
   // 获取事件列表
-  GetEventList({commit}, param) {
-    console.log(param);
-    var data = '';
-    if (param.status == 0) {
-      data = {
-        pageIndex: param.pageIndex,
-        maxResultCount: param.maxResultCount
-      };
-    } else {
-      data = {
-        status: param.status,
-        pageIndex: param.pageIndex,
-        maxResultCount: param.maxResultCount
-      };
-    }
+  GetEventList({commit}, data) {
+    commit('set_loading', true);
     return new Promise((resolve, reject) => {
       GetEventList(data)
         .then(response => {
@@ -135,11 +131,13 @@ var actions = {
             }
             commit('set_eventList', response.result.items);
             commit('set_eventListTotal', response.result.totalCount);
+            commit('set_loading', false);
             resolve(response);
           }
         })
         .catch(error => {
           commit('set_message', error.message);
+          commit('set_loading', false);
           reject(error);
         });
     });

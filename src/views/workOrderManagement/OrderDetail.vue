@@ -3,6 +3,7 @@
     <el-dialog
       title="事件详情"
       :visible.sync="dialogView"
+      :close-on-click-modal="false"
       :before-close="closeView"
     >
       <div class="content-box form-box">
@@ -25,13 +26,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">工单状态：</div>
               <div class="item-content">
-                <span>{{ orderDetail.typeStr }}</span>
+                <span>{{ orderDetail.statusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">工单提交时间：</div>
               <div class="item-content">
-                <span>{{ orderDetail.person }}</span>
+                <span>{{ orderDetail.creationTime }}</span>
               </div>
             </div>
           </div>
@@ -39,13 +40,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">完成时间：</div>
               <div class="item-content">
-                <span>{{ orderDetail.typeStr }}</span>
+                <span>{{ orderDetail.completeTime }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">预计完成时间：</div>
               <div class="item-content">
-                <span>{{ orderDetail.person }}</span>
+                <span>{{ orderDetail.planCompleteTime }}</span>
               </div>
             </div>
           </div>
@@ -62,8 +63,12 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div class="enclosure-item">
-                    <div class="enclosure-title">附件名字</div>
+                  <div
+                    v-for="(item, index) in orderDetail.resourcelist"
+                    :key="index"
+                    class="enclosure-item"
+                  >
+                    <div class="enclosure-title">{{ item.fileName}}</div>
                     <div class="enclosure-download">下载</div>
                     <div class="enclosure-preview">预览</div>
                   </div>
@@ -82,11 +87,12 @@
                 <div class="back-title">查漏：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.leak"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}1</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -95,11 +101,12 @@
                 <div class="back-title">查漏延伸：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.leakExtension"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -108,11 +115,11 @@
                 <div class="back-title">查漏地点：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.address"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    {{ item.value }}
                   </div>
                 </div>
               </div>
@@ -132,11 +139,12 @@
                 <div class="back-title">维修：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.repair"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -145,11 +153,12 @@
                 <div class="back-title">改管：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.change"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -158,11 +167,12 @@
                 <div class="back-title">阀门：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.valve"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -171,11 +181,12 @@
                 <div class="back-title">消防栓：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.fireHydrant"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    <span class="koujing">DN{{ item.caliber }}</span>
+                    <span class="zhi">{{ item.value }}m</span>
                   </div>
                 </div>
               </div>
@@ -184,11 +195,11 @@
                 <div class="back-title">贫水区改造地点：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.address"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    {{ item.value }}
                   </div>
                 </div>
               </div>
@@ -201,11 +212,11 @@
                 <div class="back-title">违章单位：</div>
                 <div class="back-content">
                   <div
-                    v-for="(item, index) in 11"
+                    v-for="(item, index) in orderDetail.workOrderBacks.company"
                     :key="index"
                     class="back-item"
                   >
-                    {{ item }}
+                    {{ item.value }}
                   </div>
                 </div>
               </div>
@@ -311,6 +322,8 @@ export default {
           .back-title {
             width: 100px;
             text-align: right;
+            line-height: 40px;
+            font-size: 12px;
           }
           .back-content {
             flex: 1;
@@ -318,6 +331,13 @@ export default {
             .back-item {
               width: 46%;
               line-height: 20px;
+              margin-top: 9px;
+              color: #999999;
+              font-size: 12px;
+
+              .zhi {
+                margin-left: 20px;
+              }
             }
             .back-item:nth-child(odd) {
               float: left;

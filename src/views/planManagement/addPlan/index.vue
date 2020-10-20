@@ -3,6 +3,7 @@
     <el-dialog
       title="新增任务"
       :visible.sync="dialogAdd"
+      :close-on-click-modal="false"
       :before-close="closeAdd"
     >
       <div class="content-box form-box">
@@ -448,7 +449,7 @@ export default {
         target = ev.target || ev.srcElement,
         opStr = target.getAttribute('data-op'),
         opIndex = target.getAttribute('data-index');
-      console.log(opIndex);
+      // console.log(opIndex);
       if (opStr == 'jia') {
         if (this.customNum < 12) {
           this.customDate.push({
@@ -457,7 +458,9 @@ export default {
           });
           this.customNum++;
         } else {
-          console.log('最多只能添加12条数据');
+          this.setMessage('最多只能添加12条数据');
+          this.dialogMessage = true;
+          // console.log('最多只能添加12条数据');
         }
       } else if (opStr == 'jian') {
         this.customDate.splice(opIndex, 1);

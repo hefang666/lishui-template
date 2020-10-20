@@ -14,6 +14,7 @@
             <choose-equip
             @clickView="views"
             :type-text="typestr"
+            :type-src="typeStr"
             ref="equipData"
           ></choose-equip>
           </div>
@@ -48,6 +49,10 @@ export default {
     typestr: {
       type: String,
       default: 'view'
+    },
+    typeStr: {
+      type: String,
+      default: 'single'
     }
   },
   components: {
@@ -92,20 +97,41 @@ export default {
     },
     // 点击确定
     determine() {
-      // 判断是否选择有管道或者设备
-      if (
-        this.$refs.equipData.checkedEqui.length != 0 
-        ||
-        this.$refs.equipData.checkedCon.length != 0
-      ) {
-        let data = {
-          dialogRoute: false,
-          equiData: this.$refs.equipData.checkedEqui,
-          conData: this.$refs.equipData.checkedCon
-        };
-        this.$emit('getRouteData', data);
-      } else {
-        alert('请选择设备或管道');
+      // 判断是单选还是多选
+      if (this.typeStr == 'single') {
+        // 单选
+        if (this.$refs.equipData.devInfo == '') {
+          // 没有数据
+          alert('请选择设备或管道');
+          return;
+        } else {
+          // 有数据
+          let data = {
+            dialogRoute: false,
+            type: this.typeStr,
+            devInfo: this.$refs.equipData.devInfo
+          }
+          this.$emit('getRouteData', data);
+        }
+      } else if (this.typeStr == 'multiple') {
+        // 多选
+        // 判断是否选择有管道或者设备
+        if (
+          this.$refs.equipData.checkedEqui.length != 0 
+          ||
+          this.$refs.equipData.checkedCon.length != 0
+        ) {
+          let data = {
+            dialogRoute: false,
+            type: this.typeStr,
+            equiData: this.$refs.equipData.checkedEqui,
+            conData: this.$refs.equipData.checkedCon
+          };
+          this.$emit('getRouteData', data);
+        } else {
+          alert('请选择设备或管道');
+          return;
+        }
       }
       // if (this.$refs.equipData.checkedInfo == '') {
       //   alert('请选择设备');

@@ -3,6 +3,7 @@
     <el-dialog
       title="新增工单"
       :visible.sync="dialogAdd"
+      :close-on-click-modal="false"
       :before-close="closeAdd"
     >
       <div class="content-box  form-box">
@@ -59,6 +60,22 @@
             <div class="list-item">
               <div class="items-box">
                 <div class="title">
+                  <span>预计完成时间：</span>
+                </div>
+                <div class="content">
+                  <el-date-picker
+                    v-model="completionTime"
+                    type="datetime"
+                    format="yyyy-MM-dd HH:mm"
+                    :picker-options="pickerOptions"
+                    placeholder="预计完成时间"
+                  ></el-date-picker>
+                </div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="items-box">
+                <div class="title">
                   <span class="tips">*</span>
                   <span>工单内容：</span>
                 </div>
@@ -72,7 +89,7 @@
                 </div>
               </div>
             </div>
-            <div class="list-item">
+            <div class="list-item has-two-item">
               <div class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
@@ -80,7 +97,15 @@
                 </div>
                 <div class="content">
                   <div class="list-item-content-box">
-                    <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
+                    <el-button
+                      class="choose-active"
+                      type="primary"
+                      plain
+                      v-if="areaInfo.id != ''"
+                      v-model="areaInfo.name"
+                    >
+                      {{ areaInfo.name }}
+                    </el-button>
                     <el-button
                       type="primary"
                       plain
@@ -122,6 +147,7 @@
     <!-- 选择区域 -->
     <choose-area
       :dialog-area="dialogArea"
+      :type="'choose'"
       @closeChooseArea="closeChooseArea"
       @checkedArea="checkedArea"
     ></choose-area>
@@ -149,7 +175,10 @@ import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('workOrderManagement');
+const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
+const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
+
+import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'AddOrder',
   props: ['dialogAdd'],
@@ -164,47 +193,89 @@ export default {
     return {
       // 负责人弹窗状态
       dialogCharge: false,
+
       // 工单类型
       orderType: '',
+
       // 负责人
       inCharge: '',
+
       // 负责人信息
       personInfo: '',
+
       // 备注
       remarks: '',
+
       // 是否显示预览弹窗
       dialogPreview: false,
+
       // 要预览的文件
       fileData: '',
+
       // 巡检片区弹窗状态
       dialogArea: false,
+
       // 片区信息
-      areaInfo: {},
+      // 区域信息
+      areaInfo: {
+        areaPoint: '',
+        id: '',
+        name: '',
+        pipelineLength: 0,
+        pointCount: 0,
+      },
+
       // 是否显示提示消息弹窗
-      dialogMessage: false
+      dialogMessage: false,
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          // return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      },
+
+      // 预计完成时间
+      completionTime: '',
+
+      // 设备信息
+      devInfo: ''
     };
   },
   computed: {
-    ...mapState(['orderTypeData', 'messageText'])
+    ...workOrderState(['orderTypeData', 'messageText'])
   },
   methods: {
-    ...mapActions(['setMessage']),
+    ...workOrderActions(['setMessage', 'InsertWorkOrder']),
+    ...xunjianActions([
+      'getOrganizationData',
+      'getRoleData',
+      'getAreaLists'
+    ]),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       console.log('点击了取消');
       let data = {
-        dialogAdd: false,
-        data: []
+        dialogAdd: false
       };
       this.$emit('closeAdd', data);
     },
     // 点击选择负责人按钮
     choosePerson() {
+      this.getOrganizationData();
+      this.getRoleData();
       this.dialogCharge = true;
     },
 
     // 点击选择片区弹窗
     chooseArea() {
+      let param = {
+        pageIndex: 1,
+        maxResultCount: 30
+      }
+      console.log(param);
+      this.getAreaLists(param);
       this.dialogArea = true;
     },
 
@@ -239,6 +310,10 @@ export default {
     checkedArea(data) {
       console.log(data);
       this.dialogArea = data.dialogArea;
+      this.areaInfo = data.areaInfo;
+      if (data.typestr == 'single') {
+        this.devInfo = data.devInfo;
+      }
     },
     // 关闭消息提示弹窗
     closeMessage(data) {
@@ -246,6 +321,9 @@ export default {
     },
     // 点击确定新增工单
     determine() {
+      console.log(this.completionTime);
+      console.log(this.$refs.upload.fileListData);
+
       if (this.orderType == '') {
         this.setMessage('请选择工单类型');
         this.dialogMessage = true;
@@ -264,22 +342,50 @@ export default {
         return;
       }
 
-      if (this.areaInfo == '') {
+      if (this.areaInfo.id == '') {
         this.setMessage('请选择巡检片区');
         this.dialogMessage = true;
         return;
       }
 
+      if (this.completionTime != '') {
+        this.completionTime = parseTime(this.completionTime, '{y}-{m}-{d} {h}:{i}');
+        let nowDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}');
+        if (judgeTime(nowDate, this.completionTime)) {
+          // 时间符合要求
+        } else {
+          this.setMessage('预计完成时间不能小于当前时间');
+          this.dialogMessage = true;
+          return;
+        }
+      }
+
       let param = {
         personId: this.personInfo.id,
         person: this.inCharge,
+        type: this.orderType,
         status: 1,
-        deviceId: 1,
-        planCompleteTime: '',
-        areaId: '',
-        resourceInfoList: ''
+        planCompleteTime: this.completionTime,
+        areaId: this.areaInfo.id,
+        content: this.remarks,
+        source: 1,
+        resourceInfoList: this.$refs.upload.fileListData,
+        deviceId: this.devInfo.id
       };
       console.log(param);
+      this.InsertWorkOrder(param).then(res => {
+        // 成功
+        if (res.success) {
+          let data = false;
+          this.$emit('getAdd', data);
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+        let data = {
+          dialogAdd: false
+        };
+        this.$emit('closeAdd', data);
+      })
     }
   }
 };

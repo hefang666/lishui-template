@@ -3,6 +3,7 @@ import {api} from '@/api/api.js';
 
 // 获取工单列表
 export function GetWorkOrderList(data) {
+  console.log(data);
   return request({
     url: api + 'WorkOrderService/GetWorkOrderList',
     method: 'post',
@@ -32,6 +33,15 @@ export function DeleteWorkOrder(data) {
 export function CloseWorkOrder(data) {
   return request({
     url: api + 'WorkOrderService/CloseWorkOrder',
+    method: 'post',
+    data
+  });
+}
+
+// 新增工单
+export function InsertWorkOrder(data) {
+  return request({
+    url: api + 'WorkOrderService/InsertWorkOrder',
     method: 'post',
     data
   });

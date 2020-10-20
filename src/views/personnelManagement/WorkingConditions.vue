@@ -2,6 +2,7 @@
   <div class="workingConditions-box dialog-box button-box">
     <el-dialog title="任务详情"
       :visible.sync="dialogWorking"
+      :close-on-click-modal="false"
       :before-close="closeWorking"
     >
       <div class="content-box form-box">
@@ -92,26 +93,31 @@
                       align="center"
                       prop="name"
                       label="计划名称"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="cycleStr"
                       label="巡检周期"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="person"
                       label="负责人"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="endTime"
                       label="预计到期时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="statusStr"
                       label="计划状态"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
                       <template slot-scope="scope">
@@ -150,32 +156,38 @@
                       align="center"
                       prop="name"
                       label="任务名称"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="typeStr"
                       label="任务类别"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="person"
                       label="负责人"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       min-width="120"
                       prop="endTime"
                       label="实际完成时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="suspendTimeStr"
                       label="暂停时长"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="statusStr"
                       label="任务状态"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
                       <template slot-scope="scope">
@@ -214,26 +226,31 @@
                       align="center"
                       prop="typeStr"
                       label="工单类型"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="person"
                       label="负责人"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="createTime"
                       label="提交时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="completeTime"
                       label="完成时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="statusStr"
                       label="工单状态"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column align="center" width="70" label="操作">
                       <template slot-scope="scope">
@@ -346,10 +363,8 @@ export default {
     ...orderActions(['GetWorkOrderDetails']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeWorking() {
-      let data = {
-        dialogWorking: false,
-        data: []
-      };
+      this.activeName = 'generalSituation';
+      let data = false;
       this.$emit('getWorkingData', data);
     },
     // 点击查看路线，打开查看路线弹窗

@@ -71,6 +71,7 @@
     <view-route
       :dialog-route="dialogRoute"
       :typestr="typeStr"
+      :type-Str="choosetype"
       @getRouteData="getRouteData"
     ></view-route>
   </div>
@@ -84,7 +85,20 @@ const {mapState: xunjianState} = createNamespacedHelpers('xunjianPublic');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'ChooseArea',
-  props: ['dialogArea', 'type'],
+  props: {
+    dialogArea: {
+      type: Boolean,
+      default: false
+    },
+    type: {
+      type: String,
+      default: 'view'
+    },
+    choosetype: {
+      type: String,
+      default: 'single'
+    }
+  },
   components: {
     Page,
     ViewRoute
@@ -107,7 +121,10 @@ export default {
       equiInfo: [],
 
       // 选择的管道信息
-      conInfo: []
+      conInfo: [],
+
+      // 单选的设备信息（设备或管道）
+      devInfo: '',
     };
   },
   computed: {
@@ -124,6 +141,9 @@ export default {
     // 选中的行
     clickRow(val) {
       this.areaInfo = val;
+      this.equiInfo = '';
+      this.conInfo = '';
+      this.devInfo = '';
     },
     // 点击确定
     determine() {
@@ -131,17 +151,37 @@ export default {
         if (this.areaInfo == '') {
           alert('请选择巡检片区！');
           return;
-        } else if (this.equiInfo.length != 0 || this.conInfo.length != 0) {
-          let data = {
-            areaInfo: this.areaInfo,
-            equiInfo: this.equiInfo,
-            conInfo: this.conInfo,
-            dialogArea: false,
-            type: 'choose'
-          };
-          this.$emit('checkedArea', data);
         } else {
-          alert('请选择设备!');
+          if (this.choosetype == 'single') {
+            if (this.devInfo == '') {
+              alert('请选择设备或管道！');
+              return;
+            }
+            // 单选
+            let data = {
+              dialogArea: false,
+              type: 'choose',
+              typestr: 'single',
+              areaInfo: this.areaInfo,
+              devInfo: this.devInfo
+            }
+            this.$emit('checkedArea', data);
+          } else if (this.choosetype == 'multiple') {
+            if (this.conInfo == '' || this.equiInfo == '') {
+              alert('请选择巡检片区！');
+              return;
+            }
+            // 多选
+            let data = {
+              areaInfo: this.areaInfo,
+              equiInfo: this.equiInfo,
+              conInfo: this.conInfo,
+              dialogArea: false,
+              type: 'choose',
+              typestr: 'multiple',
+            };
+            this.$emit('checkedArea', data);
+          }
         }
       } else if (this.type == 'view') {
         if (this.areaInfo == '') {
@@ -189,10 +229,17 @@ export default {
     getRouteData(data) {
       console.log(data);
       this.dialogRoute = data.dialogRoute;
+      // this.chooseType = data.type;
 
       if (this.typeStr == 'choose') {
-        this.equiInfo = data.equiInfo;
-        this.conInfo = data.conInfo;
+        if (data.type == 'single') {
+          // 单选
+          this.devInfo = data.devInfo;
+        } else if (data.type == 'multiple') {
+          // 多选
+          this.equiInfo = data.equiInfo;
+          this.conInfo = data.conInfo;
+        }
       }
     }
   },

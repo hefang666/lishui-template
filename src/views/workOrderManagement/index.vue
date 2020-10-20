@@ -128,7 +128,7 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="type"
+            prop="typeStr"
             label="工单类型"
             show-overflow-tooltip
           ></el-table-column>
@@ -232,6 +232,7 @@
     <add-order
       :dialog-add="dialogAdd"
       @closeAdd="closeAdd"
+      @getAdd="getAdd"
     ></add-order>
 
     <!-- 提示消息弹窗 -->
@@ -636,7 +637,11 @@ export default {
     closeAdd(data) {
       this.dialogAdd = data.dialogAdd;
     },
-
+    // 新增成功
+    getAdd(data) {
+      this.dialogAdd = data;
+      this.getData();
+    },
     // 获取数据（基础请求，包含状态，分页，页数）
     getData() {
       let param = {
