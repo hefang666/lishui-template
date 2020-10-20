@@ -95,8 +95,7 @@ service.interceptors.response.use(
     //   type: 'error',
     //   duration: 5 * 1000
     // });
-    console.log(error);
-    return Promise.reject(error.response.data.error || error);
+    return Promise.reject(error.response.data.error);
     // return error.response.data;
   }
 );
