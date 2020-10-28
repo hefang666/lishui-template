@@ -254,6 +254,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
+const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
 import {parseTime, judgeTime} from '@/utils/index';
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
@@ -266,7 +267,8 @@ export default {
     Message
   },
   computed: {
-    ...eventState(['orderTypeData', 'eventDetails', 'messageText'])
+    ...eventState(['orderTypeData', 'eventDetails', 'messageText']),
+    ...uploadState(['fileListData'])
   },
   data() {
     return {
@@ -311,6 +313,7 @@ export default {
       'getOrganizationData',
       'getRoleData'
     ]),
+    ...uploadActions(['clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       console.log('点击了取消');
@@ -393,14 +396,25 @@ export default {
         personId: this.personInfo.id,
         person: this.personInfo.trueName,
         planCompleteTime: time,
-        content: this.remarks
+        content: this.remarks,
+        resourceInfoList: this.fileListData
       };
       this.UpdateEvent(param).catch(() => {
         this.dialogMessage = true;
       });
 
+      console.log('要执行关闭弹窗了');
       let data = false;
       this.$emit('checkedTransfer', data);
+    },
+    // 点击确定或取消后清除数据填入的数据
+    clearData() {
+      this.orderType = 1;
+      this.personInfo  = {};
+      this.inCharge = '';
+      this.remarks = '';
+      this.endTime = '';
+      this.clearFileDate();
     }
   }
 };

@@ -26,9 +26,15 @@ var actions = {
     window.open(downLoadUrl);
   },
   // 删除（图片）
-  delFil({commit}, data) {
-    console.log(commit);
-    console.log(data);
+  delFil({state}, data) {
+    // console.log(commit);
+    // console.log(data);
+    state.fileListData.splice(data, 1);
+    console.log(state.fileListData);
+  },
+  // 清空fileList
+  clearFileDate({state}) {
+    state.fileListData = [];
   }
 };
 

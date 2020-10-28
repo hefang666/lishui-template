@@ -16,6 +16,10 @@ var state = {
       order: '0'
     }
   ],
+  // 设备列表总数
+  equipmentTotal: 1,
+  // 设备列表分页信息
+  equipmentPage: [30, 40, 50, 100],
 
   // 基本信息
   equipmentDetails: '',
@@ -36,24 +40,30 @@ var state = {
       taskTypeString: '计划任务'
     }
   ],
-  // 任务总数量信息
-  equipmentTaskPageInfo: {
-    total: 1
-  },
+  // 任务总数量条数
+  equipmentTaskTotal: 1,
+
+  // 设备信息分页数据
+  equipmentTaskPage: [30, 40, 50, 100],
 
   // 事件列表
   equipmentEventList: [],
 
   // 事件总数量信息
-  equipmentEventPageInfo: {
-    total: 1
-  }
+  equipmentEventTotal: 1,
+
+  // 事件分页数据
+  equipmentEventPage: [30, 40, 50, 100]
 };
 
 var mutations = {
   // 设置列表
   set_equipmentList: function(state, data) {
     state.equipmentList = data;
+  },
+  // 设置列表总数
+  set_equipmentTotal: function(state, data) {
+    state.equipmentTotal = data;
   },
   // 设置提示消息
   set_message: function(state, data) {
@@ -73,11 +83,11 @@ var mutations = {
   },
   // 设置任务page信息
   set_equipmentTaskPageInfo: function(state, data) {
-    state.equipmentTaskPageInfo.total = data.totalCount;
+    state.equipmentTaskTotal = data;
   },
   // 设置事件page信息
   set_equipmentEventPageInfo: function(state, data) {
-    state.equipmentEventPageInfo.total = data.totalCount;
+    state.equipmentEventTotal = data;
   }
 };
 
@@ -90,12 +100,12 @@ var actions = {
           console.log(response);
           if (response.success) {
             commit('set_equipmentList', response.result.items);
+            commit('set_equipmentTotal', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
@@ -109,11 +119,10 @@ var actions = {
           if (response.success) {
             commit('set_equipmentDetails', response.result);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
@@ -126,15 +135,12 @@ var actions = {
           console.log(response);
           if (response.success) {
             commit('set_equipmentTaskList', response.result.items);
-            commit('set_equipmentTaskPageInfo', {
-              totalCount: response.result.totalCount
-            });
+            commit('set_equipmentTaskPageInfo', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
@@ -147,15 +153,12 @@ var actions = {
           console.log(response);
           if (response.success) {
             commit('set_equipmentEventList', response.result.items);
-            commit('set_equipmentEventPageInfo', {
-              totalCount: response.result.totalCount
-            });
+            commit('set_equipmentEventPageInfo', response.result.totalCount);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
+          commit('set_message', error.message || error);
           reject(error);
         });
     });
