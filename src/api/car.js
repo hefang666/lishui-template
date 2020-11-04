@@ -46,7 +46,8 @@ export function GetById(params) {
 // 用车管理
 export function GetByOrgIdCarUseRecord(params) {
     return request({
-        url: '/api/services/Security/CarUseRecordService/GetByOrgId', // 根据组织机构获取用车列表
+        url: '/api/services/Security/CarUseRecordService/GetByOrgId',
+        // 根据组织机构获取用车列表
         method: 'POST',
         data: params
     })

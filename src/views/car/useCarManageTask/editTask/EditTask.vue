@@ -12,20 +12,22 @@
                 class="has-two-item"
                 label="选择车辆："
                 label-width="120px"
-                prop="carNumber"
+                prop="carId"
                 >
                 <div class="list-item-content-box">
-                   <el-select
-                    v-model="editForm.carNumber"
+                  <el-select
+                    v-model="editForm.carId"
+                    clearable
                     placeholder="请选择车辆"
+                    @change="changeCar"
                     >
-                    <el-option
-                    v-for="item in carListData"
-                    :key="item.id"
-                    :id="item.id"
-                    :value="item.value"
+                      <el-option
+                      v-for="item in carListData"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.value"
                     />
-                    </el-select>
+                  </el-select>
                 </div>
               </el-form-item>
             </div>
@@ -34,18 +36,19 @@
                 class="has-two-item"
                 label="选择用车人："
                 label-width="120px"
-                prop="userName"
+                prop="userId"
                 >
                 <div class="list-item-content-box">
                   <el-select
-                    v-model="editForm.userName"
+                    v-model="editForm.userId"
                     placeholder="请选择用车人"
+                    @change="changeUser"
                   >
                     <el-option
-                      v-for="item in userListData"
-                      :key="item.id"
-                      :id="item.id"
-                      :value="item.value"
+                      v-for="(item,index) in userListData"
+                      :key="index"
+                      :label="item.value"
+                      :value="item.id"
                     />
                   </el-select>
                 </div>
@@ -72,16 +75,14 @@
                   <el-date-picker
                   v-model="editForm.beginTime"
                   type="datetime"
-                  format="yyyy-MM-dd hh:mm"
-                  value-format="yyyy-MM-dd hh:mm"
+                  :formatter="dateFormat"
                   placeholder="请选择开始时间"
                 ></el-date-picker>
                 <span class="to-style">-</span>
                 <el-date-picker
                   v-model="editForm.endTime"
                   type="datetime"
-                  format="yyyy-MM-dd hh:mm"
-                  value-format="yyyy-MM-dd hh:mm"
+                  :formatter="dateFormat"
                   placeholder="请选择结束时间"
                 ></el-date-picker>
                 </div>
@@ -112,8 +113,8 @@
 </template>
 
 <script>
-import { UpdateCarUseRecord, GetByOrgId } from '@/api/car'
-import { GetOrgUserList } from '@/api/visitor'
+import { UpdateCarUseRecord } from '@/api/car'
+import moment from 'moment'
 
 export default {
   name: 'EditTask',
@@ -122,32 +123,44 @@ export default {
       type: Boolean,
       default: false
     },
-    editData: Object
+    editFormData: Object,
+    carListData: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    },
+    userListData: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
       editForm: {
-        id: '',
         carId: '',
-        carNumber:'',
+        carNumber: '',
         userId: '',
         userName: '',
+        userPhone: '',
         beginTime: '',
         endTime: '',
         reason: ''
       },
       // 车辆列表数据
-      carListData: [],
-      // 用车人列表数据
-      userListData: [],
+      // carListData: [],
+      // // 用车人列表数据
+      // userListData: [],
       // 日期时间
       // date_value: '',
       // 车辆下拉列表数据
       rules:{
-        carNumber: [
+        carId: [
           { required: true, message: "车辆不能为空", trigger: "blur" }
         ],
-        userName: [
+        userId: [
           { required: true, message: "用车人不能为空", trigger: "blur" }
         ]
         
@@ -156,61 +169,50 @@ export default {
       
     };
   },
-  created(){
-    this.getCarList(),
-    this.getUserList()
-  },
+ 
   watch: {
     // 监听修改用车信息的对象
-    editData(obj){
+    editFormData(obj){
       this.editForm = obj
     },
-    // 监听编辑弹窗
+    // 监听修改用车信息弹窗
     dialogEdit() {
       this.visible = this.dialogEdit;
     }
   },
+ 
   methods: {
     // 获取用车时间
     // changeDate() {
     //   this.editForm.beginTime = this.date_value[0]
     //   this.editForm.endTime = this.date_value[1]
     // },
-    // 获取车辆下拉列表
-    getCarList() {
-      var _this = this
-      let parms = {
-        orgId: 10294,
-        carType: 0
+    // 时间格式化
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined || date === null) {
+        return ''
       }
-      GetByOrgId(parms).then(res => {
-        res.result.forEach((e) => {
-          // console.log(e)
-          _this.carListData.push({
-            value: e.number,
-            id: e.id.toString()
-          })
-        })
+      return moment(date).format('YYYY-MM-DD HH:mm:ss')
+    },
+    // 选择车辆
+    changeCar(val){
+      this.carListData.map(item => {
+        if(Number(item.value) == val){
+          this.editForm.carNumber = item.label
+        }
       })
     },
-    // 获取用车人列表
-    getUserList() {
-      var _this = this
-      let parms = {
-        orgIds: []
-      }
-      GetOrgUserList(parms).then(res => {
-        res.result.map(item => {
-          item.users.map(items => {
-            _this.userListData.push({
-            value: items.nickName,
-            id: items.id
-          })
-          })
-        })
+    // 选择用车人
+    changeUser(val){
+      this.userListData.map(item => {
+        if(Number(item.id) == val){
+          this.editForm.userName = item.value
+        }
       })
     },
-    // 点击取消或者右上角的×关闭新增弹窗
+  
+    // 点击取消或者右上角的×关闭修改弹窗
     closeEdit() {
       this.$refs.editFormRef.resetFields() 
       this.$emit("update:dialogEdit", false);
@@ -225,8 +227,15 @@ export default {
           if(res.success){
             this.$emit("update:dialogEdit", false);
             this.$message.success('修改成功！')
-            // this.$parent.getList()
+            this.$parent.getList()
           }
+        })
+        .catch(err=>{
+          console.log(err)
+          this.$message({
+            message: '该车在该时间范围内已经被使用，请重新选择',
+            type: 'warning'
+          });
         })
       })
     }

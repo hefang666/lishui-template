@@ -1,7 +1,17 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree :treeData="treeData"></c-tree>
+      <div class="list-box">
+        <div class="snt-left-list">
+          <div 
+            :class="{active: currentIndex === index}" 
+            v-for="(item, index) in pointPowerData" 
+            :key="index" 
+            @click="changeList(index)">
+            <span>{{item.pointName}}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="snt-table-right-col">
       <div class="form-box">
@@ -35,9 +45,9 @@
           label-width="120px">
             <div class="list-item-content-box">
               <el-select v-model="ruleForm.idCardType" placeholder="请选择证件类型">
-                <el-option label="身份证" :value="0"></el-option>
-                <el-option label="军官证" :value="1"></el-option>
-                <el-option label="护照" :value="2"></el-option>
+                <el-option label="身份证" :value="1"></el-option>
+                <el-option label="军官证" :value="2"></el-option>
+                <el-option label="护照" :value="3"></el-option>
               </el-select>
             </div>
           </el-form-item>
@@ -82,7 +92,7 @@
             <el-input
               type="text"
               v-model="ruleForm.company"
-              style="width:700px;"
+              style="width:692px;"
             ></el-input>
           </div>
           </el-form-item>
@@ -96,7 +106,7 @@
             <el-input
               type="text" 
               v-model="ruleForm.reason"
-              style="width:700px;"
+              style="width:692px;"
             ></el-input>
           </div>
           </el-form-item>
@@ -115,7 +125,7 @@
               <el-option
                 v-for="item in intervieweesData"
                 :key="item.id"
-                :id="item.id"
+                :label="item.label"
                 :value="item.value"
               />
             </el-select>
@@ -165,14 +175,17 @@
               <el-date-picker
                 v-model="ruleForm.visitTime"
                 type="datetime"
+                format="yyyy-MM-dd hh:mm:ss"
+                value-format="yyyy-MM-dd hh:mm:ss"
                 placeholder="请选择来访时间"
               ></el-date-picker>
               </div>
             </el-form-item>
           </div>
           <div class="footer-btn">
-            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
-            <el-button @click="goToLink">管理列表</el-button>
+            <!-- <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button> -->
+            <KtButton type="primary" size="small" @click="submitForm('ruleForm')" label='保存' perms='Security.Visitor.Register.Add'/>
+            <el-button size="small" @click="goToLink">管理列表</el-button>
           </div>
         </el-form>
       </div>
@@ -181,12 +194,9 @@
 </template>
 
 <script>
-import cTree from "@/components/tree/cTree";
-import { PostUserList, GetInsertRecord } from '@/api/visitor';
-import { GetOrgagencyTree } from '@/api/role';
+import { PostUserList, GetInsertRecord, GetPointPower } from '@/api/visitor';
 
 export default {
-  components: { cTree },
   data() {
     // 验证手机号的验证规则
     var checkMobile = (rule, value, callback) => {
@@ -202,116 +212,145 @@ export default {
     // 正则验证车牌,验证通过返回true,不通过返回false
     var isLicensePlate = (rule, value, callback) => {
       const regLicensePlate = /^(([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z](([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领][A-Z][A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳使领]))$/
-      if (regLicensePlate.test(value)) {
+      if (value=='' || regLicensePlate.test(value)) {
         // 验证通过，合法的车牌号
         return callback()
       }
       // 验证不通过，不合法
       callback(new Error('请输入合法的车牌号'))
     }
+   
     return {
-      // 组织机构树
-      treeData: [],
+      // 表单参数
       ruleForm: {
-        visitorName: "",
+        visitorName: '',
         idCardType: '',
-        idCardNumber: "",
-        phoneNumber: "",
-        carNumber: "",
-        address: "",
-        company: "",
-        reason: "",
-        interviewees: "",
+        idCardNumber: '',
+        phoneNumber: '',
+        idCardPhoto: '',
+        carNumber: '',
+        address: '',
+        reason: '',
+        company: '',
+        interviewees: '',
         visitorCount: '',
-        idCardPhoto: "",
-        visitTime: "",
+        remark: '',
+        visitTime: '',
+        leaveTime:'',
         checkStatus: 1,
-        checkAddress: "",
+        checkAddress: '',
         resource: 1,
-        code: ""
-
+        code: ''
       },
+      // 表单验证规则
       rules: {
         visitorName: [
           { required: true, message: "请输入姓名", trigger: "blur" },
-          { min: 1, max: 20, message: "长度在20字符", trigger: "blur" }
+          { min: 1, max: 20, message: "长度在20个字符", trigger: "blur" }
         ],
         idCardType: [
           { required: true, message: "证件类型不能为空", trigger: "blur" }
         ],
-        idCardNumber: [{ min: 1, max: 10, message: "长度在10字符", trigger: "blur" }],
+        idCardNumber: [
+          { required: true, min: 18, max: 18, message: "长度必须在18个字符", trigger: "blur" }
+        ],
         phoneNumber: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
           { validator: checkMobile, trigger: "blur" }
         ],
         carNumber: [
-          { required: true, message: "请输入车牌号码", trigger: "blur" },
+          { required: false, message: "请输入车牌号码", trigger: "blur" },
           { validator: isLicensePlate, trigger: "blur" }
         ],
         interviewees: [
           { required: true, message: "请选择被访人", trigger: "blur" }
         ],
-        // visitorCount: [{ required: true,type: "number", message: "请输入数字值",trigger: "blur" }],
+        visitorCount: [
+          { required: false, type: "number", message: "请输入数字值",trigger: "blur" }
+        ],
         visitTime: [
           { required: true, message: "请输入来访时间", trigger: "blur" },
         ]
       },
+      // 访客登记点数据
+      pointPowerData:[],
+      currentIndex: 0, // 默认选中第一个
       // 被访人下拉列表
       intervieweesData: [],
       // 图片地址
       imageUrl: ""
     };
   },
-  created(){
-    this.getInterviewees(),
-    this.getTreeData()// 加载组织机构树
+  mounted(){
+    this.getInterviewees(), // 加载被访人下拉列表
+    this.getPointPower() // 加载访客登记点
   },
   methods: {
-    // 加载组织机构树
-    getTreeData() {
-      GetOrgagencyTree().then(res => {
-        // console.log(res)
-        if(res.success) {
-          this.treeData = res.result
-        }else {
-          return false
+    // 获取访客登记点
+    getPointPower(){
+      GetPointPower().then(res => {
+        console.log(res)
+        if(res.success){
+          this.pointPowerData = res.result
         }
-        
       })
+    },
+    // 点击切换列表事件
+    changeList(index) {
+      // console.log(index)
+      this.currentIndex = index
+      this.ruleForm.code = this.pointPowerData[this.currentIndex].pointName
     },
     // 获取被访人列表
     getInterviewees() {
       var _this = this
       let parm = {
         orgId: 10294,
-        isContainSublevel: true,
+        isContainSublevel: false,
+        // isExport: true,
+        isAdvanced: false,
+        advanced: {
+          sex: null,
+          status: null,
+          position: null
+        },
+        filter: '',
         pageIndex: 1,
-        maxResultCount: 10
+        maxResultCount: 30
       }
       PostUserList(parm).then(res => {
+        let newsData = []
         res.result.items.forEach((e) => {
           // console.log(e)
-          _this.intervieweesData.push({
-            value: e.nickName,
-            id: e.id
+          newsData.push({
+            // value: e.nickName,
+            // id: e.id
+            value:e.id,
+            label:e.nickName
           })
         })
+        _this.intervieweesData = newsData
       })
     },
     // 保存访客记录信息
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.ruleForm.code = this.pointPowerData[this.currentIndex].pointName
+          // console.log(this.ruleForm.code)
           GetInsertRecord(this.ruleForm).then(res => {
             if(res.success) {
               this.$message.success('登记成功！')
-              //  this.getList()
             }
-            }).catch(err => {
+          }).catch(err => {
             console.log(err)
+            this.$message({
+              message: '该访客已被登记',
+              type: 'warning'
+            });
           })
         } else {
-          console.log("登记失败！");
+          // console.log("登记失败！");
           return false;
         }
       });
@@ -327,11 +366,10 @@ export default {
     },
     handleAvatarSuccess(file) {
       let url = "http://192.168.9.44:9090/" + file.result.items[0].url
-      console.log(file)
+      // console.log(file)
       if (file.success) {
         // this.imageUrl = file.result.items[0].url;
         this.imageUrl = url;
-        console.log(this.imageUrl)
       }
     },
     // 跳转到列表
@@ -352,11 +390,28 @@ export default {
 }
 .snt-list-left-col {
   position: absolute;
+  height: 100%;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;
+  .list-box div{
+    height: 26px;
+    line-height: 26px;
+    color: #4b77be;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    &.active {
+      background: #4b77be;
+      color: #fff;
+    }
+    
+  }
+  .list-box div:first-child{
+    margin-top: 10px;
+  }
 }
 .snt-table-right-col {
   margin-left: 190px;
@@ -365,11 +420,12 @@ export default {
   flex: 1;
 
   .form-box {
-    width: 950px;
+    width: 935px;
+    height: 776px;
     padding: 20px;
     margin-right: 50px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: 1px solid #E6E6E6;
+    border-radius: 4px;
     .list-item {
       display: flex;
       justify-content: space-between;
@@ -389,12 +445,13 @@ export default {
     background-color: #4b77be;
     border-color: #4b77be;
   }
+
   //上传图片
   .org-img {
     border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    height: 80px;
-    width: 80px;
+    border-radius: 4px;
+    height: 104px;
+    width: 104px;
   }
   .avatar-uploader {
     border: none;
@@ -402,11 +459,12 @@ export default {
   .avatar-uploader-icon {
     font-size: 28px;
     border: 1px dashed #d9d9d9;
-    border-radius: 6px;
+    border-radius: 4px;
+    background:  rgba(0,0,0,0.04);
     color: #8c939d;
-    width: 80px;
-    height: 80px;
-    line-height: 80px;
+    height: 104px;
+    width: 104px;
+    line-height: 104px;
     text-align: center;
   }
   .avatar-uploader ::v-deep .el-upload {

@@ -1,9 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import getters from "./getters";
-// import car from "./modules/car"
-// import * as tagsView from './modules/tagsView'
-// import * as sideBar from './modules/sideBar'
+
 Vue.use(Vuex);
 
 // https://webpack.js.org/guides/dependency-management/#requirecontext
@@ -19,11 +17,22 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
 }, {});
 
 const store = new Vuex.Store({
+    state: {
+        permission: [] // 权限集合
+    },
+    mutations: {
+        SET_PERMISSION(state, permission) { // permissions 为传入的权限标识集合
+            // 传入的权限集合 赋值给状态中的 permission
+            state.permissions = permission;
+        }
+    },
+    actions: {
+        SET_PERMISSION(context, permission) {
+            // 提交到 mutation 中的 SET_PERMISSION 函数
+            context.commit("SET_PERMISSION", permission);
+        }
+    },
     modules,
-    // modules: {
-    //   tagsView: tagsView.default
-    // },
-    // car,
     getters
 });
 

@@ -1,39 +1,44 @@
 <template>
-  <div id="upload">
-    <el-upload
-      class="upload-demo"
-      ref="upload"
-      action="#"
-      :on-change="onChange"
-      :on-remove="handleRemove"
-      multiple
-      :on-exceed="handleExceed"
-      accept=".pdf"
-      :limit="5"
-      :file-list="fileList"
-      :auto-upload="false"
-      show-file-list
-    >
-      <el-button slot="trigger" size="small" type="primary"
-        >选取文件<i class="el-icon-upload el-icon--right"></i
-      ></el-button>
-      <el-button
-        style="margin-left: 10px;"
-        size="small"
-        type="success"
-        @click="submitUpload"
-        >上传到服务器</el-button
+  <div class="container">
+    <div id="upload">
+      <el-upload
+        class="upload-demo"
+        ref="upload"
+        action="#"
+        :on-change="onChange"
+        :on-remove="handleRemove"
+        multiple
+        :on-exceed="handleExceed"
+        accept=".pdf"
+        :limit="5"
+        :file-list="fileList"
+        :auto-upload="false"
+        show-file-list
       >
-      <!-- <div slot="tip" class="el-upload__tip">只能上传pdf文件</div> -->
-    </el-upload>
-    <!--上传显示进度条-->
-    <div v-show="progressFlag" class="head-img">
-      <el-progress
-        :text-inside="true"
-        :stroke-width="14"
-        :percentage="progressPercent"
-        status="success"
-      ></el-progress>
+        <el-button slot="trigger" size="small" type="primary"
+          >选取文件<i class="el-icon-upload el-icon--right"></i
+        ></el-button>
+        <el-button
+          style="margin-left: 10px;"
+          size="small"
+          type="success"
+          @click="submitUpload"
+          >上传到服务器</el-button
+        >
+        <!-- <div slot="tip" class="el-upload__tip">只能上传pdf文件</div> -->
+      </el-upload>
+      <!--上传显示进度条-->
+      <div v-show="progressFlag" class="head-img">
+        <el-progress
+          :text-inside="true"
+          :stroke-width="14"
+          :percentage="progressPercent"
+          status="success"
+        ></el-progress>
+      </div>
+    </div>
+    <div class="footer-btn">
+      <el-button type="primary">提交</el-button>
     </div>
   </div>
 </template>
@@ -127,9 +132,11 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import '@/styles/element-ui-new.scss';
+@import '@/styles/public.scss';
 #upload {
-  width: 800px;
+  width: 950px;
   height: 500px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -139,4 +146,13 @@ export default {
 .head-img {
   width: 650px;
 }
+.footer-btn {
+    width:950px;
+    margin-top: 20px;
+    text-align: center;
+  }
+  /deep/.el-button--primary{
+    background-color: #4b77be;
+    border-color: #4b77be;
+  }
 </style>

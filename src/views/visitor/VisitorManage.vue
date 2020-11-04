@@ -1,7 +1,17 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree :treeData="treeData" @changeTree="getChangeTree"></c-tree>
+      <div class="list-box">
+        <div class="snt-left-list">
+          <div 
+            :class="{active: currentIndex === index}" 
+            v-for="(item, index) in pointPowerData" 
+            :key="index" 
+            @click="changeList(index)">
+            <span>{{item.pointName}}</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
@@ -10,11 +20,12 @@
             <!--搜索-->
             <div class="search-box">
               <el-input
-                placeholder="请输入访客姓名/电话"
+                placeholder="请输入访客姓名/联系电话"
                 prefix-icon="el-icon-search"
                 clearable
                 @clear="getList" 
                 v-model="form.nameOrTel"
+                @input="searchTableData(form.nameOrTel)"
                 style="width:210px;margin-right:20px;"
               ></el-input>
               <!-- <el-date-picker
@@ -42,14 +53,15 @@
                 value-format="yyyy-MM-dd hh:mm"
                 placeholder="请选择结束时间"
               ></el-date-picker>
-
-              <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
+              <!-- <el-button class="search-button" type="primary"  @click="getList">查询</el-button> -->
+              <KtButton type="primary" class="search-button" @click="getList" label='查询' perms='Security.Visitor.Management.Search'/>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
-              <el-button type="primary" plain @click="handleCheckInfo">详情</el-button>
-              <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleCheckInfo('','','top')">详情</el-button>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleLeaveTimeAdd">添加离开时间</el-button>
+              <el-button type="primary" :disabled="multipleSelection.length == 0 ? true : false" plain @click="handleDel('')">删除</el-button>
             </el-button-group>
           </div>
         </div>
@@ -81,27 +93,29 @@
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
-                prop="contactAddress"
+                prop="address"
                 label="登记地点"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
                 prop="visitTime"
                 label="登记时间"
+                :formatter="dateFormat"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column
                 prop="leaveTime"
                 label="离开时间"
+                :formatter="dateFormat"
                 show-overflow-tooltip
               ></el-table-column>
               <el-table-column label="操作">
                 <template slot-scope="scope">
                   <div class="operate-box">
-                    <el-button
+                    <!-- <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleCheckInfo(scope.$index, scope.row)"
+                      @click="handleCheckInfo(scope.$index, scope.row,'seeInfo')"
                       >详情</el-button
                     >
                     <el-button
@@ -110,7 +124,17 @@
                       @click="handleLeaveTimeAdd(scope.row)"
                       >添加离开时间</el-button
                     >
+                    <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleDel(scope.$index, scope.row)"
+                      >删除</el-button
+                    > -->
+                    <KtButton type="text" class="operate-button" @click="handleCheckInfo(scope.$index,scope.row,'seeInfo')" label='详情' perms='Security.Visitor.Management.Detail'/>
+                    <KtButton type="text" class="operate-button" @click="handleLeaveTimeAdd(scope.row)" label='添加离开时间' perms='Security.Visitor.Management.Leave'/>
+                    <KtButton type="text" class="operate-button" @click="handleDel(scope.row)" label='删除' perms='Security.Visitor.Management.Delete'/>
                   </div>
+                  
                 </template>
               </el-table-column>
             </el-table>
@@ -138,8 +162,8 @@
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="证件类型：" prop="idCardType" :formatter="formatType">
-                          <span>{{ detilForm.idCardType }}</span>
+                        <el-form-item label="证件类型：" prop="idCardType">
+                          <span>{{ detilForm.idCardType == 1 ? '身份证': detilForm.idCardType == 2 ? '军官证': '护照' }}</span>
                         </el-form-item>
                       </div>
                       <div class="list-items has-two-item">
@@ -150,8 +174,8 @@
                     </div>
                     <div class="list-item">
                       <div class="list-items has-two-item">
-                        <el-form-item label="联系电话：" prop="idCardPhoto">
-                          <span class="info">{{ detilForm.idCardPhoto }}</span>
+                        <el-form-item label="联系电话：" prop="phoneNumber">
+                          <span class="info">{{ detilForm.phoneNumber }}</span>
                         </el-form-item>
                       </div>
                       <div class="list-items has-two-item">
@@ -160,13 +184,13 @@
                         </el-form-item>
                       </div>
                     </div>  
-                    <div class="list-item">
+                    <!-- <div class="list-item">
                       <div class="list-items has-two-item">
                         <el-form-item label="联系地址：" prop="contactAddress">
                           <span>{{ detilForm.contactAddress }}</span>
                         </el-form-item>
                       </div>
-                    </div>  
+                    </div>   -->
                     <div class="list-item">
                       <div class="list-items has-two-item">
                         <el-form-item label="来访事由：" prop="reason">
@@ -196,12 +220,13 @@
                     <div class="list-item">
                       <div class="list-items has-two-item">
                         <el-form-item label="来访时间：" prop="visitTime">
-                          <span class="info">{{ detilForm.visitTime }}</span>
+                          <!-- <span class="info">{{ detilForm.visitTime }}</span> -->
+                          <span class="info">{{$moment(detilForm.visitTime).format('YYYY-MM-DD HH:mm:ss')}}</span>
                         </el-form-item>
                       </div>
                       <div class="list-items has-two-item">
                         <el-form-item label="离开时间：" prop="leaveTime">
-                          <span class="info">{{ detilForm.leaveTime }}</span>
+                          <span class="info">{{ detilForm.leaveTime == null?'' : $moment(detilForm.leaveTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
                         </el-form-item>
                       </div>
                     </div>
@@ -231,8 +256,8 @@
                   <el-date-picker
                     v-model="addForm.leaveTime"
                     type="datetime"
-                    format="yyyy-MM-dd hh:mm"
-                    value-format="yyyy-MM-dd hh:mm"
+                    format="yyyy-MM-dd hh:mm:ss"
+                    value-format="yyyy-MM-dd hh:mm:ss"
                     placeholder="选择离开时间"
                   >
                   </el-date-picker> </el-form-item
@@ -255,28 +280,30 @@
 </template>
 
 <script>
-import cTree from "@/components/tree/cTree";
+// import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
-// import ViewTask from './visitorManageTask/viewTask/ViewTask';
-import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord } from '@/api/visitor';
-import { GetOrgagencyTree } from '@/api/role';
+import moment from 'moment'
+import { GetPageList, GetById, getInsertLeaveTime, DeleteRecord, GetPointPower } from '@/api/visitor';
+// import { GetOrgagencyTree } from '@/api/role';
 
 export default {
-  components: { cTree, Page },
+  components: { Page },
   data() {
     return {
+      multipleSelection:[],
       id:'',
       // 查询参数
       form: {
         nameOrTel:'',
         visitTimeBegin:'',
         visitTimeEnd:'',
-        codes: [""],
+        codes: [],
         pageIndex: 1,
         maxResultCount: 30,
       },
-      // 组织机构树
-      treeData: [],
+      // 访客登记点数据
+      pointPowerData:[],
+      currentIndex: 0, // 默认选中第一个
       // 日期时间参数
       // visitTime:'',
       // 总条数
@@ -302,42 +329,55 @@ export default {
           { required: true, message: "离开时间不能为空", trigger: "blur" }
         ],
       },
-      // 批量删除id
+      // 选中的数组
       ids:[],
+      showWindow: false
     };
   },
-  mounted() {
-    this.getTreeData()// 加载组织机构树
+  created() {
+    this.getPointPower() // 加载访客登记点
+    // this.getList(0)
   },
   methods: {
-    // 获取查询的访问时间
-    // changeDate() {
-    //   this.form.visitTimeBegin = this.visitTime[0]
-    //   this.form.visitTimeEnd = this.visitTime[1]
-    // },
-    // 
-    // 点击节点时获取到id
-    getChangeTree(v) {
-      this.id = v
+    // 时间格式化
+    dateFormat: function(row, column) {
+      var date = row[column.property]
+      if (date === undefined || date === null) {
+        return ''
+      }
+      return moment(date).format('YYYY-MM-DD HH:mm:ss')
+    },
+    
+    // 获取访客登记点
+    getPointPower() {
+      GetPointPower().then(res => {
+        // console.log(res)
+        if(res.success){
+          this.pointPowerData = res.result
+          this.changeList(0)
+        }
+      })
+    },
+    // 点击切换列表事件
+    changeList(index) {
+      this.currentIndex = index
+      this.form.codes[0] = this.pointPowerData[this.currentIndex].pointName
+      // console.log(this.form.codes[0])
       this.getList()
     },
-    // 判断证件类型
-    formatType: function(row) {
-      return row.idCardType === 1 ? '军官证' : row.idCardType === 0 ? '身份证' : ''
-    },
-    // 加载组织机构树
-    getTreeData() {
-      GetOrgagencyTree().then(res => {
-        if(res.success) {
-          this.treeData = res.result
-          // let id = res.result[0].id
-          // this.form.organizationId = id
-          this.getList()
-        }else {
-          return false
+    // 根据姓名和电话模糊查询
+    searchTableData(nameOrTel) {
+      // console.log(nameOrTel)
+      let  that = this;
+      that.tableData = that.tableData.filter(Val => {
+        if (
+          Val.visitorName.includes(nameOrTel) ||
+          Val.phoneNumber.includes(nameOrTel)
+        ) {
+          that.tableData.push(Val);
+          return that.tableData;
         }
-        
-      })
+      });
     },
     // 获取列表
     getList() {
@@ -345,7 +385,11 @@ export default {
       GetPageList(this.form).then(res => {
         // console.log(res)
         if(res.success){
+          // this.tableData.address = this.form.codes[0]
           this.tableData = res.result.items
+          this.tableData.map(item => {
+            item.address = this.form.codes[0]
+          })
           this.totalCount =  res.result.totalCount
           this.loading = false
         }
@@ -355,17 +399,28 @@ export default {
     handleSelectionChange(val) {
       let list = []
       this.multipleSelection = val;
-      console.log(val)
+      // console.log(val)
+      if(val.length > 0){
+        this.showWindow = true
+      }else{
+        this.showWindow = false
+      }
       val.forEach((res) => {
         list.push(res.id)
       })
       this.ids = list
     },
     // 查看访客记录详情
-    handleCheckInfo(index, row) {
-      // console.log(index, row);
-      this.detilFormVisible = true
-      if(row) {
+    handleCheckInfo(index, row, string) {
+      if(string == 'top'){
+        this.detilForm = this.multipleSelection[0]
+         let param = {
+          id: this.multipleSelection[0].id
+        }
+        GetById(param).then(res => {
+          this.detilForm = res.result
+        })
+      }else{
         this.detilForm = row
         let param = {
           id: row.id
@@ -373,10 +428,8 @@ export default {
         GetById(param).then(res => {
           this.detilForm = res.result
         })
-      } else{
-        this.detilForm = this.multipleSelection[0]
       }
-      
+      this.detilFormVisible = true
     },
     // 打开新增添加时间弹窗
     handleLeaveTimeAdd(row) {
@@ -394,39 +447,39 @@ export default {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
          getInsertLeaveTime(this.addForm).then(res => {
-          console.log(res)
+          // console.log(res)
           if(res.success){
             this.dialogAddLeaveTimeVisible = false
             this.$message.success('添加成功！')
+            this.getList()
           }
         })
       })
     },
     // 删除
-    handleDel(rows){  
+    handleDel(row){  
       const _this = this
-      console.log(rows)
-      if (_this.ids.length === 0) {
-        _this.$message({
-          message: '请勾选要删除的行',
-          type: 'warning'
+      let ids = []
+      if(row){
+        ids.push(row.id)
+      }else{
+        _this.multipleSelection.map(item => {
+          ids.push(item.id)
         })
-        return
-      } else {
-        var data = this.ids
-        _this.$confirm('确定删除此数据吗？', '提示', {
+      }
+      _this.$confirm('确定删除此数据吗？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteRecord(data).then(res => {
+          DeleteRecord(ids).then(res => {
             console.log(res)
             if (res.success) {
               _this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
-             _this.getList()
+             _this.getList(1)
             } else {
               _this.$message({
                 type: 'warning',
@@ -434,21 +487,25 @@ export default {
               })
             }
           })
-        })
-      }    
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     },
-    // 获取从分页传过来的每页多少条数据
+   // 获取从分页传过来的每页多少条数据
 		changePageSize(val) {
-      console.log(val);
-      this.form.maxResultCount = val
+      // console.log(val);
+      this.form.maxResultCount = val.pageSize;
       this.getList()
 		},
 		// 获取从分页传过来的当前页数
 		changeCurrentPage(val) {
-      console.log(val);
-      this.form.pageIndex = val
+      // console.log(val);
+      this.form.pageIndex = val.currentPage;
       this.getList()
-    },
+		}
 
   }
 };
@@ -462,13 +519,39 @@ export default {
   display: flex;
   overflow: hidden;
 }
+// .snt-list-left-col {
+//   position: absolute;
+//   width: 190px;
+//   height: 100%;
+//   min-height:calc(100vh - 10px);
+//   overflow: hidden;
+//   transition:width 0.28s;
+//   border-right: 1px solid #ccc;
+// }
 .snt-list-left-col {
   position: absolute;
+  height: 100%;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;
+  .list-box div{
+    height: 26px;
+    line-height: 26px;
+    color: #4b77be;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    &.active {
+      background: #4b77be;
+      color: #fff;
+    }
+    
+  }
+  .list-box div:first-child{
+    margin-top: 10px;
+  }
 }
 .snt-table-right-col {
   margin-left: 190px;
@@ -502,6 +585,7 @@ export default {
       .table-box {
         border: 1px solid #ddd;
         box-sizing: border-box;
+        min-height: 800px;
       }
       .page-box {
         margin-top: 10px;
@@ -528,7 +612,7 @@ export default {
 }
 /deep/.search-box .el-input__icon,
 /deep/.el-date-editor .el-range-separator{
-  line-height: 22px !important;
+  line-height: 30px;
 }
 /deep/.el-table th, 
 /deep/.el-table td{

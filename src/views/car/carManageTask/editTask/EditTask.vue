@@ -6,7 +6,7 @@
           <i class="el-dialog__close el-icon el-icon-close"></i>
         </div>
         <div class="content_box">
-          <el-form :model="editForm" :rules="rules" ref="editFormRef">
+          <el-form :model="editForm" :rules="editFormRules" ref="editFormRef">
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
@@ -80,11 +80,11 @@
                     placeholder="请选择车辆类型">
                     <el-option 
                     label="标准民用车" 
-                    :value="0">
+                    :value="1">
                     </el-option>
                     <el-option 
                     label="工程车辆" 
-                    :value="1">
+                    :value="2">
                     </el-option>
                   </el-select>
                 </div>
@@ -110,12 +110,13 @@
             <div class="list-item">
               <el-form-item 
                 label="登记时间：" 
-                label-width="120px">
+                label-width="120px"
+                prop="registerTime"
+                >
                 <el-date-picker
-                v-model="editForm.registrationTime"
+                v-model="editForm.registerTime"
                 type="datetime"
-                format="yyyy-MM-dd hh:mm"
-                value-format="yyyy-MM-dd hh:mm"
+                format="yyyy-MM-dd hh:mm:ss"
                 placeholder="登记时间">
                 </el-date-picker>
               </el-form-item>
@@ -155,25 +156,24 @@ export default {
       type: Boolean,
       default: false
     },
-    editData: Object
+    editFormData: Object
   },
   data() {
     return {
       editForm: {
-        id: 0,
-        organizationId: 10294,
-        number: '',
-        ownerName: '',
-        phoneNumber: '',
-        color: '',
-        type: '',
-        brand: '',
-        remark: '',
-        registrationTime: '',
-        iemi: ''
-       
+        // id: 0,
+        // organizationId: 10294,
+        // number: '',
+        // ownerName: '',
+        // phoneNumber: '',
+        // color: '',
+        // type: '',
+        // brand: '',
+        // remark: '',
+        // registerTime: '',
+        // iemi: ''
       },
-      rules:{
+      editFormRules:{
         number: [
           { required: true, message: "请输入车牌号码", trigger: "blur" }
         ],
@@ -183,6 +183,12 @@ export default {
         phoneNumber: [
           { required: true, message: "请输入联系电话", trigger: "blur" }
         ],
+        type: [
+          { required: true, trigger: "blur" },
+        ],
+        registerTime: [
+          { required: true, trigger: "blur" },
+        ]
       },
       visible: this.dialogEdit,
       
@@ -190,7 +196,7 @@ export default {
   },
   watch: {
     // 监听编辑的对象
-    editData(obj){
+    editFormData(obj){
       this.editForm = obj
     },
     // 监听编辑弹窗
@@ -210,11 +216,11 @@ export default {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
         UpdateCar(this.editForm).then(res => {
-          console.log(res)
+          // console.log(res)
           if(res.success){
-              this.$emit("update:dialogEdit", false);
-              this.$message.success('修改成功！')
-              this.$parent.getList()
+            this.$emit("update:dialogEdit", false);
+            this.$message.success('修改成功！')
+            this.$parent.getList(1)
           }
         })
       })

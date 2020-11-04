@@ -17,13 +17,17 @@
                 v-model="form.numberOrNameOrTel"
                 style="width:220px;"
               ></el-input>
-              <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
+              <!-- <el-button class="search-button" type="primary"  @click="getList">查询</el-button> -->
+              <KtButton type="primary" class="search-button" @click="getList" label='查询' perms='Security.Vehicle.Use.Search'/>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
-              <el-button type="primary" plain @click="handleAdd">新增</el-button>
-              <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
+              <!-- <el-button type="primary" plain @click="handleAdd">新增</el-button> -->
+              <KtButton type="primary" plain @click="handleAdd" label='新增' perms='Security.Vehicle.Use.Add'/>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleEdit(0,editObj[0],'top')">修改</el-button>
+              <el-button type="primary" :disabled="multipleSelection.length == 0 ? true : false" plain @click="handleDel('')">删除</el-button>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleCheckInfo('','','top')">详情</el-button>
             </el-button-group>
           </div>
         </div>
@@ -74,18 +78,27 @@
               <el-table-column label="操作">
                 <template slot-scope="scope">
                   <div class="operate-box">
+                    <!-- <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleEdit(scope.$index, scope.row,'edit')"
+                      >修改</el-button
+                    >
+                    <el-button
+                      type="text"
+                      class="operate-button"
+                      @click="handleDel(scope.$index, scope.row)"
+                      >删除</el-button
+                    >
                     <el-button
                       type="text"
                       class="operate-button"
                       @click="handleCheckInfo(scope.$index, scope.row)"
                       >详情</el-button
-                    >
-                    <el-button
-                      type="text"
-                      class="operate-button"
-                      @click="handleEdit(scope.$index, scope.row)"
-                      >修改</el-button
-                    >
+                    > -->
+                    <KtButton type="text" class="operate-button" @click="handleEdit(scope.$index,scope.row,'edit')" label='修改' perms='Security.Vehicle.Use.Edit'/>
+                    <KtButton type="text" class="operate-button" @click="handleDel(scope.row)" label='删除' perms='Security.Vehicle.Use.Delete'/>
+                    <KtButton type="text" class="operate-button" @click="handleCheckInfo(scope.$index,scope.row,'seeInfo')" label='详情' perms='Security.Vehicle.Use.Detail'/>
                   </div>
                 </template>
               </el-table-column>
@@ -127,7 +140,8 @@
                     <div class="list-item">
                       <div class="list-items has-two-item">
                         <el-form-item label="用车时间：">
-                          <span class="info">{{ detilForm.endTime }}</span>
+                          <span class="info">{{ detilForm.beginTime == null?'' :$moment(detilForm.beginTime).format('YYYY-MM-DD HH:mm') }}</span> 至
+                          <span class="info">{{ detilForm.endTime == null?'' :$moment(detilForm.endTime).format('YYYY-MM-DD HH:mm') }}</span>
                         </el-form-item>
                       </div>
                     </div>
@@ -149,9 +163,9 @@
         </el-dialog>
       </div>
       <!-- 新增用车信息弹窗 -->
-      <add-task :dialogAdd.sync="dialogAdd"></add-task>
+      <add-task :dialogAdd.sync="dialogAdd" :carListData="carListData" :userListData="userListData"></add-task>
       <!-- 修改用车信息弹窗 -->
-      <edit-task :editData="editData" :dialogEdit.sync="dialogEdit"></edit-task>
+      <edit-task :editFormData="editFormData" :dialogEdit.sync="dialogEdit" :carListData="carListData" :userListData="userListData"></edit-task>
     </div>
     </div>
   </div>
@@ -162,9 +176,9 @@ import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
 import AddTask from './useCarManageTask/addTask/AddTask';
 import EditTask from './useCarManageTask/editTask/EditTask';
-import { GetByOrgIdCarUseRecord, GetByIdCarUseRecord, DeleteCarUseRecord } from '@/api/car';
+import { GetByOrgIdCarUseRecord,DeleteCarUseRecord, GetByOrgId } from '@/api/car';
 import { GetOrgagencyTree } from '@/api/role';
-
+import { GetOrgUserList } from '@/api/visitor'
 export default {
   components: { 
     cTree, 
@@ -181,6 +195,7 @@ export default {
         pageIndex: 1,
         maxResultCount: 30,
       },
+      multipleSelection:[],
       // 总条数
       totalCount:0,
       loading: false,
@@ -188,30 +203,36 @@ export default {
       treeData: [],
       // 列表数据
       tableData: [],
+      // 车辆下拉列表数据
+      carListData: [],
+      // 用车人下拉列表数据
+      userListData: [],
       // 是否显示新增弹窗
       dialogAdd: false,
       // 是否显示修改用车信息弹窗
       dialogEdit: false,
       // 查询到的用车信息对象
-      editData: {},
+      editFormData: {},
       // 是否显示查看用车详情弹窗
       dialogView: false,
       // 用车详情对象
       detilForm: {}, 
       detilFormVisible: false,
-      // 批量删除id
+      // 选中的数组
       ids:[],
+      showWindow: false,
+      // 操作头部修改的对象
+      editObj: {},
     };
   },
-  
-  mounted() {
-    // this.getList();
-    this.getTreeData()// 加载组织机构树
+  created() {
+    this.getTreeData() // 加载组织机构树
   },
   methods: {
-    // 点击节点时获取到id
-    getChangeTree(v) {
-      this.id = v
+    // 点击节点时获取到id并加载列表
+    getChangeTree(id) {
+      this.form.organizationId = id
+      // console.log(id)
       this.getList()
     },
     // 加载组织机构树
@@ -234,18 +255,54 @@ export default {
       this.loading = true
       GetByOrgIdCarUseRecord(this.form).then(res => {
         if(res.success){
-          // res.result.items.map(item => {
-          //   item.id = item.carId
-          // })
           this.tableData = res.result.items
           this.totalCount =  res.result.totalCount
           this.loading = false
         }
       })
     },
+    // 获取车辆下拉列表
+    getCarList() {
+      // console.log('this.form.organizationId :>> ', this.form.organizationId);
+      let parms = {
+        orgId: this.form.organizationId,
+        numberOrName: '',
+        carType: 0
+      }
+      GetByOrgId(parms).then(res => {
+        let newsCarListData = []
+        res.result.forEach((res) => {
+          res.carNumber = res.number
+          newsCarListData.push({
+            value: res.id,
+            label: res.carNumber
+          })
+        })
+        this.carListData = newsCarListData
+      })
+    },
+    // 获取用车人下拉列表
+    getUserList() {
+      let _this = this
+      let parm = {
+        orgIds: []
+      }
+      GetOrgUserList(parm).then(res => {
+        let newsUserListData = []
+        res.result.map(item => {
+          item.users.map(items => {
+            newsUserListData.push({
+              value: items.nickName,
+              id: items.id
+          })
+          })
+        })
+        _this.userListData = newsUserListData
+      })
+    },
     // 判断车辆类型
     formatType: function(row) {
-      return row.type === 1 ? '工程车辆' : row.type === 0 ? '标准民用车' : ''
+      return row.type === 2 ? '工程车辆' : row.type === 1 ? '标准民用车' : ''
     },
     // 点击取消关闭详情弹窗
     closeAdd() {
@@ -255,56 +312,84 @@ export default {
     handleSelectionChange(val) {
       let list = []
       this.multipleSelection = val;
-      console.log(val)
+      // console.log(val)
+      if(val.length > 0){
+        this.showWindow = true
+        for(var i=0; i<val.length; i++){
+          this.editObj[i] = val[i]
+        }
+      }else{
+        this.showWindow = false
+      }
       val.forEach((res) => {
         list.push(res.id)
       })
       this.ids = list
     },
-    // 显示新增弹窗
+    // 显示新增用车信息弹窗
     handleAdd() {
+      this.getCarList() // 加载车辆下拉列表
+      this.getUserList() // 加载用车人下拉列表
       this.dialogAdd = true;
     },
     // 显示修改用车信息弹窗
-    handleEdit(index, row){
-      console.log(index, row)
-      this.editData = row
-      this.dialogEdit = true
+    handleEdit(index, row , string){
+      // console.log(index, row)
+      this.getCarList()
+      this.getUserList() 
+      let param = Object.assign({},row)
+      this.editFormData = param
+      if(row === undefined){
+        return false
+      }
+      if(string === 'top' && this.showWindow || string === 'edit'){
+        this.dialogEdit = true
+      } 
     },
     // 查看用车详情
-    handleCheckInfo(index, row) {
+    handleCheckInfo(index, row, string ) {
       this.detilFormVisible = true
-      this.detilForm = row
-      let params = {
-        Id: row.id
+      if(string == 'top') {
+        this.detilForm = this.multipleSelection[0]
+        // GetByIdCarUseRecord(`Id=${this.multipleSelection[0].id}`).then(res => {
+        // if(res.success){
+        //   this.detilForm = res.result
+        //   // console.log('res.result :>> ', res.result);
+        // }
+        // }).catch(err => {
+        //   console.log(err)
+        // })
+      }else {
+        let newdetilForm =  Object.assign({},row)
+        this.detilForm = newdetilForm
+        // GetByIdCarUseRecord(`Id=${row.id}`).then(res => {
+        // if(res.success){
+        //   this.detilForm = res.result
+        // }
+        // }).catch(err => {
+        //   console.log(err)
+        // })
       }
-      GetByIdCarUseRecord(params).then(res => {
-        if(res.success){
-          // this.detilFormVisible = false
-        }
-      }).catch(err => {
-        console.log(err)
-      })
     },
     
     // 删除
-    handleDel(rows){  
+    handleDel(row){  
       const _this = this
-      console.log(rows)
-      if (_this.ids.length === 0) {
-        _this.$message({
-          message: '请勾选要删除的行',
-          type: 'warning'
+      let ids = []
+      if(row){
+        ids.push(row.id)
+      }else{
+        // console.log('this.multipleSelection :>> ', _this.multipleSelection);
+        _this.multipleSelection.map(item => {
+          ids.push(item.id)
         })
-        return
-      } else {
-        var data = this.ids
-        _this.$confirm('确定删除此数据吗？', '提示', {
+      }
+      _this.$confirm('确定删除此数据吗？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteCarUseRecord(data).then(res => {
+          DeleteCarUseRecord(ids).then(res => {
             console.log(res)
             if (res.success) {
               _this.$message({
@@ -319,22 +404,25 @@ export default {
               })
             }
           })
-        })
-      }    
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     },
     // 获取从分页传过来的每页多少条数据
 		changePageSize(val) {
-      console.log(val);
-      this.form.maxResultCount = val
+      // console.log(val);
+      this.form.maxResultCount = val.pageSize;
       this.getList()
 		},
 		// 获取从分页传过来的当前页数
 		changeCurrentPage(val) {
-      console.log(val);
-      this.form.pageIndex = val
+      // console.log(val);
+      this.form.pageIndex = val.currentPage;
       this.getList()
-    },
-
+		}
   }
 };
 </script>
@@ -350,7 +438,8 @@ export default {
 .snt-list-left-col {
   position: absolute;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  height: 100%;
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;
@@ -381,6 +470,7 @@ export default {
       .table-box {
         border: 1px solid #ddd;
         box-sizing: border-box;
+        min-height: 800px;
       }
       .page-box {
         margin-top: 10px;

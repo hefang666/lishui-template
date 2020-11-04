@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="新增访客登记点" :visible.sync="visible" :dialog-add="dialogAdd">
+    <el-dialog title="新增访客登记点" :close-on-click-modal="false" :visible.sync="visible" :dialog-add="dialogAdd" @close="dialogClose">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeAdd">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -10,7 +10,7 @@
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
-                label="访客点名称："
+                label="访客地点："
                 label-width="120px"
                 prop="pointName"
                 >
@@ -22,9 +22,7 @@
                   ></el-input>
                 </div>
               </el-form-item>
-              
             </div>
-            
             <el-form-item 
             class="has-two-item"
             label="备注：" 
@@ -68,12 +66,12 @@ export default {
   data() {
     return {
       addForm: {
-        id:0,
-        code:'',
+        id: 0,
+        code: '',
         pointName: '',
         remark: '',
-        orgIds:[],
-        roleIds:[]
+        orgIds: [],
+        roleIds: []
       },
       addFormRules:{
         pointName: [
@@ -89,6 +87,13 @@ export default {
     }
   },
   methods: {
+    // 清空表单
+    dialogClose(){
+      this.addForm =  {
+        pointName: '',
+        remark: '',
+      }
+    },
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       this.$refs.addFormRef.resetFields() // 监听对话框关闭事件
@@ -100,7 +105,7 @@ export default {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
         InsertVisitPoint(this.addForm).then(res => {
-          console.log(res)
+          // console.log(res)
           if(res.success){
               // this.dialogAdd = false
               this.$emit("update:dialogAdd", false);

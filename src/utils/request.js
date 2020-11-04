@@ -17,23 +17,22 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // do something before request is sent
-
         // if (store.getters.token) {
-        //     // let each request carry token
-        //     // ['X-Token'] is a custom headers key
-        //     // please modify it according to the actual situation
-        //     // config.headers['X-Token'] = getToken()
-
+        //     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+        //     config.headers['Authorization'] = getToken
         // }
-        let token = ''
-        if (!localStorage.getItem('token')) {
-            token = store.getters.token
-        } else {
-            token = localStorage.getItem('token')
-        }
-        config.headers['Authorization'] = `Bearer ${token}`;
-        // config.headers['aa'] = 'aa'
-        // console.log(config)
+
+        // 获取token
+        // let token = ''
+        // if (!localStorage.getItem('token')) {
+        //     token = store.getters.token
+        // } else {
+        //     token = localStorage.getItem('token')
+        // }
+        // config.headers['Authorization'] = `Bearer ${token}`;
+
+        config.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY6KeS6ImyIiwi6K6_5a6i54K5566h55CG6KeS6ImyIl0sImh0dHA6Ly93d3cuYXNwbmV0Ym9pbGVycGxhdGUuY29tL2lkZW50aXR5L2NsYWltcy90ZW5hbnRJZCI6IjEwMTU5IiwiVXNlck5hbWUiOiJOSkxTIiwiT3JnSWQiOiIxMDI5NCIsIlRydWVOYW1lIjoi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY55So5oi3IiwiQXZhdGVyIjoiIiwiT3JnTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoSIsIlRlbmFudE5hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnRDb25uZWN0U3RyaW5nIjoiIiwiUm9sZXMiOiIxNjMxODIsMTYzMTg0Iiwic3ViIjoiMTAyOTQiLCJqdGkiOiI2NmViZTdkMS1hZmQyLTQ2MmMtOGJjYS1iNTQzZGI3ZTEwYmQiLCJpYXQiOjE2MDQ0NTQ4OTgsIm5iZiI6MTYwNDQ1NDg5OCwiZXhwIjoxNjA0NDk4MDk4LCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.tuRMst4gDghjLma8IGY8-oB0aPp_0VCxpc7ixVWUerI'
+            // console.log(config)
         return config;
     },
     error => {
@@ -90,12 +89,12 @@ service.interceptors.response.use(
     },
     error => {
         console.log('err' + error) // for debug
-        Message({
-            message: error.message,
-            type: 'error',
-            duration: 5 * 1000
-        })
-        return Promise.reject(error)
+            // Message({
+            //     message: error.message,
+            //     type: 'error',
+            //     duration: 5 * 1000
+            // })
+        return Promise.reject(error.message)
     }
 )
 

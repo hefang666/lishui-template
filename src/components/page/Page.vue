@@ -53,10 +53,10 @@ export default {
 			// console.log(`每页 ${val} 条`);
 			this.pageSize = val;
 			this.getShowRecoeding();
-			// let data = {
-			// 	pageSize: this.pageSize
-			// };
-			this.$emit('changePageSize', val);
+			let data = {
+				pageSize: this.pageSize
+			};
+			this.$emit('changePageSize', data);
 		},
 		// 获取当前选择了第几页
 		handleCurrentChange(val) {
@@ -64,10 +64,10 @@ export default {
 			this.currentPage = val;
 			this.inputPage = val;
 			this.getShowRecoeding();
-			// let data = {
-			// 	currentPage: this.currentPage
-			// };
-			this.$emit('changeCurrentPage', val);
+			let data = {
+				currentPage: this.currentPage
+			};
+			this.$emit('changeCurrentPage', data);
 		},
 		// 设置下拉框（可选择的每页数据是多少条）
 		setPageSizeData(data) {
@@ -96,10 +96,10 @@ export default {
 			this.currentPage = this.inputPage;
 
 			this.getShowRecoeding();
-			// let data = {
-			// 	currentPage: this.currentPage
-			// };
-			this.$emit('changeCurrentPage', this.inputPage);
+			let data = {
+				currentPage: this.currentPage
+			};
+			this.$emit('changeCurrentPage', data);
 		}
 	},
 	mounted() {
@@ -139,9 +139,7 @@ export default {
 				width: 60px;
 				margin: 0 5px;
 
-				.el-input--mini .el-input__inner {
-					text-align: center !important;
-				}
+				
 			}
 
 			.jump-button {
@@ -152,6 +150,9 @@ export default {
 	
 	.page-right {
 		font-size: 14px;
+	}
+	/deep/ .el-input--mini .el-input__inner {
+		text-align: center;
 	}
 }
 </style>

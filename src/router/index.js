@@ -8,7 +8,7 @@ Vue.use(VueRouter);
  * Note: 当子路由children的长度大于等于1的时候子导航才会显示
  * 详细参考下面配置
  *
- * hidden: true                   为真的时当前路由不会显示在侧导航中
+ * hidden: true                   为真时当前路由不会显示在侧导航中
  * alwaysShow: true               为真时根路由会显示在侧导航中
  *                                
  *                                
@@ -41,7 +41,7 @@ const routes = [{
         name: "staffaccess",
         redirect: "/staffaccess/AccessRecords.vue",
         component: Home,
-        meta: { title: "员工出入", icon: "el-icon-user" },
+        meta: { title: "考勤管理", icon: "el-icon-user" },
         children: [{
                 path: "AccessRecords",
                 name: "AccessRecords",
@@ -50,7 +50,7 @@ const routes = [{
                         /* webpackChunkName: "about" */
                         "../views/staffaccess/AccessRecords.vue"
                     ),
-                meta: { title: "出入记录" }
+                meta: { title: "考勤记录" }
             },
             {
                 path: "RecordImport",

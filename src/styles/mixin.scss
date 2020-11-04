@@ -1,126 +1,120 @@
 @mixin clearfix {
-  .clearfix{
-    &:after {
-      visibility: hidden;
-      display: block;
-      font-size: 0;
-      content: " ";
-      clear: both;
-      height: 0;
+    .clearfix {
+        &:after {
+            visibility: hidden;
+            display: block;
+            font-size: 0;
+            content: " ";
+            clear: both;
+            height: 0;
+        }
     }
-  }
-  .fl {
-    float: left;
-  }
-  .fr {
-    float: right;
-  }
+    .fl {
+        float: left;
+    }
+    .fr {
+        float: right;
+    }
 }
 
 @mixin textAlign {
-  .text-center {
-    text-align: center
-  }
-  .text-left {
-    text-align: left;
-  }
-  .text-right {
-    text-align: right;
-  }
+    .text-center {
+        text-align: center
+    }
+    .text-left {
+        text-align: left;
+    }
+    .text-right {
+        text-align: right;
+    }
 }
 
-@mixin padding($i, $p: $i * 5 ) {
-  .p-#{$p} {
-    padding: $p * 1px;
-  }
-  .p-l-#{$p} {
-    padding-left: $p * 1px;
-  }
-  .p-r-#{$p} {
-    padding-right: $p * 1px;
-  }
-  .p-t-#{$p} {
-    padding-top: $p * 1px;
-  }
-  .p-b-#{$p} {
-    padding-bottom: $p * 1px;
-  }
-  .m-#{$p} {
-    margin: $p * 1px;
-  }
-  .m-l-#{$p} {
-    margin-left: $p * 1px;
-  }
-  .m-r-#{$p} {
-    margin-right: $p * 1px;
-  }
-  .m-t-#{$p} {
-    margin-top: $p * 1px;
-  }
-  .m-b-#{$p} {
-    margin-bottom: $p * 1px;
-  }
-  $i: $i + 1;
-  @if $i <= 7 {
-    @include padding($i);
-  }
+@mixin padding($i, $p: $i * 5) {
+    .p-#{$p} {
+        padding: $p * 1px;
+    }
+    .pl-#{$p} {
+        padding-left: $p * 1px;
+    }
+    .pr-#{$p} {
+        padding-right: $p * 1px;
+    }
+    .pt-#{$p} {
+        padding-top: $p * 1px;
+    }
+    .pb-#{$p} {
+        padding-bottom: $p * 1px;
+    }
+    .m-#{$p} {
+        margin: $p * 1px;
+    }
+    .ml-#{$p} {
+        margin-left: $p * 1px;
+    }
+    .mr-#{$p} {
+        margin-right: $p * 1px;
+    }
+    .mt-#{$p} {
+        margin-top: $p * 1px;
+    }
+    .mb-#{$p} {
+        margin-bottom: $p * 1px;
+    }
+    $i: $i+1;
+    @if $i <=7 {
+        @include padding($i);
+    }
 }
 
 @mixin scrollBar {
-  &::-webkit-scrollbar-track-piece {
-    background: #d3dce6;
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #99a9bf;
-    border-radius: 20px;
-  }
+    &::-webkit-scrollbar-track-piece {
+        background: #d3dce6;
+    }
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #99a9bf;
+        border-radius: 20px;
+    }
 }
 
 @mixin relative {
-  position: relative;
-  width: 100%;
-  height: 100%;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 @mixin pct($pct) {
-  width: #{$pct};
-  position: relative;
-  margin: 0 auto;
+    width: #{$pct};
+    position: relative;
+    margin: 0 auto;
 }
 
 @mixin triangle($width, $height, $color, $direction) {
-  $width: $width/2;
-  $color-border-style: $height solid $color;
-  $transparent-border-style: $width solid transparent;
-  height: 0;
-  width: 0;
-
-  @if $direction==up {
-    border-bottom: $color-border-style;
-    border-left: $transparent-border-style;
-    border-right: $transparent-border-style;
-  }
-
-  @else if $direction==right {
-    border-left: $color-border-style;
-    border-top: $transparent-border-style;
-    border-bottom: $transparent-border-style;
-  }
-
-  @else if $direction==down {
-    border-top: $color-border-style;
-    border-left: $transparent-border-style;
-    border-right: $transparent-border-style;
-  }
-
-  @else if $direction==left {
-    border-right: $color-border-style;
-    border-top: $transparent-border-style;
-    border-bottom: $transparent-border-style;
-  }
+    $width: $width/2;
+    $color-border-style: $height solid $color;
+    $transparent-border-style: $width solid transparent;
+    height: 0;
+    width: 0;
+    @if $direction==up {
+        border-bottom: $color-border-style;
+        border-left: $transparent-border-style;
+        border-right: $transparent-border-style;
+    }
+    @else if $direction==right {
+        border-left: $color-border-style;
+        border-top: $transparent-border-style;
+        border-bottom: $transparent-border-style;
+    }
+    @else if $direction==down {
+        border-top: $color-border-style;
+        border-left: $transparent-border-style;
+        border-right: $transparent-border-style;
+    }
+    @else if $direction==left {
+        border-right: $color-border-style;
+        border-top: $transparent-border-style;
+        border-bottom: $transparent-border-style;
+    }
 }

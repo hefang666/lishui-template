@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="snt-list-left-col">
-      <c-tree :treeData="treeData"></c-tree>
+      <c-tree :treeData="treeData" @changeTree="getChangeTree"></c-tree>
     </div>
     <div class="snt-table-right-col">
       <div class="form-box">
@@ -26,8 +26,6 @@
               ></el-input>
             </div>
           </el-form-item>
-        </div>
-        <div class="list-item">
           <el-form-item 
             class="has-two-item" 
             label="负责人：" 
@@ -41,6 +39,8 @@
             ></el-input>
            </div>
           </el-form-item>
+        </div>
+        <div class="list-item">
           <el-form-item
             class="has-two-item" 
             label="联系电话："
@@ -52,6 +52,18 @@
             v-model="ruleForm.phoneNumber"
             ></el-input>
             </div>
+          </el-form-item>
+          <el-form-item 
+            class="has-two-item" 
+            label="车辆品牌：" 
+            label-width="120px" 
+          >
+           <div class="list-item-content-box">
+            <el-input 
+            type="text" 
+            v-model="ruleForm.brand"
+            ></el-input>
+           </div>
           </el-form-item>
         </div>
         <div class="list-item">
@@ -80,11 +92,11 @@
               >
               <el-option 
               label="标准民用车" 
-              :value="0">
+              :value="1">
               </el-option>
               <el-option 
               label="工程车辆" 
-              :value="1">
+              :value="2">
               </el-option>
             </el-select>
             </div>
@@ -104,7 +116,7 @@
               maxlength="200"
               v-model="ruleForm.remark"
               show-word-limit
-              style="width:700px;"
+              style="width:692px;"
               >
             </el-input>
             </div>
@@ -115,11 +127,14 @@
             class="has-two-item"
             label="登记时间："
             label-width="120px"
+            prop="registerTime"
           >
             <div class="list-item-content-box">
               <el-date-picker
-                v-model="ruleForm.registrationTime"
+                v-model="ruleForm.registerTime"
                 type="datetime"
+                format="yyyy-MM-dd hh:mm:ss"
+                value-format="yyyy-MM-dd hh:mm:ss"
                 placeholder="登记时间"
               ></el-date-picker>
             </div>
@@ -138,11 +153,12 @@
           </el-form-item>
         </div>  
           <div class="footer-btn">
-            <el-button 
+            <!-- <el-button 
             type="primary" 
             @click="submitForm('ruleForm')"
-            >保存</el-button>
-            <el-button @click="goToLink">管理列表</el-button>
+            >保存</el-button> -->
+            <KtButton type="primary" size="small" @click="submitForm('ruleForm')" label='保存' perms='Security.Vehicle.Register.Add'/>
+            <el-button size="small" @click="goToLink">管理列表</el-button>
           </div>
         </el-form>
       </div>
@@ -183,15 +199,15 @@ export default {
       treeData: [], // 组织机构树
       ruleForm: {
         organizationId: '',
-        number: "",
-        ownerName: "",
-        phoneNumber: "",
-        color: "",
+        number: '',
+        ownerName: '',
+        phoneNumber: '',
+        color: '',
         type: '',
-        brand: "",
-        remark: "",
-        registrationTime: "",
-        iemi: ""
+        brand: '',
+        remark: '',
+        registerTime: '',
+        iemi: ''
       },
       // 车辆类型值
       // type_value:'',
@@ -209,6 +225,9 @@ export default {
         ],
         type: [
           { required: true, message: "请选择车辆类型", trigger: "blur" },
+        ],
+        registerTime: [
+          { required: true, message: "请输入登记时间", trigger: "blur" },
         ]
         
       },
@@ -219,6 +238,11 @@ export default {
     this.getTreeData()
   },
   methods: {
+    // 点击节点时获取到id
+    getChangeTree(id) {
+      this.ruleForm.organizationId = id
+      console.log(id)
+    },
     // 加载组织机构树
     getTreeData() {
       GetOrgagencyTree().then(res => {
@@ -227,17 +251,11 @@ export default {
           this.treeData = res.result
           let id = res.result[0].id
           this.ruleForm.organizationId = id
-          // this.getList()
         }else {
           return false
         }
       })
     },
-    // 获取车辆类型
-    // changeType() {
-    //   this.ruleForm.type = this.type_value[0]
-    //   this.ruleForm.type = this.type_value[1]
-    // },
     // 保存车辆登记信息
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -249,6 +267,10 @@ export default {
             }
           }).catch(err => {
             console.log(err)
+            this.$message({
+              message: '该车牌号已被登记',
+              type: 'warning'
+            });
           })
         } else {
           console.log("登记车辆失败！");
@@ -276,7 +298,8 @@ export default {
 .snt-list-left-col {
   position: absolute;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  height: 100%;
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;
@@ -288,11 +311,12 @@ export default {
   flex: 1;
 
   .form-box {
-    width: 950px;
+   width: 935px;
+    height: 776px;
     padding: 20px;
     margin-right: 50px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: 1px solid #E6E6E6;
+    border-radius: 4px;
     .list-item {
       display: flex;
       justify-content: space-between;

@@ -2,7 +2,7 @@
   <div class="c-tree">
     <div class="list-box">
       <!-- 树形控件 -->
-      <div class="tree">
+      <div class="tree" >
         <el-tree
           :data="treeData"
           accordion
@@ -11,10 +11,10 @@
           highlight-current
           :props="defaultProps"
           @node-click="handleCheckChange"
+          :render-content="addTreeIcon"
           check-on-click-node
         ></el-tree>
       </div>
-      
     </div>
   </div>
 </template>
@@ -27,8 +27,6 @@ export default {
   },
   data() {
     return {
-      // 树节点
-      // treeData: [],      
       // 默认data数组参数
       defaultProps: {     
         children: 'children',
@@ -36,14 +34,34 @@ export default {
       },
     }
   },
-  mounted() {},
+  created(){
+    this.$nextTick(function () {
+      this.$refs.tree.setCurrentKey(1); 
+    })
+  },
   methods: {
     // 节点被点击时的回调 
     handleCheckChange(data) { 
       // console.log(data)
       this.$emit('changeTree', data.id)
-      // this.$parent.getList()
     }, 
+    // 给树形控件添加图标
+    addTreeIcon(h, {node, data}) {
+      if (!data.children) {
+        return (
+          <span class="custom-tree-node">
+            <i class="el-icon-office-building" style="font-size:14px;margin-right:6px;"></i>
+            <span>{node.label}</span>
+          </span>
+        );
+      } else {
+        return (
+          <span class="custom-tree-node">
+            <span>{node.label}</span>
+          </span>
+        );
+      }
+    }
     
   }
 };
@@ -61,12 +79,11 @@ export default {
     border-bottom: 1px solid #ddd;
   }
   .list-box div{
-    // height: 30px;
-    // line-height: 30px;
+    height: 26px;
+    line-height: 26px;
     margin-top: 10px;
-    // background: #4b77be;
-    // color: #fff;
     text-align: center;
+    color: #4b77be;
     cursor: pointer;
     font-size: 14px;
     &.active {
@@ -74,11 +91,10 @@ export default {
       color: #fff;
     }
   }
-  /deep/.el-tree{
-    background: #4b77be;
-    color: #fff;
-  }
-  
+// /deep/ .custom-tree-node span,/deep/.custom-tree-node i{
+//   color: #4b77be;
+// }
+
 /deep/ .el-tree-node__content:hover {
   background: rgba(255, 255, 255, 0.05);
 }
@@ -98,6 +114,13 @@ export default {
   color: #fff;
  
 }
+/deep/ .el-tree__empty-block{
+  min-height: 28px;
+}
+/deep/ .el-tree__empty-text{
+  color: #ababab;
+}
+
 
 
 </style>

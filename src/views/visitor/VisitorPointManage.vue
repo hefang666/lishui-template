@@ -1,19 +1,5 @@
 <template>
   <div class="container">
-    <!-- <div class="snt-list-left-col">
-      <div class="list-box">
-        <div class="snt-left-list">
-          <div 
-            :class="{active: currentIndex === index}" 
-            v-for="(item, index) in listData" 
-            :key="index" 
-            @click="changeList(index)">
-            <span>{{item.pointName}}</span>
-            
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="snt-table-right-col">
       <div class="task_management_pages button-box">
         <div class="header-box">
@@ -26,17 +12,20 @@
                 clearable
                 @clear="getList" 
                 v-model="form.pointName"
+                @input="searchTableData(form.pointName)"
               ></el-input>
-              <el-button class="search-button" type="primary"  @click="getList">查询</el-button>
+              <!-- <el-button class="search-button" type="primary"  @click="getList">查询</el-button> -->
+              <KtButton type="primary" class="search-button" @click="getList" label='查询' perms='Security.Visitor.Point.Search'/>
             </div>
           </div>
           <div class="header-right">
             <el-button-group>
-              <el-button type="primary" plain @click="handleAdd">新增</el-button>
-              <el-button type="primary" plain @click="handleEdit">修改</el-button>
-              <el-button type="primary" :disabled="ids.length === 0" plain @click="handleDel(tableData)">删除</el-button>
-              <el-button type="primary" plain @click="handleCheckInfo">详情</el-button>
-              <el-button type="primary" plain @click="handleShowSetRole">关联角色</el-button>
+              <!-- <el-button type="primary" plain @click="handleAdd">新增</el-button> -->
+              <KtButton type="primary" plain @click="handleAdd" label='新增' perms='Security.Visitor.Point.Add'/>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleEdit(0,editObj[0],'top')">修改</el-button>
+              <el-button type="primary" :disabled="multipleSelection.length == 0 ? true : false" plain @click="handleDel('')">删除</el-button>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleCheckInfo('','','top')">详情</el-button>
+              <el-button type="primary" :disabled="ids.length > 1 || ids.length == 0" plain @click="handleShowSetRole('')">关联角色</el-button>
             </el-button-group>
           </div>
         </div>
@@ -64,10 +53,10 @@
               <el-table-column label="操作">
                 <template slot-scope="scope">
                   <div class="operate-box">
-                    <el-button
+                    <!-- <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleEdit(scope.$index, scope.row)"
+                      @click="handleEdit(scope.$index, scope.row,'edit')"
                       >修改</el-button
                     >
                     <el-button
@@ -79,14 +68,18 @@
                     <el-button
                       type="text"
                       class="operate-button"
-                      @click="handleCheckInfo(scope.$index, scope.row)"
-                      >查看</el-button
+                      @click="handleCheckInfo(scope.$index, scope.row,'seeInfo')"
+                      >详情</el-button
                     >
                     <el-button 
                       type="text"
                       class="operate-button" 
                       @click="handleShowSetRole(scope.row)"
-                    >关联角色</el-button>
+                    >关联角色</el-button> -->
+                    <KtButton type="text" class="operate-button" @click="handleEdit(scope.$index,scope.row,'edit')" label='修改' perms='Security.Visitor.Point.Edit'/>
+                    <KtButton type="text" class="operate-button" @click="handleDel(scope.row)" label='删除' perms='Security.Visitor.Point.Delete'/>
+                    <KtButton type="text" class="operate-button" @click="handleCheckInfo(scope.$index,scope.row,'seeInfo')" label='详情' perms='Security.Visitor.Point.Detail'/>
+                    <KtButton type="text" class="operate-button" @click="handleShowSetRole(scope.row)" label='关联角色' perms='Security.Visitor.Point.JoinRole'/>
                     
                   </div>
                 </template>
@@ -106,19 +99,19 @@
             <div class="content-box form-box">
               <div class="content_box">
                 <div class="info-box">
-                  <div>地点：{{pointService}}</div>
+                  <div>访客地点：{{pointService}}</div>
                 </div>
               </div>
             </div>
             <div slot="footer" class="dialog-footer">
               <el-button @click.native="detilFormVisible = false">取消</el-button>
             </div>
-        </el-dialog>
-      </div>
+          </el-dialog>
+        </div>
         <!-- 新增弹窗 -->
         <add-task :dialogAdd.sync="dialogAdd"></add-task>
         <!-- 修改弹窗 -->
-        <edit-task :editData="editData" :dialogEdit.sync="dialogEdit"></edit-task>
+        <edit-task :editFormData="editFormData" :dialogEdit.sync="dialogEdit"></edit-task>
         <!--分配角色权限弹窗-->
         <div class="addTask-box dialog-box button-box">
           <el-dialog title="关联角色" :visible.sync="setRoleVisible">
@@ -138,7 +131,9 @@
                     default-expand-all 
                     :default-checked-keys="defKeys" 
                     @node-click="handleNodeClick"
-                    ref="treeRef">
+                    ref="treeRef"
+                    :render-content="associatedrender"
+                    >
                     </el-tree>
                   </div>
                 </div>
@@ -156,11 +151,10 @@
 </template>
 
 <script>
-// import cTree from "@/components/tree/cTree";
 import Page from '@/components/page/Page';
 import AddTask from './visitorPointTask/addTask/AddTask';
 import EditTask from './visitorPointTask/editTask/EditTask';
-import { GetPagePointList, DeleteVisitPoint, GetByCode, GetRoleTree, GetPowerToRole } from '@/api/visitor';
+import { GetPagePointList, DeleteVisitPoint, GetByCode, GetRoleTree, GetPowerToRole, GetByIdSearch } from '@/api/visitor';
 
 export default {
   components: { 
@@ -184,7 +178,7 @@ export default {
       tableData:[],
       loading: false,
       // 总条数
-      totalCount:0,
+      totalCount: 0,
       // 访客地点详情数据
       pointService:'',
       detilFormVisible:false,
@@ -196,7 +190,7 @@ export default {
       rolesList:[], 
       // 当前即将分配权限的角色id
       roleId: '',
-      // 树形控件的属性绑定对象
+      // 关联角色属性绑定的对象
       treeProps: {
         label: 'orgName',
         children: 'roleItems'
@@ -207,31 +201,31 @@ export default {
       dialogAdd: false,
       // 是否显示修改弹窗
       dialogEdit: false,
-      // 查询到的信息对象
-      editData: {},
-      // 批量删除id
-      ids:[]
-
+      // 查询到的访客登记点对象
+      editFormData: {},
+      // 选中的数组
+      ids:[],
+      showWindow: false,
+      // 操作头部修改的对象
+      editObj: {}
     }
   },
   mounted() {
     this.getList()
-    // this.getLeftList()
   },
   methods: {
-    // 获取访客登记点列表
-    // getLeftList(){
-    //   let _this = this
-    //   GetPointPower().then(res => {
-    //     console.log(res)
-    //     if(res.success){
-    //       _this.listData = res.result
-    //     }
-    //   })
-    // },
-    // changeList(index) {
-    //   this.currentIndex = index;
-    // },
+    // 根据访客地点名称模糊查询
+    searchTableData(pointName) {
+      let  that = this;
+      that.tableData = that.tableData.filter(Val => {
+        if (
+          Val.pointName.includes(pointName) 
+        ) {
+          that.tableData.push(Val);
+          return that.tableData;
+        }
+      });
+    },
     // 获取列表
     getList() {
       this.loading = true
@@ -249,16 +243,35 @@ export default {
       let list = []
       this.multipleSelection = val;
       // console.log(val)
+      if(val.length > 0){
+        this.showWindow = true
+        for(var i=0; i<val.length; i++){
+          this.editObj[i] = val[i]
+        }
+        // console.log(this.obj)
+      }else{
+        this.showWindow = false
+      }
       val.forEach((res) => {
         list.push(res.id)
       })
       this.ids = list
     },
     // 查看访客地点详情
-    handleCheckInfo(index, row) {
+    handleCheckInfo(index, row, string) {
       // console.log(index, row);
       this.detilFormVisible = true
-      if(row){
+      if(string == 'top'){
+        this.detilForm = this.multipleSelection[0]
+        this.pointService = this.multipleSelection[0].pointName
+        let param = {
+          code: this.multipleSelection[0].code
+        }
+        GetByCode(param).then(res => {
+          this.detilForm = res.result
+        })
+      }else{
+        this.detilForm = row
         this.pointService = row.pointName
         let param = {
           code: row.code
@@ -266,21 +279,34 @@ export default {
         GetByCode(param).then(res => {
           this.detilForm = res.result
         })
-      }else {
-        this.detilForm = this.multipleSelection[0]
       }
-     
     },
     // 显示新增弹窗
     handleAdd() {
       this.dialogAdd = true;
     },
-    // 展示分配权限的对话框
-    async handleShowSetRole(role) {
-      this.setRoleVisible = true
-      this.roleId = role.id
-      this.accountInfo = role.pointName
-      // 获取所有权限
+    // 显示修改弹窗
+    handleEdit(index,row,string){
+      // console.log(index, row)
+      if(row === undefined){
+        return
+      }
+      // this.editData = row
+      this.editFormData = Object.assign({}, this.row, {
+        id: row.id,
+        code: row.code,
+        pointName: row.pointName,
+        remark: row.remark,
+        orgIds: row.orgIds,
+        roleIds: row.roleIds
+      })
+      if(string === 'top' && this.showWindow || string === 'edit'){
+        this.dialogEdit = true
+      } 
+      
+    },
+    // 初始化角色关联
+    roletree() {
       GetRoleTree().then(res => {
         // console.log(res)
         if(res.success) {
@@ -290,22 +316,57 @@ export default {
               items.id = items.roleId
             })
           })
-          // 把获取到的权限数据保存到data中
           this.rolesList = res.result
         }else {
           return false
         }
       })
-      
+    },
+    // 展示分配权限的对话框
+    handleShowSetRole(row) {
+      this.setRoleVisible = true
+      if (row != '') {
+        this.accountInfo = row.pointName;
+        this.roleid = row.id;
+        let params = {
+          Id: this.roleid
+        }
+        GetByIdSearch(params).then(res => {
+          if(res.success){
+            this.setRoleVisible = false
+          }
+        })
+      } else {
+        this.roleid = this.multipleSelection[0].id;
+        this.accountInfo = this.multipleSelection[0].pointName;
+      }
+      this.roletree()
     },
     // 节点被点击时的回调
     handleNodeClick(node, data){
       console.log(data)
     },
+    // 树形结构添加图标
+    associatedrender(h, {node, data}) {
+      if (!data.children) {
+        return (
+          <span class="custom-tree-node">
+            <i class="el-icon-user-solid"></i>
+            <span>{node.label}</span>
+          </span>
+        );
+      } else {
+        return (
+          <span class="custom-tree-node">
+            <span>{node.label}</span>
+          </span>
+        );
+      }
+    },
     // 保存角色关联
     setRoleSubmit() {
       this.setRoleVisible = true
-      let id = this.roleId
+      let id = this.roleid
       let roleIds = [
         ...this.$refs.treeRef.getHalfCheckedKeys(),
         ...this.$refs.treeRef.getCheckedKeys()
@@ -315,31 +376,30 @@ export default {
         roleIds
       }
       GetPowerToRole(data).then(res => {
-        console.log(res)
+        // console.log(res)
         if(res.success){
           this.setRoleVisible = false
         }
       })
     },
     // 删除
-    handleDel(){  
+    handleDel(row){  
       const _this = this
-      // console.log(rows)
-      if (_this.ids.length === 0) {
-        _this.$message({
-          message: '请勾选要删除的行',
-          type: 'warning'
+      let ids = []
+      if(row){
+        ids.push(row.id)
+      }else{
+        _this.multipleSelection.map(item => {
+          ids.push(item.id)
         })
-        return
-      } else {
-        var data = this.ids
-        _this.$confirm('确定删除此数据吗？', '提示', {
+      }
+      _this.$confirm('确定删除此数据吗？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          DeleteVisitPoint(data).then(res => {
-            // console.log(res)
+          DeleteVisitPoint(ids).then(res => {
+            console.log(res)
             if (res.success) {
               _this.$message({
                 type: 'success',
@@ -353,30 +413,24 @@ export default {
               })
             }
           })
-        })
-      }    
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     },
-    // 显示修改弹窗
-    handleEdit(index, row){
-      // console.log(index, row)
-      if(row){
-        this.editData = row
-      }else{
-        this.editData = this.multipleSelection[0]
-      }
-      this.dialogEdit = true
-      // console.log(this.multipleSelection)
-    },
+    
     // 获取从分页传过来的每页多少条数据
 		changePageSize(val) {
       // console.log(val);
-      this.form.maxResultCount = val
+      this.form.maxResultCount = val.pageSize;
       this.getList()
 		},
 		// 获取从分页传过来的当前页数
 		changeCurrentPage(val) {
       // console.log(val);
-      this.form.pageIndex = val
+      this.form.pageIndex = val.currentPage;
       this.getList()
 		}
   }
@@ -392,34 +446,12 @@ export default {
   display: flex;
   overflow: hidden;
 }
-// .snt-list-left-col {
-//   position: absolute;
-//   width: 190px;
-//   min-height:calc(100vh - 24px);
-//   overflow: hidden;
-//   transition:width 0.28s;
-//   border-right: 1px solid #ccc;
-//   .list-box div{
-//     height: 30px;
-//     line-height: 30px;
-//     margin-top: 10px;
-//     border-bottom: 1px solid #ddd;
-//     text-align: center;
-//     cursor: pointer;
-//     font-size: 14px;
-//     &.active {
-//       background: #4b77be;
-//       color: #fff;
-//     }
-    
-//   }
-// }
 .snt-table-right-col {
   // margin-left: 190px;
   overflow: hidden;
   // padding:30px;
   flex: 1;
-  min-height: calc(100vh - 24px);
+  min-height: calc(100vh - 0px);
   .task_management_pages {
     padding: 10px;
     .header-box {
@@ -441,6 +473,7 @@ export default {
       .table-box {
         border: 1px solid #ddd;
         box-sizing: border-box;
+        min-height: 800px;
       }
       .page-box {
         margin-top: 10px;
@@ -453,6 +486,7 @@ export default {
   .tree-list{
     width: 100%;
     height: 226px;
+    overflow-y: auto;
     border: 1px solid #dddddd;
     padding: 15px 0 15px 15px;
   }

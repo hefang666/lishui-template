@@ -1,6 +1,6 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="修改访客登记点" :visible.sync="visible" :dialog-edit="dialogEdit">
+    <el-dialog title="修改访客登记点" :close-on-click-modal="false" :visible.sync="visible" :dialog-edit="dialogEdit">
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
@@ -10,7 +10,7 @@
             <div class="list-item">
               <el-form-item
                 class="has-two-item"
-                label="访客点名称："
+                label="访客地点："
                 label-width="120px"
                 prop="pointName"
                 >
@@ -22,9 +22,7 @@
                   ></el-input>
                 </div>
               </el-form-item>
-              
             </div>
-            
             <el-form-item 
             class="has-two-item"
             label="备注：" 
@@ -63,17 +61,17 @@ export default {
       type: Boolean,
       default: false
     },
-    editData: Object
+    editFormData: Object
   },
   data() {
     return {
       editForm: {
-        id:0,
-        code:'',
-        pointName: '',
-        remark: '',
-        orgIds:[],
-        roleIds:[]
+        // id:0,
+        // code:'',
+        // pointName: '',
+        // remark: '',
+        // orgIds:[],
+        // roleIds:[]
       },
       rules:{
         pointName: [
@@ -86,7 +84,7 @@ export default {
   },
   watch: {
     // 监听编辑的对象
-    editData(obj){
+    editFormData(obj){
       this.editForm = obj
     },
     // 监听编辑弹窗
@@ -106,7 +104,7 @@ export default {
         // 如果valid的值为true，说明校验成功，反之则校验失败
         if (!valid) return
         UpdateVisitPoint(this.editForm).then(res => {
-          console.log(res)
+          // console.log(res)
           if(res.success){
               // this.dialogAdd = false
               this.$emit("update:dialogEdit", false);

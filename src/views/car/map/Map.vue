@@ -31,7 +31,7 @@
         content="">
         <!-- <img alt src="@/assets/logo.png" slot="reference"/> -->
         <i class="el-icon-truck" slot="reference" style="font-size:56px;color:#4b77be;"></i>
-        <div class="info-box">
+        <div class="info">
           <div class="info-list">
             <div>车牌：{{item.number}}</div>
             <div>车辆状态：{{item.status}}</div>
@@ -175,7 +175,7 @@ export default {
 
 <style lang="scss">
 @import '~@/styles/style.scss';
-.info-box{
+.info{
   display: flex;
   justify-content: space-between;
   .info-list div{

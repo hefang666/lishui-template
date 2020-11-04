@@ -8,12 +8,12 @@
           <div class="online-otal">在线：</div>
         </div>
         <c-tree :treeData="treeData"></c-tree>
-        <div 
+        <!-- <div 
           class="car-list" 
           v-for="(item, index) in carListData" 
           :key="index">
           <span><i class="el-icon-truck" style="font-size:32px;margin-right:10px;"></i>{{item.number}}</span>
-        </div>
+        </div> -->
         <!-- <div class="list-box">
           <div class="snt-left-list">
             <div 
@@ -44,7 +44,7 @@ import cTree from "@/components/tree/cTree";
 import Map from './map/Map';
 
 // import { GetPointPower } from '@/api/visitor';
-import { GetByOrgId } from '@/api/car'
+// import { GetByOrgId } from '@/api/car'
 import { GetOrgagencyTree } from '@/api/role';
 
 export default {
@@ -58,7 +58,7 @@ export default {
       // 组织机构树
       treeData: [],
       // 车辆列表
-      carListData:[]
+      // carListData:[]
      
     };
   },
@@ -99,16 +99,16 @@ export default {
     },
     // 获取车辆列表
     getLeftCarList() {
-      let param = {
-        orgId: 10294,
-        carType: this.carType
-      }
-      GetByOrgId(param).then(res => {
-        console.log(res)
-        if(res.success){
-          this.carListData = res.result
-        }
-      })
+      // let param = {
+      //   orgId: 10294,
+      //   carType: this.carType
+      // }
+      // GetByOrgId(param).then(res => {
+      //   console.log(res)
+      //   if(res.success){
+      //     this.carListData = res.result
+      //   }
+      // })
     }
   }
 };
@@ -133,7 +133,8 @@ export default {
 .snt-list-left-col {
   position: absolute;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  height: 100%;
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;

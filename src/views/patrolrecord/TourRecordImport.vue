@@ -88,7 +88,8 @@ export default {
 .snt-list-left-col {
   position: absolute;
   width: 190px;
-  min-height:calc(100vh - 24px);
+  height: 100%;
+  min-height:calc(100vh - 10px);
   overflow: hidden;
   transition:width 0.28s;
   border-right: 1px solid #ccc;

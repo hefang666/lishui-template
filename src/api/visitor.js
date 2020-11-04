@@ -113,3 +113,10 @@ export function GetPowerToRole(params) {
         data: params
     })
 }
+export function GetByIdSearch(params) {
+    return request({
+        url: '/api/services/Security/VisitPointService/GetById', // 根据访客点Id查询访客登记点及机构和角色权限
+        method: 'POST',
+        data: params
+    })
+}
