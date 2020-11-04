@@ -4,6 +4,7 @@
       <el-dialog
         title="转工单"
         :visible.sync="dialogTransfer"
+        :close-on-click-modal="false"
         :before-close="closeTransfer"
       >
         <div class="content-box form-box">
@@ -399,13 +400,17 @@ export default {
         content: this.remarks,
         resourceInfoList: this.fileListData
       };
-      this.UpdateEvent(param).catch(() => {
+      this.UpdateEvent(param).then(res=>{
+        if(res.success){
+          let data = false;
+          console.log('data :>> ', data);
+          this.$emit('checkedTransfer', data);
+        }
+      }).catch(() => {
         this.dialogMessage = true;
       });
-
-      console.log('要执行关闭弹窗了');
-      let data = false;
-      this.$emit('checkedTransfer', data);
+      // console.log('要执行关闭弹窗了');
+      
     },
     // 点击确定或取消后清除数据填入的数据
     clearData() {

@@ -149,15 +149,13 @@
               <div class="operate-box">
                 <el-button
                   type="text"
-                  :class="
-                    [
-                      'operate-button',
-                      scope.row['status'] != 3 ?
-                      'operate-button-active' :
-                        ''
-                    ]
+                  :class="[
+                    'operate-button',
+                    scope.row['status'] != 3 ? 'operate-button-active' : ''
+                  ]"
+                  :disabled="
+                    scope.row['status'] != 3 ? disabledTrue : disabledFalse
                   "
-                  :disabled="scope.row['status'] != 3 ? disabledTrue : disabledFalse"
                   @click="handleClose(scope.row)"
                   >关闭</el-button
                 >
@@ -165,14 +163,14 @@
                   type="text"
                   :class="[
                     'operate-button',
-                    (scope.row['status'] == 2 ||
-                    scope.row['status'] == 4)
-                    ? ''
-                    : 'operate-button-active'
+                    scope.row['status'] == 2 || scope.row['status'] == 4
+                      ? ''
+                      : 'operate-button-active'
                   ]"
                   :disabled="
-                    (scope.row['status'] == 2 ||
-                    scope.row['status'] == 4) ? disabledTrue : disabledFalse
+                    scope.row['status'] == 2 || scope.row['status'] == 4
+                      ? disabledTrue
+                      : disabledFalse
                   "
                   @click="handleComplete(scope.row)"
                   >完成</el-button
@@ -181,15 +179,15 @@
                   type="text"
                   :class="[
                     'operate-button',
-                    (scope.row['status'] == 1 ||
-                    scope.row['status'] == 3) 
-                    ? '' 
-                    : 'operate-button-active']"
-                  :disabled="(
-                    scope.row['status'] == 1 ||
-                    scope.row['status'] == 3) 
-                    ? disabledFalse
-                    : disabledTrue"
+                    scope.row['status'] == 1 || scope.row['status'] == 3
+                      ? ''
+                      : 'operate-button-active'
+                  ]"
+                  :disabled="
+                    scope.row['status'] == 1 || scope.row['status'] == 3
+                      ? disabledFalse
+                      : disabledTrue
+                  "
                   @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
@@ -256,7 +254,9 @@ import EditTask from './editTask/EditTask.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
+  'taskManagement'
+);
 import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'TaskManagement',
@@ -269,7 +269,13 @@ export default {
     Operate
   },
   computed: {
-    ...taskState(['taskList', 'listTotalCount', 'messageText', 'pageData', 'loading'])
+    ...taskState([
+      'taskList',
+      'listTotalCount',
+      'messageText',
+      'pageData',
+      'loading'
+    ])
   },
   data() {
     return {
@@ -403,6 +409,7 @@ export default {
         // 判断选中的项里是否包含有不符合条件的列
         let flag = false;
         this.multipleSelection.forEach(item => {
+          console.log('item :>> ', item);
           if (item.status == 3 || item.status == 5) {
             // 执行删除操作
             flag = true;
@@ -486,13 +493,15 @@ export default {
         Id: row.id,
         operate: 2
       };
-      this.UpdateTaskStatus(param).then(res => {
-        if (res.success) {
+      this.UpdateTaskStatus(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogMessage = true;
+          }
+        })
+        .catch(() => {
           this.dialogMessage = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+        });
     },
 
     // 修改任务
@@ -507,13 +516,15 @@ export default {
           let param = {
             Id: this.multipleSelection[0].id
           };
-          this.GetTaskDetails(param).then(res => {
-            if (res.success) {
-              this.dialogEdit = true;
-            }
-          }).catch(() => {
-            this.dialogMessage = true;
-          });
+          this.GetTaskDetails(param)
+            .then(res => {
+              if (res.success) {
+                this.dialogEdit = true;
+              }
+            })
+            .catch(() => {
+              this.dialogMessage = true;
+            });
         } else {
           this.setMessage('该状态不能修改');
           this.dialogMessage = true;
@@ -526,13 +537,15 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param).then(res => {
-        if (res.success) {
-          this.dialogEdit = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.GetTaskDetails(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogEdit = true;
+          }
+        })
+        .catch(() => {
+          this.dialogMessage = true;
+        });
     },
 
     // 查看任务
@@ -542,13 +555,15 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetTaskDetails(param).then(res => {
-          if (res.success) {
-            this.dialogView = true;
-          }
-        }).catch(() => {
-          this.dialogMessage = true;
-        });
+        this.GetTaskDetails(param)
+          .then(res => {
+            if (res.success) {
+              this.dialogView = true;
+            }
+          })
+          .catch(() => {
+            this.dialogMessage = true;
+          });
       }
     },
 
@@ -557,13 +572,15 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param).then(res => {
-        if (res.success) {
-          this.dialogView = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.GetTaskDetails(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        })
+        .catch(() => {
+          this.dialogMessage = true;
+        });
     },
 
     // 关闭提示消息弹窗
@@ -678,12 +695,28 @@ export default {
         this.UpdateTaskStatus(param);
       } else if (data.type == 'del') {
         // 删除
-        this.multipleSelection.forEach(item => {
-          let param = {
-            id: item.id
-          };
-          this.deleteTask(param);
+        let newidarr = [];
+        this.multipleSelection.map(item => {
+          newidarr.push(item.id);
         });
+        let param = {
+          id: newidarr
+        };
+        this.deleteTask(param)
+          .then(res => {
+            if (res.success) {
+              this.getData();
+            }
+          })
+          .catch(() => {
+            this.dialogMessage = true;
+          });
+        // this.multipleSelection.forEach(item => {
+        //   let param = {
+        //     id: item.id
+        //   };
+        //   this.deleteTask(param);
+        // });
       } else if (data.type == 'suspend') {
         // 暂停
         param.id = this.multipleSelection[0].id;
@@ -703,7 +736,6 @@ export default {
     },
     // 获取数据
     getData() {
-      
       console.log(this.currentPage);
       let param = {
         currentPage: this.currentPage,
@@ -738,7 +770,7 @@ export default {
         'endTime',
         'suspendTimeStr',
         'statusStr'
-      ]
+      ];
       let tableData;
       let tableName = '任务列表';
       if (this.multipleSelection.length == 0) {
@@ -804,7 +836,7 @@ export default {
           font-size: 12px;
           margin-right: 5px;
           .tips {
-            color: red;;
+            color: red;
           }
         }
 

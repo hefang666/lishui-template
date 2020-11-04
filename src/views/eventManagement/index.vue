@@ -217,7 +217,7 @@
     <transfer-order
       :dialog-transfer="dialogTransfer"
       @closeTransfer="closeTransfer"
-      @checkedTansfer="checkedTransfer"
+      @checkedTransfer="checkedTransfer"
     ></transfer-order>
 
     <!-- 工单详情弹窗 -->
@@ -550,7 +550,8 @@ export default {
 
     // 确定转工单
     checkedTransfer(data) {
-      console.log(data);
+      // console.log(data);
+      console.log('data++++ :>> ', data);
       this.dialogTransfer = data;
     },
 

@@ -163,4 +163,7 @@ export default {
     font-size: 14px;
   }
 }
+/deep/ .el-input--suffix .el-input__inner{
+  padding-right: 21px;
+}
 </style>

@@ -9,13 +9,13 @@ import {filterArray, addIcon, processingNodes} from '@/utils/index';
 var state = {
   // 组织树数据
   organizationData: [
-    {
-      id: 10294,
-      orgCode: 'njls',
-      orgName: '溧水智慧水务',
-      orgType: 1,
-      parentId: 0
-    }
+    // {
+    //   id: 10294,
+    //   orgCode: 'njls',
+    //   orgName: '溧水智慧水务',
+    //   orgType: 1,
+    //   parentId: 0
+    // }
   ],
   // 按人员选择数据
   pinData: [
@@ -102,6 +102,7 @@ var state = {
 var mutations = {
   // 设置人员数据
   set_person_list: function(state, list) {
+    console.log('list :>> ', list);
     state.personList = list;
   },
   // 设置组织数据

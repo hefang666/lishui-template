@@ -39,11 +39,11 @@
               <div class="item-title">参与人：</div>
               <div class="item-content">
                 <span
-                  v-for="(item, index) in planDetails.participant"
+                  v-for="(item, index) in planDetails.user"
                   :key="index"
                 >
                   <span v-if="index != 0">、</span>
-                  {{ item.trueName }}
+                  {{ item.userName }}
                 </span>
               </div>
             </div>

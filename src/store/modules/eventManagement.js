@@ -4,18 +4,18 @@ import {parseTime} from '@/utils/index.js';
 var state = {
   // 事件列表
   eventList: [
-    {
-      creationName: 'NJLS',
-      creationTime: '2020-09-17 15:59',
-      creatorUserId: 10294,
-      errorType: '漏损',
-      id: 1,
-      predictWaterLoss: '0.2',
-      status: 2,
-      statusStr: '转工单',
-      type: 1,
-      typeStr: '漏损事件'
-    }
+    // {
+    //   creationName: 'NJLS',
+    //   creationTime: '2020-09-17 15:59',
+    //   creatorUserId: 10294,
+    //   errorType: '漏损',
+    //   id: 1,
+    //   predictWaterLoss: '0.2',
+    //   status: 2,
+    //   statusStr: '转工单',
+    //   type: 1,
+    //   typeStr: '漏损事件'
+    // }
   ],
   // 异常类型
   exceptionTypeData: [
@@ -180,7 +180,7 @@ var actions = {
     return new Promise((resolve, reject) => {
       UpdateEventById(data)
         .then(response => {
-          console.log(response);
+          // console.log(response.success);
           if (response.success) {
             commit('set_message', '操作成功！');
             resolve(response);

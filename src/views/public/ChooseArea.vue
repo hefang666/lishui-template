@@ -124,7 +124,7 @@ export default {
       conInfo: [],
 
       // 单选的设备信息（设备或管道）
-      devInfo: '',
+      devInfo: ''
     };
   },
   computed: {
@@ -164,7 +164,7 @@ export default {
               typestr: 'single',
               areaInfo: this.areaInfo,
               devInfo: this.devInfo
-            }
+            };
             this.$emit('checkedArea', data);
           } else if (this.choosetype == 'multiple') {
             if (this.conInfo == '' || this.equiInfo == '') {
@@ -178,7 +178,7 @@ export default {
               conInfo: this.conInfo,
               dialogArea: false,
               type: 'choose',
-              typestr: 'multiple',
+              typestr: 'multiple'
             };
             this.$emit('checkedArea', data);
           }
@@ -197,7 +197,6 @@ export default {
           this.$emit('checkedArea', data);
         }
       }
-      
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -209,21 +208,29 @@ export default {
     },
     // 查看按钮
     handleSee(row) {
-      console.log(row);
+      console.log('row :>> ', row);
       let param = {
         Id: row.id
-      }
-      this.getAreaDetailInfo(param);
-      this.typeStr = 'view';
-      this.dialogRoute = true;
+      };
+      this.getAreaDetailInfo(param).then(res => {
+        if (res.success) {
+          this.typeStr = 'view';
+          this.dialogRoute = true;
+        }
+      });
     },
     handleChoose(row) {
       let param = {
         Id: row.id
-      }
-      this.getAreaDetailInfo(param);
-      this.typeStr = 'choose';
-      this.dialogRoute = true;
+      };
+      this.getAreaDetailInfo(param).then(res => {
+        if (res.success) {
+          this.typeStr = 'choose';
+          this.dialogRoute = true;
+        }
+      });
+      // this.typeStr = 'choose';
+      // this.dialogRoute = true;
     },
     // 关闭查看路线弹窗
     getRouteData(data) {

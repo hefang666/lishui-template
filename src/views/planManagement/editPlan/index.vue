@@ -78,16 +78,12 @@
                     class="choose-active"
                     type="primary"
                     plain
-                    v-for="(item, index) in editPlanDetails.participant"
+                    v-for="(item, index) in editPlanDetails.user"
                     :key="index"
                   >
-                    {{ item.trueName }}
+                    {{ item.userName }}
                   </el-button>
-                  <el-button
-                    type="primary"
-                    plain
-                    @click="choosePar"
-                  >
+                  <el-button type="primary" plain @click="choosePar">
                     选择人员
                   </el-button>
                 </div>
@@ -106,7 +102,8 @@
             </div>
             <div
               v-if="editPlanDetails.cycle == 1 || editPlanDetails.cycle == 2"
-              class="list-item">
+              class="list-item"
+            >
               <div class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
@@ -130,10 +127,18 @@
         <el-button type="primary" @click="determine">保存</el-button>
       </div>
     </el-dialog>
-    
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
     <!-- 负责人 -->
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'single'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
@@ -155,18 +160,24 @@
 <script>
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-const {mapState: planState} = createNamespacedHelpers('planManagement');
+const {mapState: planState, mapActions: planActions} = createNamespacedHelpers(
+  'planManagement'
+);
 export default {
   name: 'EditTask',
   props: ['dialogEdit'],
   components: {
     ChoosePeople,
-    ChooseArea
+    ChooseArea,
+    Message
   },
   data() {
     return {
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
       // 负责人弹窗状态
       dialogCharge: false,
       // 巡检片区弹窗状态
@@ -176,10 +187,11 @@ export default {
     };
   },
   computed: {
-    ...planState(['editPlanDetails'])
+    ...planState(['editPlanDetails', 'messageText'])
   },
   methods: {
     ...xunjianActions(['getOrganizationData', 'getRoleData']),
+    ...planActions(['updatePlan', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       let data = false;
@@ -227,10 +239,30 @@ export default {
       this.dialogArea = data.dialogArea;
       // this.editForm.inCharge = data.name;
     },
-
+    // 关闭消息提示弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
     // 保存
     determine() {
-      console.log(this.editPlanDetails.name);
+      if (this.editPlanDetails.name == '') {
+        this.setMessage('请输入计划名称');
+        this.dialogMessage = true;
+        return;
+      }
+      if (!this.editPlanDetails.endTime) {
+        this.setMessage('请输入计划时效');
+        this.dialogMessage = true;
+        return;
+      }
+      console.log(this.editPlanDetails);
+      this.updatePlan(this.editPlanDetails).then(res => {
+        console.log('res :>> ', res);
+        if (res.success) {
+          this.$emit('closeEdit', false);
+          this.$parent.getData()
+        }
+      });
     }
   }
 };
@@ -289,7 +321,8 @@ export default {
                 display: flex;
                 .time-box {
                   width: 180px;
-                  /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
+                  /deep/ .el-date-editor.el-input,
+                  .el-date-editor.el-input__inner {
                     width: 100%;
                   }
                 }

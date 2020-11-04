@@ -114,13 +114,9 @@
                   >
                     {{ areaInfo.name }}
                   </el-button>
-                  <el-button
-                    type="primary"
-                    plain
-                    @click="chooseArea"
-                  >
+                  <el-button type="primary" plain @click="chooseArea">
                     选择片区
-                  </el-button >
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -178,7 +174,9 @@ import ChooseArea from '@/views/public/ChooseArea.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-const {mapState: taskState ,mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
+  'taskManagement'
+);
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   props: ['dialogAdd'],
@@ -203,7 +201,7 @@ export default {
 
       // 开始时间
       estimatedStartTime: '',
-      
+
       // 结束时间
       estimatedEndTime: '',
 
@@ -219,7 +217,7 @@ export default {
         id: '',
         name: '',
         pipelineLength: 0,
-        pointCount: 0,
+        pointCount: 0
       },
 
       // 备注
@@ -244,17 +242,13 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
-          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+          return time.getTime() <= Date.now(); //禁用今天以及以前的日期
         }
       }
     };
   },
   methods: {
-    ...xunjianActions([
-      'getOrganizationData',
-      'getRoleData',
-      'getAreaLists'
-    ]),
+    ...xunjianActions(['getOrganizationData', 'getRoleData', 'getAreaLists']),
     ...taskActions(['addTask', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
@@ -301,7 +295,10 @@ export default {
         this.dialogMessage = true;
         return;
       } else {
-        this.estimatedStartTime = parseTime(this.estimatedStartTime, '{y}-{m}-{d} {h}:{i}');
+        this.estimatedStartTime = parseTime(
+          this.estimatedStartTime,
+          '{y}-{m}-{d} {h}:{i}'
+        );
       }
 
       if (this.estimatedEndTime == '') {
@@ -309,7 +306,10 @@ export default {
         this.dialogMessage = true;
         return;
       } else {
-        this.estimatedEndTime = parseTime(this.estimatedEndTime, '{y}-{m}-{d} {h}:{i}');
+        this.estimatedEndTime = parseTime(
+          this.estimatedEndTime,
+          '{y}-{m}-{d} {h}:{i}'
+        );
       }
 
       let now = new Date();
@@ -353,18 +353,20 @@ export default {
         type: this.taskType,
         person: this.inCharge,
         remark: this.remarks
-      }
+      };
 
-      this.addTask(param).then(res => {
-        if (res.success) {
-          let data = false;
-          console.log(data);
-          this.$emit('getAddData', data);
-          this.clearData();
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.addTask(param)
+        .then(res => {
+          if (res.success) {
+            let data = false;
+            console.log(data);
+            this.$emit('getAddData', data);
+            this.clearData();
+          }
+        })
+        .catch(() => {
+          this.dialogMessage = true;
+        });
     },
 
     // 清除数据
@@ -378,7 +380,7 @@ export default {
         id: '',
         name: '',
         pipelineLength: 0,
-        pointCount: 0,
+        pointCount: 0
       };
       this.taskType = '';
       this.inCharge = '';
@@ -390,10 +392,13 @@ export default {
       let param = {
         pageIndex: 1,
         maxResultCount: 30
-      }
+      };
       console.log(param);
-      this.getAreaLists(param);
-      this.dialogArea = true;
+      this.getAreaLists(param).then(res => {
+        if (res.success) {
+          this.dialogArea = true;
+        }
+      });
     },
     // 关闭选择片区弹窗
     closeChooseArea(data) {

@@ -3,6 +3,7 @@
     <el-dialog
       title="修改任务"
       :visible.sync="dialogEdit"
+      :close-on-click-modal="false"
       :before-close="closeEdit"
     >
       <div class="content-box form-box">

@@ -9,17 +9,17 @@ import {parseTime} from '@/utils/index.js';
 
 var state = {
   orderList: [
-    {
-      id: 1,
-      type: '临时任务',
-      typeStr: '任务类型文本',
-      person: '张三',
-      creationTime: '2019-01-01 9:00',
-      planCompleteTime: '2019-01-01 17:00',
-      completeTime: '2019-01-01 17:00',
-      status: 3,
-      statusStr: '已关闭'
-    }
+    // {
+    //   id: 1,
+    //   type: '临时任务',
+    //   typeStr: '任务类型文本',
+    //   person: '张三',
+    //   creationTime: '2019-01-01 9:00',
+    //   planCompleteTime: '2019-01-01 17:00',
+    //   completeTime: '2019-01-01 17:00',
+    //   status: 3,
+    //   statusStr: '已关闭'
+    // }
   ],
   // 工单总数
   orderListTotal: 1,
@@ -193,6 +193,7 @@ var actions = {
           }
         })
         .catch(error => {
+          console.log('error :>> ', error);
           commit('set_message', error.message || error);
           reject(error);
         });

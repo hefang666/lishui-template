@@ -1,6 +1,7 @@
 import {
   getPlanList,
   addPlan,
+  updatePlan,
   getPlanDetails,
   UpdatePlanStatuById,
   DeletePlanById
@@ -9,19 +10,19 @@ import {mGetDate, parseTime} from '@/utils/index';
 var state = {
   // 计划列表
   planList: [
-    {
-      id: -73151446,
-      name: 'ad aute ex sed non',
-      status: -74806858,
-      areaId: 76229918,
-      participant: 'Duis eiusmod esse',
-      person: 'reprehenderit tempor proident in nulla',
-      personId: -31908519,
-      cycle: -90439625,
-      cycleStr: 'dolore',
-      statuStr: 'ad elit',
-      planEndTime: 'sunt dolor ea pariatur'
-    }
+    // {
+    //   id: -73151446,
+    //   name: 'ad aute ex sed non',
+    //   status: -74806858,
+    //   areaId: 76229918,
+    //   participant: 'Duis eiusmod esse',
+    //   person: 'reprehenderit tempor proident in nulla',
+    //   personId: -31908519,
+    //   cycle: -90439625,
+    //   cycleStr: 'dolore',
+    //   statuStr: 'ad elit',
+    //   planEndTime: 'sunt dolor ea pariatur'
+    // }
   ],
   // 每周数据
   weeklyData: [
@@ -190,6 +191,20 @@ var actions = {
         });
     });
   },
+  // 修改任务
+  updatePlan({commit}, data){
+    return new Promise ((resolve,reject)=>{
+      updatePlan(data).then(response => {
+        if(response.success){
+          commit('set_message', '修改成功');
+          resolve(response);
+        }
+      }).catch(error => {
+        commit('set_message', error.message);
+          reject(error);
+      })
+    })
+  },
   // 根据id获取任务详情
   getPlanDetails({commit}, data) {
     return new Promise((resolve, reject) => {
@@ -215,18 +230,19 @@ var actions = {
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
-            console.log(response.result);
-            let details = response.result;
-            let arr = details.participant.split('、');
-            let array = [];
-            arr.forEach(item => {
-              array.push({
-                trueName: item
-              });
-            });
-            console.log(arr);
-            console.log(array);
-            details.participant = array;
+            // let details = response.result;
+            // let arr = details.participant.split('、');
+            // let array = [];
+            // arr.forEach(item => {
+            //   array.push({
+            //     trueName: item
+            //   });
+            // });
+            // console.log(arr);
+            // console.log(array);
+            // details.participant = array;
+            // console.log('details :>> ', details.user);
+            
             commit('set_planDetails', response.result);
             commit('set_editPlanDetails', response.result);
             resolve(response);

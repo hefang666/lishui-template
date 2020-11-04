@@ -3,27 +3,29 @@
     <div ref="map" id="map" class="index-map"></div>
     <div
       v-for="(item, index) in memberList"
+      :key="index + 'overlay'"
+      :id="`overlay-element-${item.userId}`"
+      style="min-width: 20px; cursor: pointer;"
+      class="index-map-archor-img"
+    >
+      <!-- <img src="@/assets/icon-location-active.png"
+        @mouseenter="() => handleAnchorEnter(item)"
+        @mouseleave="() => handleAnchorLeave(item)"
+      /> -->
+      <img src="@/assets/icon-location-active.png" @click="mouseenterEnter(index)" />
+    </div>
+
+    <div
+      v-show="isshow"
+      v-for="(item, index) in memberList"
       :id="`img-${item.userId}`"
       :key="index + 'img'"
       style="min-width: 20px; cursor: pointer;"
-      class="index-map-archor-img"
-      v-show="item.isOnline"
-    >
-      <img
-        src="@/assets/icon-location-active.png"
-        @mouseenter="() => handleAnchorEnter(item)"
-        @mouseleave="() => handleAnchorLeave(item)"
-      />
-    </div>
-    <div
       class="task-container overlay-element"
-      v-for="(item, index) in memberList"
-      :key="index + 'overlay'"
-      :id="`overlay-element-${item.userId}`"
-      v-show="item.isOnline"
-      @mouseenter="() => handleOverlayEnter(item)"
-      @mouseleave="() => handleOverlayLeave(item)"
     >
+ <!-- @mouseenter="() => handleOverlayEnter(item)"
+      @mouseleave="() => handleOverlayLeave(item)" -->
+
       <div class="task-title clearfix">
         {{ item.userName }}（{{ item.onlineTime || '' }}）
         <span class="fr">时长：{{ item.duration }} h</span>
@@ -76,6 +78,8 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+
+    <!-- v-show="item.isOnline" -->
   </div>
 </template>
 
@@ -89,7 +93,8 @@ export default {
       zoomMap: '12',
       isOverlayEnter: false,
       position: [],
-      clickarr: [],
+      isshow: false,
+      clicknum:0,
       autoplay: false,
       memberIndex: -1
     };
@@ -119,7 +124,7 @@ export default {
       minZoom: 5,
       target: 'map'
     });
-    this.addMember(this.memberList);
+    // this.addMember(this.memberList);
   },
   methods: {
     routePush(path) {
@@ -134,32 +139,53 @@ export default {
         return [x, y];
       });
       this.position = [...this.position, ...position];
+      // this.position = [...position];
       // 将默认的第一个人设为中心位置
       if (position[0]) this.map.getView().setCenter(position[0]);
+
       // 循环每一个人象地图中添加人的位置及信息
       data.forEach((member, index) => {
+        console.log('member :>> ', member);
         const overlayDom = document.querySelector(
           `#overlay-element-${member.userId}`
         );
         const imgDom = document.querySelector(`#img-${member.userId}`);
+
         const overlay = new window.ol.Overlay({
           element: overlayDom,
           className: `customer-overlay customer-overlay-${index}`,
           position: position[index],
           offset: [30, -35]
         });
+
         const anchor = new window.ol.Overlay({
           element: imgDom,
           className: `customer-anchor customer-anchor-${index}`,
           positioning: 'center-center',
           position: position[index]
         });
+
         this.overlays = {...this.overlays, [`${member.userId}`]: overlay};
+
         this.anchors = {...this.anchors, [`${member.userId}`]: anchor};
-        // this.map.addOverlay(overlay);
+
+        // 标记点
+        this.map.addOverlay(overlay);
+        // 标记（详情）
         this.map.addOverlay(anchor);
       });
     },
+
+    mouseenterEnter(index) {
+      let newarr = []
+      newarr.push(this.memberList[index])
+      this.addMember(newarr)
+      this.isshow = true;
+    },
+    mouseleaveLeave() {
+      this.isshow = false;
+    },
+    //
     handleAnchorEnter(member) {
       this.map.addOverlay(this.overlays[member.userId]);
     },
@@ -180,19 +206,15 @@ export default {
       this.isOverlayEnter = false;
       this.map.removeOverlay(this.overlays[member.userId]);
     },
+
     // 将地图聚焦到选中人选的位置
     focusOnCurrentMember(index) {
+      // this.map.getView().setCenter(this.position[index]);
+      this.isshow = false;
       let newmemberList = [];
       newmemberList.push(this.memberList[index]);
       this.memberIndex = index;
-      if (this.memberList[index].isOnline) {
-        if (this.clickarr.indexOf(newmemberList[0].userId) != -1) {
-          this.map.getView().setCenter(this.position[index]);
-        } else {
-          this.clickarr.push(this.memberList[index].userId);
-          this.addMember(newmemberList);
-        }
-      }
+      this.addMember(newmemberList);
     }
   }
 };

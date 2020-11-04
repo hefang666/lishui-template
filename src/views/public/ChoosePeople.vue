@@ -213,7 +213,16 @@ import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('xunjianPublic');
 export default {
   name: 'ChoosePeople',
-  props: ['dialogCharge', 'selectType'],
+  // props: ['dialogCharge', 'selectType'],
+  props:{
+    dialogCharge:{
+      type:Boolean
+    },
+    selectType:{
+      type:String,
+      default:'single'
+    }
+  },
   components: {
     Page,
     LayerTree,

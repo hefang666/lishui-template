@@ -19,9 +19,9 @@
         </div>
         <div class="left-search">
           <snt-search
-          :placeholder="'请输入任务名称'"
-          @changeSearch="getSearchText"
-          @submit="search"
+            :placeholder="'请输入任务名称'"
+            @changeSearch="getSearchText"
+            @submit="search"
           />
         </div>
       </div>
@@ -55,10 +55,7 @@
             label="计划名称"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column
-            prop="cycleStr"
-            label="巡检周期"
-          ></el-table-column>
+          <el-table-column prop="cycleStr" label="巡检周期"></el-table-column>
           <el-table-column
             prop="participant"
             label="负责人"
@@ -79,24 +76,19 @@
             label="计划状态"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column
-            label="操作"
-            width="100"
-          >
+          <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <div class="operate-box">
                 <el-button
                   type="text"
                   class="operate-button"
-                  :class="
-                    [
-                      'operate-button',
-                      scope.row['status'] != 2 ?
-                      'operate-button-active' :
-                        ''
-                    ]
+                  :class="[
+                    'operate-button',
+                    scope.row['status'] != 2 ? 'operate-button-active' : ''
+                  ]"
+                  :disabled="
+                    scope.row['status'] != 2 ? disabledTrue : disabledFalse
                   "
-                  :disabled="scope.row['status'] != 2 ? disabledTrue : disabledFalse"
                   @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
@@ -111,10 +103,7 @@
           </el-table-column>
         </el-table>
       </div>
-      <page
-        :page-data="[30, 40, 50, 100]"
-        :total="planTotal"
-      ></page>
+      <page :page-data="[30, 40, 50, 100]" :total="planTotal"></page>
     </div>
     <!-- 新增任务弹框 -->
     <add-plan
@@ -124,16 +113,10 @@
     ></add-plan>
 
     <!-- 任务详情弹窗 -->
-    <view-plan
-      :dialog-view="dialogView"
-      @closeView="closeView"
-    ></view-plan>
+    <view-plan :dialog-view="dialogView" @closeView="closeView"></view-plan>
 
     <!-- 修改任务弹窗 -->
-    <edit-plan
-      :dialog-edit="dialogEdit"
-      @closeEdit="closeEdit"
-    ></edit-plan>
+    <edit-plan :dialog-edit="dialogEdit" @closeEdit="closeEdit"></edit-plan>
 
     <!-- 提示消息弹窗 -->
     <message
@@ -177,12 +160,7 @@ export default {
   data() {
     return {
       // 按状态筛选的状态内容
-      statusList: [
-        '全部',
-        '进行中',
-        '暂停',
-        '已到期'
-      ],
+      statusList: ['全部', '进行中', '暂停', '已到期'],
 
       disabledTrue: true,
       disabledFalse: false,
@@ -231,7 +209,13 @@ export default {
     this.getData();
   },
   computed: {
-    ...mapState(['planList', 'planDetails', 'messageText', 'planTotal', 'loading'])
+    ...mapState([
+      'planList',
+      'planDetails',
+      'messageText',
+      'planTotal',
+      'loading'
+    ])
   },
   methods: {
     ...mapActions([
@@ -242,13 +226,13 @@ export default {
       'UpdatePlanStatuById',
       'deletePlan',
       'setMessage',
-      'searchPlan',
+      'searchPlan'
     ]),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentState = index;
       this.$store.commit('taskManagement/update_taskStatus', index);
-      
+
       this.getData();
     },
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
@@ -294,7 +278,7 @@ export default {
           pageIndex: 1,
           maxResultCount: 30,
           name: data
-        }
+        };
         console.log(param);
         this.searchPlan(param).catch(() => {
           this.dialogMessage = true;
@@ -330,13 +314,15 @@ export default {
         let param = {
           Id: row.id
         };
-        this.getPlanDetails(param).then(res => {
-          if (res.success) {
-            this.dialogEdit = true;
-          }
-        }).catch(() => {
-          this.dialogMessage = true;
-        });
+        this.getPlanDetails(param)
+          .then(res => {
+            if (res.success) {
+              this.dialogEdit = true;
+            }
+          })
+          .catch(() => {
+            this.dialogMessage = true;
+          });
         this.changeEdit(this.planDetails);
       } else {
         this.setMessage('该状态不能修改');
@@ -350,13 +336,15 @@ export default {
       let param = {
         id: row.id
       };
-      this.getPlanDetails(param).then(res => {
-        if (res.success) {
-          this.dialogView = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.getPlanDetails(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        })
+        .catch(() => {
+          this.dialogMessage = true;
+        });
     },
 
     //关闭查看弹窗
@@ -447,38 +435,59 @@ export default {
         // 重启
         param.id = this.multipleSelection[0].id;
         param.status = 1;
-        this.UpdatePlanStatuById(param).then(res => {
-          if (res.success) {
-            this.dialogMessage = true;
-          }
-        }).catch(() => {
-          this.dialogMessage = true;
-        });
-      } else if (data.type == 'del') {
-        // 删除
-        this.multipleSelection.forEach(item => {
-          let param = {
-            id: item.id
-          };
-          this.deletePlan(param).then(res => {
+        this.UpdatePlanStatuById(param)
+          .then(res => {
             if (res.success) {
               this.dialogMessage = true;
             }
-          }).catch(() => {
+          })
+          .catch(() => {
             this.dialogMessage = true;
           });
+      } else if (data.type == 'del') {
+        // 删除
+        let newidarr = [];
+        this.multipleSelection.map(item => {
+          newidarr.push(item.id);
         });
+
+        let param = {
+          id: newidarr
+        };
+        this.deletePlan(param)
+          .then(res => {
+            if (res.success) {
+              this.getData()
+            }
+          })
+          .catch(() => {
+            this.dialogMessage = true;
+          });
+        // this.multipleSelection.forEach(item => {
+        //   let param = {
+        //     id: item.id
+        //   };
+        //   this.deletePlan(param).then(res => {
+        //     if (res.success) {
+        //       this.dialogMessage = true;
+        //     }
+        //   }).catch(() => {
+        //     this.dialogMessage = true;
+        //   });
+        // });
       } else if (data.type == 'suspend') {
         // 暂停
         param.id = this.multipleSelection[0].id;
         param.status = 2;
-        this.UpdatePlanStatuById(param).then(res => {
-          if (res.success) {
+        this.UpdatePlanStatuById(param)
+          .then(res => {
+            if (res.success) {
+              this.dialogMessage = true;
+            }
+          })
+          .catch(() => {
             this.dialogMessage = true;
-          }
-        }).catch(() => {
-          this.dialogMessage = true;
-        });
+          });
       }
     },
     // 导出
@@ -498,7 +507,7 @@ export default {
         'participant',
         'endTime',
         'statusStr'
-      ]
+      ];
       let tableData;
       let tableName = '计划列表';
       if (this.multipleSelection.length == 0) {
@@ -525,7 +534,8 @@ export default {
 
     .header-left {
       display: flex;
-      .left-button {}
+      .left-button {
+      }
       .left-search {
         .search-box {
           margin-left: 20px;

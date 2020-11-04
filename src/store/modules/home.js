@@ -6,18 +6,33 @@ var state = {
   pageCount: 10,
   pageTotal: 10,
   memberList: [
-    {
-      id: 1,
-      name: '李四四',
-      phone: '133-3333-3333',
-      location: '106.548293, 29.565552'
-    },
-    {
-      id: 2,
-      name: '张三',
-      phone: '133-3333-3333',
-      location: '106.552974, 29.567178'
-    }
+    // {
+    //   id: 1,
+    //   number: '渝A88888',
+    //   status: '正常行驶',
+    //   signal: '强',
+    //   name: '张三',
+    //   location: '106.548293, 29.565552',
+    //   speed: '60km/h'
+    // },
+    // {
+    //   id: 2,
+    //   number: '渝B66666',
+    //   status: '离线',
+    //   signal: '强',
+    //   name: '李四',
+    //   location: '106.612974, 29.614178',
+    //   speed: '80km/h'
+    // },
+    // {
+    //   id: 3,
+    //   number: '渝c77777',
+    //   status: '休眠',
+    //   signal: '弱',
+    //   name: '王五',
+    //   location: '106.482974, 29.614178',
+    //   speed: '100km/h'
+    // }
   ]
 };
 
