@@ -64,7 +64,7 @@
           </div>
           <div class="content-right">
             <div class="content-right-top">
-              <div class="search-box">
+              <!-- <div class="search-box">
                 <el-input
                   placeholder="请输入内容"
                   prefix-icon="el-icon-search"
@@ -77,7 +77,7 @@
                 >
                   查询
                 </el-button>
-              </div>
+              </div> -->
               <div class="selected-person-box">
                 <div class="selected-button">
                   <el-button type="primary" @click.stop="changeShowBox">
@@ -324,7 +324,12 @@ export default {
         };
 
         this.$emit('checkedPerson', data);
+        this.clearPerson();
       }
+    },
+    // 清除选中的数据
+    clearPerson(){
+      this.selectedData = [];
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -455,8 +460,9 @@ export default {
         flex: 1;
 
         .content-right-top {
-          display: flex;
-          justify-content: space-between;
+          /* display: flex;
+          justify-content: space-between; */
+          text-align: right;
 
           .selected-person-box {
             position: relative;

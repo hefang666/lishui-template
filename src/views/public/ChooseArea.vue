@@ -13,6 +13,7 @@
               :data="areaList"
               :stripe="true"
               tooltip-effect="dark"
+              border
               height="400"
               style="width: 100%"
               :highlight-current-row="true"
@@ -258,6 +259,8 @@ export default {
 @import '@/styles/public.scss';
 
 .content-box {
+  padding: 10px;
+  
   .search-box {
     display: flex;
 

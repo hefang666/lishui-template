@@ -516,5 +516,6 @@ export function formatJson(filterVal, jsonData) {
  */
 export function hasSpecialCharts(data) {
   var reg = /[\'\"\\<>;&=#]/;
+  // var reg = /[`~!#$%^&*()_\-+=<>?:\"{}|,.\/;'\\[\]]/im;
   return reg.test(data);
 }

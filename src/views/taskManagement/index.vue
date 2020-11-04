@@ -216,6 +216,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -348,7 +349,10 @@ export default {
       operateType: '',
 
       // 操作提示文字
-      messageT: '请确认操作'
+      messageT: '请确认操作',
+
+      // icon的class
+      iconStr: 'el-icon-warning-outline'
     };
   },
   methods: {
@@ -370,10 +374,12 @@ export default {
     onlyOne() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
         this.setMessage('只能选择一行数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else {
@@ -395,6 +401,7 @@ export default {
         } else {
           // 只能选择一行数据
           this.setMessage('该状态不能重启');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -404,6 +411,7 @@ export default {
     del() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -416,6 +424,7 @@ export default {
           } else {
             flag = false;
             this.setMessage('只允许删除已暂停和已关闭的任务');
+            this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           }
         });
@@ -434,6 +443,7 @@ export default {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 2) {
           this.setMessage('该状态不能暂停');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -450,6 +460,7 @@ export default {
         if (this.multipleSelection[0].statusList != 3) {
           // 关闭任务只能对已暂停状态的任务进行
           this.setMessage('该状态不能关闭');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -482,6 +493,7 @@ export default {
           this.dialogOperate = true;
         } else {
           this.setMessage('该状态不能完成');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -496,10 +508,12 @@ export default {
       this.UpdateTaskStatus(param)
         .then(res => {
           if (res.success) {
+            this.iconStr = 'el-icon-circle-check';
             this.dialogMessage = true;
           }
         })
         .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         });
     },
@@ -523,10 +537,12 @@ export default {
               }
             })
             .catch(() => {
+              this.iconStr = 'el-icon-warning-outline';
               this.dialogMessage = true;
             });
         } else {
           this.setMessage('该状态不能修改');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -544,6 +560,7 @@ export default {
           }
         })
         .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         });
     },
@@ -562,6 +579,7 @@ export default {
             }
           })
           .catch(() => {
+            this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           });
       }
@@ -579,6 +597,7 @@ export default {
           }
         })
         .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         });
     },
@@ -624,6 +643,7 @@ export default {
           endTime: this.endTime
         };
         this.searchTask(data).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         });
         this.clearSearch();
@@ -652,6 +672,7 @@ export default {
     getAddData(data) {
       console.log(data);
       this.dialogAdd = data;
+      this.iconStr = 'el-icon-circle-check';
       this.dialogMessage = true;
       this.getData();
     },
@@ -666,6 +687,7 @@ export default {
     // 修改后的操作
     getEditData(data) {
       this.dialogEdit = data;
+      this.iconStr = 'el-icon-circle-check';
       this.dialogMessage = true;
     },
     // 获取从分页传过来的每页多少条数据
@@ -709,6 +731,7 @@ export default {
             }
           })
           .catch(() => {
+            this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           });
         // this.multipleSelection.forEach(item => {
@@ -743,6 +766,7 @@ export default {
         status: this.currentState
       };
       this.getTaskList(param).catch(() => {
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
       });
     },

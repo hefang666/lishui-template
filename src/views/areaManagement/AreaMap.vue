@@ -3,7 +3,7 @@
     <div id="areamap" class="areamap"></div>
     <div id="contextmenu_container" class="contextmenu">
       <ul class="contextmenu-lists">
-        <li><a @click="selectByArea" href="#" id="popup-area-select">选择区域内设备</a></li>
+        <li><a @click="selectByArea" id="popup-area-select">选择区域内设备</a></li>
       </ul>
     </div>
     <div ref="popup" class="pop-boxer">
@@ -524,8 +524,9 @@
         for(let i = 0; i < checkedLine.length; i++) {
           for(let j = 0; j < allLineList.length; j++) {
             if(checkedLine[i].deviceCode ==allLineList[j].properties.LineNumber) {
-              let x = (allLineList[j].geometry.coordinates[0][0] + allLineList[j].geometry.coordinates[1][0]) / 2;
-              let y = (allLineList[j].geometry.coordinates[0][1] + allLineList[j].geometry.coordinates[1][1]) / 2;
+              // console.log(allLineList[j]);
+              let x = ((allLineList[j].geometry.coordinates[0][0] + allLineList[j].geometry.coordinates[1][0]) / 2).toFixed(8);
+              let y = ((allLineList[j].geometry.coordinates[0][1] + allLineList[j].geometry.coordinates[1][1]) / 2).toFixed(8);
               lineLength += allLineList[i].properties.LineLength;
               lineList.push({
                 deviceCode: allLineList[j].properties.LineNumber,

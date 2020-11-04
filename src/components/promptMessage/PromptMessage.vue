@@ -103,6 +103,12 @@ export default {
         font-size: 33px;
         color: #e6ae35;
       }
+      .el-icon-warning-outline {
+        color: #e6ae35;
+      }
+      .el-icon-circle-check {
+        color: green;
+      }
       .message {
         text-align: center;
         font-size: 12px;

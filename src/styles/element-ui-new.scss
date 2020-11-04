@@ -162,7 +162,8 @@
 		padding-right: 10px;
 	}
 	/deep/ .el-table__body tr.current-row > td,
-	/deep/ .el-table--striped .el-table__body tr.el-table__row--striped.current-row td {
+	/deep/ .el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
+	/deep/ .el-table__body tr.current-row:hover > td{
 		background-color: #c6e4fd;
 	}
 }

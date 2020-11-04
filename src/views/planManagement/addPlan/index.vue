@@ -1,7 +1,7 @@
 <template>
   <div class="addTask-box dialog-box button-box">
     <el-dialog
-      title="新增任务"
+      title="新增计划"
       :visible.sync="dialogAdd"
       :close-on-click-modal="false"
       :before-close="closeAdd"
