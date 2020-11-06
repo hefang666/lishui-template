@@ -553,6 +553,7 @@ export default {
       // console.log(data);
       console.log('data++++ :>> ', data);
       this.dialogTransfer = data;
+      this.getData();
     },
 
     // 多选选择后拿到的数据
