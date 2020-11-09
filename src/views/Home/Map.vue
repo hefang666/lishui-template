@@ -148,11 +148,6 @@ export default {
           position: position[index],
           offset: [30, -35]
         });
-<<<<<<< HEAD
-        
-
-=======
->>>>>>> c384f50a31b7a2ae692723d6d9ed2fe865b47297
         const anchor = new window.ol.Overlay({
           element: imgDom,
           className: `customer-anchor customer-anchor-${index}`,

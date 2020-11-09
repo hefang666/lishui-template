@@ -90,7 +90,7 @@ export default {
       // 管线图层
       lineLayer: {},
       // 默认地图放到比例
-      zoomMap: '16',
+      zoomMap: 16,
       geoserverUrl: geoserverUrl,
       // 设备服务地址
       geoserverUrlConstPoint: geoserverUrlConstPoint,
@@ -978,8 +978,10 @@ export default {
       this.currentDevice = currentDevice;
 
       this.$nextTick(() => {
-        this.overlay.setPosition(currentDevice.devicePoint.split(','));
-        this.map.getView().fit(this.mapLocation);
+        let positioning = currentDevice.devicePoint.split(',')
+        this.overlay.setPosition(positioning);
+        this.map.getView().fit([positioning[0], positioning[1],positioning[0], positioning[1]], this.map.getSize());
+        // this.map.getView().fit(this.mapLocation);
 
       })
     }
