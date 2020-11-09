@@ -3,6 +3,7 @@
     <el-dialog
       title="工单详情"
       :visible.sync="dialogOrderDetail"
+      :close-on-click-modal="false"
       :before-close="closeOrder"
     >
       <div class="content-box form-box">
@@ -11,13 +12,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">工单类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.typeStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">负责人：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.person }}</span>
               </div>
             </div>
           </div>
@@ -25,7 +26,7 @@
             <div class="list-items has-two-item">
               <div class="item-title">工单内容：</div>
               <div class="item-content">
-                <span>3小时20分</span>
+                <span>{{ orderDetail.content }}</span>
               </div>
             </div>
           </div>
@@ -33,7 +34,18 @@
             <div class="list-items has-two-item">
               <div class="item-title">附件：</div>
               <div class="item-content">
-                <span>3小时20分</span>
+                <!-- <span>3小时20分</span> -->
+                <div class="enclosure-box">
+                  <div
+                    v-for="(item, index) in orderDetail.resourcelist"
+                    :key="index"
+                    class="enclosure-item"
+                  >
+                    <div class="enclosure-title">{{ item. fileName}}</div>
+                    <div class="enclosure-download">下载</div>
+                    <div class="enclosure-preview">预览</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -41,13 +53,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备名称：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.deviceName }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">设备编号：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.deviceCode }}</span>
               </div>
             </div>
           </div>
@@ -55,13 +67,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备坐标点：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.devicePoint }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">地址：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.address }}</span>
               </div>
             </div>
           </div>
@@ -69,27 +81,27 @@
             <div class="list-items has-two-item">
               <div class="item-title">设备点状态：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.deviceStatusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">异常类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.typeStr }}</span>
               </div>
             </div>
           </div>
           <div class="list-item">
             <div class="list-items has-two-item">
-              <div class="item-title">事件类型：</div>
+              <div class="item-title">异常类型：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.errorType }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">事件提交时间：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.creationTime }}</span>
               </div>
             </div>
           </div>
@@ -97,13 +109,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">报告人：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.creationName }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">联系方式：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.phone }}</span>
               </div>
             </div>
           </div>
@@ -111,13 +123,13 @@
             <div class="list-items has-two-item">
               <div class="item-title">事件状态：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.statusStr }}</span>
               </div>
             </div>
             <div class="list-items has-two-item">
               <div class="item-title">提交工单时间：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.creationTime }}</span>
               </div>
             </div>
           </div>
@@ -125,18 +137,29 @@
             <div class="list-items has-two-item">
               <div class="item-title">巡检内容：</div>
               <div class="item-content">
-                <span>2019-01-01 18:00</span>
+                <span>{{ orderDetail.eventDetails.content }}</span>
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <!-- <div class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">损坏：</div>
               <div class="item-content">
+                <div class="enclosure-box">
+                  <div
+                    v-for="(item, index) in orderDetail.resourcelist"
+                    :key="index"
+                    class="enclosure-item"
+                  >
+                    <div class="enclosure-title">{{ item.fileName}}</div>
+                    <div class="enclosure-download">下载</div>
+                    <div class="enclosure-preview">预览</div>
+                  </div>
+                </div>
                 <span>2019-01-01 18:00</span>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -154,6 +177,8 @@
 
 <script>
 import ViewRoute from '@/views/public/ViewRoute.vue';
+import {createNamespacedHelpers} from 'vuex';
+const {mapState: orderState} = createNamespacedHelpers('workOrderManagement');
 export default {
   name: 'OrderDetail',
   props: ['dialogOrderDetail'],
@@ -164,6 +189,9 @@ export default {
     return {
       dialogRoute: false
     }
+  },
+  computed: {
+    ...orderState(['orderDetail'])
   },
   methods: {
     closeOrder(){

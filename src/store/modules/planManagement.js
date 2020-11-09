@@ -1,6 +1,7 @@
 import {
   getPlanList,
   addPlan,
+  updatePlan,
   getPlanDetails,
   UpdatePlanStatuById,
   DeletePlanById
@@ -9,19 +10,19 @@ import {mGetDate, parseTime} from '@/utils/index';
 var state = {
   // 计划列表
   planList: [
-    {
-      id: -73151446,
-      name: 'ad aute ex sed non',
-      status: -74806858,
-      areaId: 76229918,
-      participant: 'Duis eiusmod esse',
-      person: 'reprehenderit tempor proident in nulla',
-      personId: -31908519,
-      cycle: -90439625,
-      cycleStr: 'dolore',
-      statuStr: 'ad elit',
-      planEndTime: 'sunt dolor ea pariatur'
-    }
+    // {
+    //   id: -73151446,
+    //   name: 'ad aute ex sed non',
+    //   status: -74806858,
+    //   areaId: 76229918,
+    //   participant: 'Duis eiusmod esse',
+    //   person: 'reprehenderit tempor proident in nulla',
+    //   personId: -31908519,
+    //   cycle: -90439625,
+    //   cycleStr: 'dolore',
+    //   statuStr: 'ad elit',
+    //   planEndTime: 'sunt dolor ea pariatur'
+    // }
   ],
   // 每周数据
   weeklyData: [
@@ -59,7 +60,7 @@ var state = {
   // 提示消息
   messageText: '',
   // 计划详情
-  planDetails: '',
+  planDetails: {},
   // 修改计划详情
   editPlanDetails: {
     name: '测试',
@@ -89,7 +90,9 @@ var state = {
   maxResultCount: 10,
   editModalVisble: false,
   addModalVisible: false,
-  checkModalVisible: false
+  checkModalVisible: false,
+  // 请求列表时的加载状态
+  loading: false
 };
 
 var mutations = {
@@ -116,6 +119,10 @@ var mutations = {
   // 设置计划列表总数
   set_planTotal: function(state, data) {
     state.planTotal = data;
+  },
+  // 改变加载状态
+  set_loading: function(state, data) {
+    state.loading = data;
   }
   // update_modal_status: function(state, modal) {
   //   state[modal.name] = modal.status;
@@ -131,6 +138,7 @@ var actions = {
   // },
   // 获取计划列表
   getPlanList({commit}, data) {
+    commit('set_loading', true);
     return new Promise((resolve, reject) => {
       getPlanList(data)
         .then(response => {
@@ -144,11 +152,13 @@ var actions = {
             }
             commit('set_plan_list', response.result.items);
             commit('set_planTotal', response.result.totalCount);
+            commit('set_loading', false);
             resolve(response);
           }
         })
         .catch(error => {
           commit('set_message', error.message);
+          commit('set_loading', false);
           reject(error);
         });
     });
@@ -181,13 +191,61 @@ var actions = {
         });
     });
   },
+  // 修改任务
+  updatePlan({commit}, data){
+    return new Promise((resolve, reject) => {
+      updatePlan(data)
+        .then(response => {
+          if (response.success) {
+            commit('set_message', '修改成功');
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
+  },
   // 根据id获取任务详情
   getPlanDetails({commit}, data) {
     return new Promise((resolve, reject) => {
       getPlanDetails(data)
         .then(response => {
           if (response.success) {
+            if (
+              response.result.planCompleteTime != null ||
+              response.result.planCompleteTime != ''
+            ) {
+              response.result.planCompleteTime = parseTime(
+                response.result.planCompleteTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+
+            if (
+              response.result.endTime != null ||
+              response.result.endTime != ''
+            ) {
+              response.result.endTime = parseTime(
+                response.result.endTime,
+                '{y}-{m}-{d} {h}:{i}'
+              );
+            }
+            // let details = response.result;
+            // let arr = details.participant.split('、');
+            // let array = [];
+            // arr.forEach(item => {
+            //   array.push({
+            //     trueName: item
+            //   });
+            // });
+            // console.log(arr);
+            // console.log(array);
+            // details.participant = array;
+            // console.log('details :>> ', details.user);
             commit('set_planDetails', response.result);
+            commit('set_editPlanDetails', response.result);
             resolve(response);
           }
         })

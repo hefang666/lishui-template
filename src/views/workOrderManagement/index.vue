@@ -28,7 +28,7 @@
           <el-button type="primary" plain @click="close">关闭</el-button>
           <el-button type="primary" plain @click="modify">修改</el-button>
           <el-button type="primary" plain @click="See">查看</el-button>
-          <el-button type="primary" plain @click="del">删除</el-button>
+          <!-- <el-button type="primary" plain @click="del">删除</el-button> -->
           <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
@@ -128,7 +128,7 @@
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column
-            prop="type"
+            prop="typeStr"
             label="工单类型"
             show-overflow-tooltip
           ></el-table-column>
@@ -232,6 +232,7 @@
     <add-order
       :dialog-add="dialogAdd"
       @closeAdd="closeAdd"
+      @getAdd="getAdd"
     ></add-order>
 
     <!-- 提示消息弹窗 -->
@@ -564,17 +565,30 @@ export default {
 
     // 操作弹窗点击了确定
     determine(data) {
-      console.log(data);
       this.dialogOperate = data.flag;
-      let param;
       if (data.type == 'del') {
         // 删除
-        this.multipleSelection.forEach(item => {
-          param = {
-            id: item.id
-          };
-          this.DeleteWorkOrder(param);
-        });
+        console.log(' this.multipleSelection :>> ',  this.multipleSelection);
+        let newidarr = []
+        this.multipleSelection.map(item => {
+          newidarr.push(item.id)
+        })
+
+        let param = {
+          id:newidarr
+        }
+        this.DeleteWorkOrder(param).then(res=>{
+          if(res.success){
+            this.dialogMessage = true;
+          }
+        })
+        // console.log('this.multipleSelection :>> ', this.multipleSelection);
+        // this.multipleSelection.forEach(item => {
+        //   param = {
+        //     id: item.id
+        //   };
+        //   this.DeleteWorkOrder(param);
+        // });
       }
     },
 
@@ -636,7 +650,11 @@ export default {
     closeAdd(data) {
       this.dialogAdd = data.dialogAdd;
     },
-
+    // 新增成功
+    getAdd(data) {
+      this.dialogAdd = data;
+      this.getData();
+    },
     // 获取数据（基础请求，包含状态，分页，页数）
     getData() {
       let param = {

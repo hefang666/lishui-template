@@ -3,6 +3,7 @@
     <el-dialog
       title="出勤查看"
       :visible.sync="dialogAttend"
+      :close-on-click-modal="false"
       :before-close="closeAttend"
     >
       <div class="content-box">
@@ -41,7 +42,7 @@
                   <el-button
                     type="text"
                     class="operate-button"
-                    @click="handleSee(scope.$index, scope.row)"
+                    @click="handleSee(scope.row)"
                     >查看</el-button
                   >
                 </template>
@@ -60,11 +61,19 @@
         <el-button @click="closeAttend">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 人员轨迹弹窗 -->
+    <online
+      :dialog-online="dialogOnline"
+      :user-id="checkedId"
+      @closeOnline="closeOnline"
+    ></online>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page.vue';
+import Online from './OnlineTrajectory.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('personManagement');
 import {parseTime} from '@/utils/index';
@@ -72,7 +81,8 @@ export default {
   name: 'Attendance',
   props: ['dialogAttend', 'attendanceId'],
   components: {
-    Page
+    Page,
+    Online
   },
   data() {
     return {
@@ -83,7 +93,13 @@ export default {
       currentPage: 1,
 
       // 当前每页条数
-      pageSize: 10
+      pageSize: 10,
+
+      // 是否显示人员轨迹弹窗
+      dialogOnline: false,
+      
+      // 当前选中的id
+      checkedId: ''
     };
   },
   computed: {
@@ -118,7 +134,17 @@ export default {
       console.log(data);
     },
     // 查看
-    handleSee() {}
+    handleSee(row) {
+      this.checkedId = row.userId;
+      this.dialogOnline = true;
+      console.log(row);
+    },
+
+    // 关闭人员轨迹弹窗
+    closeOnline(data) {
+      console.log(data);
+      this.dialogOnline = data;
+    }
   }
 };
 </script>

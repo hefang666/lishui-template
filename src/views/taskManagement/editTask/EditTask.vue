@@ -3,6 +3,7 @@
     <el-dialog
       title="修改任务"
       :visible.sync="dialogEdit"
+      :close-on-click-modal="false"
       :before-close="closeEdit"
     >
       <div class="content-box form-box">
@@ -62,7 +63,13 @@
                   <span>参与人：</span>
                 </div>
                 <div class="content">
-                  <span>{{ taskDetails.participant }}</span>
+                  <span
+                    v-for="(item, index) in taskDetails.participant"
+                    :key="index"
+                  >
+                    {{ item }}
+                  </span>
+                  <!-- <span>{{ taskDetails.participant }}</span> -->
                   <!-- <el-button
                     class="choose-active"
                     type="primary"
@@ -188,6 +195,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -250,7 +258,10 @@ export default {
           // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
           return time.getTime() <= Date.now();    //禁用今天以及以前的日期
         }
-      }
+      },
+
+      //
+      iconStr: 'el-icon-warning-outline'
     };
   },
   computed: {
@@ -290,8 +301,10 @@ export default {
         // 参与人
         this.partData = data.personinfo;
         this.taskDetails.participant = [];
+        this.taskDetails.participantIds = [];
         this.partData.forEach(item => {
           this.taskDetails.participant.push(item.trueName);
+          this.taskDetails.participantIds.push(item.trueName);
         });
       }
       this.dialogCharge = data.dialogCharge;
@@ -325,12 +338,14 @@ export default {
     Edit() {
       if (this.taskDetails.planStartTime == '') {
         this.setMessage('开始时间不能为空');
+        this.iconStr = 'el-icon-warning-outline'
         this.dialogMessage = true;
         return;
       }
 
       if (this.taskDetails.planEndTime == '') {
         this.setMessage('结束时间不能为空');
+        this.iconStr = 'el-icon-warning-outline'
         this.dialogMessage = true;
         return;
       }
@@ -341,40 +356,73 @@ export default {
       if (judgeTime(now, this.taskDetails.planStartTime)) {
         if (!judgeTime(this.taskDetails.planStartTime, this.taskDetails.planEndTime)) {
           this.setMessage('结束时间不能小于当前时间');
+          this.iconStr = 'el-icon-warning-outline'
           this.dialogMessage = true;
           return;
         }
       }else {
         this.setMessage('任务开始时间不能小于当前时间');
+        this.iconStr = 'el-icon-warning-outline'
         this.dialogMessage = true;
         return;
       }
 
       if (this.taskDetails.name == '') {
         this.setMessage('任务名称不能为空');
+        this.iconStr = 'el-icon-warning-outline'
         this.dialogMessage = true;
         return;
       }
 
       if (this.taskDetails.remark == '' || this.taskDetails.remark == null) {
         this.setMessage('任务备注不能为空');
+        this.iconStr = 'el-icon-warning-outline'
         this.dialogMessage = true;
         return;
       }
 
-      let param = {
-        Id: this.taskDetails.id,
-        name: this.taskDetails.name,
-        personId: this.taskDetails.personId,
-        person: this.taskDetails.person,
-        startTime: this.taskDetails.planStartTime,
-        endTime: this.taskDetails.planEndTime,
-        remark: this.taskDetails.remark,
+      let param;
+      if (this.taskDetails.type == 1) {
+        // 临时任务
+        param = {
+          Id: this.taskDetails.id,
+          name: this.taskDetails.name,
+          personId: this.taskDetails.personId,
+          person: this.taskDetails.person,
+          startTime: this.taskDetails.planStartTime,
+          endTime: this.taskDetails.planEndTime,
+          remark: this.taskDetails.remark,
+        }
+      } else if (this.taskDetails.type == 2) {
+        // 计划任务（需要添加参与人信息）
+        param = {
+          Id: this.taskDetails.id,
+          name: this.taskDetails.name,
+          personId: this.taskDetails.personId,
+          person: this.taskDetails.person,
+          startTime: this.taskDetails.planStartTime,
+          endTime: this.taskDetails.planEndTime,
+          remark: this.taskDetails.remark,
+          participantIds: this.taskDetails.participantIds,
+          participants: this.taskDetails.participants
+        }
       }
-      this.UpdateTask(param);
       
-      let data = false;
-      this.$emit('getEditData', data);
+      this.UpdateTask(param).then(res => {
+        if (res.success) {
+          this.setMessage('修改成功');
+          this.iconStr = 'el-icon-circle-check'
+          this.dialogMessage = true;
+          let data = false;
+          this.$emit('getEditData', data);
+        }
+      }).catch(() => {
+        this.iconStr = 'el-icon-warning-outline'
+        this.dialogMessage = true;
+        let data = false;
+        this.$emit('getEditData', data);
+      });
+      
     }
   }
 };

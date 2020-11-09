@@ -2,65 +2,128 @@
   <div class="addTask-box">
     <div class="dialog-box dialog_box button-box">
       <el-dialog
-        title="转工单"
+        title="修改工单"
         :visible.sync="dialogEdit"
+        :close-on-click-modal="false"
         :before-close="closeEdit"
       >
         <div class="content-box form-box">
           <div class="content_box select_box">
-            <el-form :model="addForm">
-              <div class="list-item">
-                <el-form-item
-                  class="has-two-item"
-                  label="工单类型："
-                  label-width="120px"
-                >
-                  <div class="list-item-content-box">
-                    <el-select
-                      v-model="orderDetails.type"
-                      placeholder="请选择工单类型"
-                      @change="selectType"
-                    >
-                      <el-option
-                        v-for="(item, index) in orderTypeData"
-                        :key="index"
-                        :label="item.label"
-                        :value="item.value"
-                      ></el-option>
-                    </el-select>
+            <el-form>
+              <div class="list-item has-two-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>工单类型：</span>
                   </div>
-                </el-form-item>
-                <el-form-item
-                  class="has-two-item"
-                  label="负责人："
-                  label-width="120px"
-                >
-                  <el-button
-                    class="choose-active"
-                    type="primary"
-                    plain
-                    v-if="orderDetails.person != ''"
-                    v-model="orderDetails.person"
-                    >{{ orderDetails.person }}</el-button
-                  >
-                  <el-button type="primary" plain @click="choosePerson"
-                    >选择人员</el-button
-                  >
-                </el-form-item>
+                  <div class="content">
+                    <div class="list-item-content-box">
+                      <el-select
+                        v-model="orderDetails.type"
+                        placeholder="请选择工单类型"
+                        @change="selectType"
+                      >
+                        <el-option
+                          v-for="(item, index) in orderTypeData"
+                          :key="index"
+                          :label="item.label"
+                          :value="item.value"
+                        ></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </div>
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>负责人：</span>
+                  </div>
+                  <div class="content">
+                    <el-button
+                      class="choose-active"
+                      type="primary"
+                      plain
+                      v-if="orderDetails.person != ''"
+                      v-model="orderDetails.person"
+                    >
+                      {{ orderDetails.person }}
+                    </el-button>
+                    <el-button
+                      type="primary"
+                      plain
+                      @click="choosePerson"
+                    >
+                      选择人员
+                    </el-button>
+                  </div>
+                </div>
               </div>
-              <el-form-item label="工单内容：" label-width="120px"
-                ><el-input
-                  type="textarea"
-                  :rows="3"
-                  v-model="orderDetails.content"
-                  autocomplete="off"
-                ></el-input
-              ></el-form-item>
-              <el-form-item label="附件上传：" label-width="120px">
+              <div class="list-item has-two-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span>巡检片区：</span>
+                  </div>
+                  <div class="content">
+                    <div class="list-item-content-box">
+                      <el-button
+                        class="choose-active"
+                        type="primary"
+                        plain
+                        v-if="orderDetails.person != ''"
+                        v-model="orderDetails.person"
+                      >
+                        {{ orderDetails.areaId }}
+                      </el-button>
+                    </div>
+                  </div>
+                </div>
+                <div class="items-box">
+                  <div class="title">
+                    <!-- <span class="tips">*</span> -->
+                    <span>预计完成时间：</span>
+                  </div>
+                  <div class="content">
+                    <el-date-picker
+                      v-model="orderDetails.planCompleteTime"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm"
+                      :picker-options="pickerOptions"
+                      placeholder="预计完成时间"
+                    ></el-date-picker>
+                  </div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span class="tips">*</span>
+                    <span>工单内容：</span>
+                  </div>
+                  <div class="conten">
+                    <el-input
+                      type="textarea"
+                      :rows="3"
+                      v-model="orderDetails.content"
+                      autocomplete="off"
+                    ></el-input>
+                  </div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="items-box">
+                  <div class="title">
+                    <span>附件上传：</span>
+                  </div>
+                  <div class="conten">
+                    <upload ref="upload" @showPreview="showPreview"></upload>
+                  </div>
+                </div>
+              </div>
+              <!-- <el-form-item label="附件上传：" label-width="120px">
                 <upload ref="upload" @showPreview="showPreview"></upload>
-              </el-form-item>
+              </el-form-item> -->
             </el-form>
-            <div class="list-box">
+            <div v-if="orderDetails.eventDetails != null" class="list-box">
               <div class="list-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">设备名称：</div>
@@ -176,7 +239,7 @@
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button @click="closeEdit">取 消</el-button>
-          <el-button type="primary" @click="closeEdit">确 定</el-button>
+          <el-button type="primary" @click="determine">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -193,6 +256,13 @@
       :file-data="fileData"
       @closePreview="closePreview"
     ></preview>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
@@ -200,43 +270,47 @@
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import Upload from '@/components/upLoad/index.vue';
 import Preview from '@/components/upLoad/Preview.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('workOrderManagement');
+const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
+import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditOrder',
   props: ['dialogEdit'],
   components: {
     ChoosePeople,
     Upload,
-    Preview
+    Preview,
+    Message,
   },
   computed: {
-    ...mapState(['orderTypeData', 'orderDetails'])
+    ...workOrderState(['orderTypeData', 'orderDetails', 'messageText'])
   },
   data() {
     return {
-      addForm: {
-        taskName: '',
-        inCharge: '测试人员',
-        estimatedStartTime: '',
-        estimatedEndTime: '',
-        taskType: '',
-        inspectionArea: '',
-        remarks: ''
-      },
       // 负责人弹窗状态
       dialogCharge: false,
-      selectType: 0,
-      exceptionType: 0,
       // 是否显示预览弹窗
       dialogPreview: false,
       // 选择的工单类型
       orderType: '',
       // 选中要预览的图片信息
-      fileData: ''
+      fileData: '',
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          // return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      },
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
+      // 负责人信息
+      personInfo: ''
     };
   },
   methods: {
+    ...workOrderActions(['setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       console.log('点击了取消');
@@ -260,7 +334,8 @@ export default {
     checkedPerson(data) {
       console.log(data);
       this.dialogCharge = data.dialogCharge;
-      this.addForm.inCharge = data.name;
+      this.orderDetails.person = data.personinfo[0].trueName;
+      this.personInfo = data.personinfo;
     },
     // 打开预览弹窗
     showPreview(data) {
@@ -270,6 +345,51 @@ export default {
     // 关闭预览弹窗
     closePreview(data) {
       this.dialogPreview = data;
+    },
+    // 关闭消息提示弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
+    // 修改工单类型
+    selectType(val) {
+      this.orderDetails.type = val;
+      console.log(this.orderDetails.type);
+    },
+    // 点击确定修改工单
+    determine() {
+      if (this.orderDetails.type == '') {
+        // alert('请选择工单类型');
+        this.setMessage('请选择工单类型');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.orderDetails.person == '') {
+        this.setMessage('负责人不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      
+      if (this.orderDetails.content == '') {
+        this.setMessage('工单类容不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
+      if (this.orderDetails.planCompleteTime != '') {
+        this.orderDetails.planCompleteTime = parseTime(this.orderDetails.planCompleteTime, '{y}-{m}-{d} {h}:{i}');
+        let nowDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}');
+        if (judgeTime(nowDate, this.orderDetails.planCompleteTime)) {
+          // 时间符合要求
+        } else {
+          this.setMessage('预计完成时间不能小于当前时间');
+          this.dialogMessage = true;
+          return;
+        }
+      }
+
+      // 修改工单操作
     }
   }
 };
@@ -305,6 +425,46 @@ export default {
         .list-item-content-box {
           width: 220px;
         }
+      }
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+
+      .items-box {
+        flex: 1;
+        display: flex;
+        .title {
+          width: 120px;
+          text-align: right;
+          line-height: 28px;
+          .tips {
+            color: red;
+          }
+        }
+        .content {
+          line-height: 28px;
+        }
+        .conten {
+          width: 79%;
+        }
+      }
+    }
+    .has-two-item {
+      .items-box {
+        width: 46%;
+      }
+      .choose-active {
+        color: #ffffff !important;
+        background: #4b77be !important;
+        border: none;
+        cursor: auto;
+      }
+
+      .list-item-content-box {
+        width: 220px;
       }
     }
 

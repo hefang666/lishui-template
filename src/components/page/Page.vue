@@ -71,14 +71,44 @@ export default {
       // 共有多少页
       // pagesNum: 1,
       // 从第几条开始显示
-      startRecording: 1,
+      // startRecording: 1,
       // 显示到第几条
-      endRecoeding: 30
+      // endRecoeding: 30
     };
   },
   computed: {
+    // 总页数
     pagesNum() {
       return Math.ceil(this.$props.total / this.pageSize);
+    },
+    // 开始条数
+    startRecording() {
+      if(this.$props.total == 0) {
+        return 0;
+      } else {
+        if (this.currentPageNum == this.pagesNum) {
+          return ((this.currentPageNum - 1) * this.pageSize + 1);
+          // this.endRecoeding = this.$props.total;
+        } else {
+          return ((this.currentPageNum - 1) * this.pageSize + 1);
+          // this.endRecoeding = this.currentPageNum * this.pageSize;
+        }
+      }
+    },
+    // 结束条数
+    endRecoeding() {
+      if(this.total == 0) {
+        // this.startRecording = 0;
+        return 0;
+      } else {
+        if (this.currentPageNum == this.pagesNum) {
+          // this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+          return this.$props.total;
+        } else {
+          // this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+          return this.currentPageNum * this.pageSize;
+        }
+      }
     }
   },
   methods: {
@@ -86,13 +116,13 @@ export default {
     handleSizeChange(data) {
       this.pageSize = data;
       // this.getPagesNum();
-      this.getShowRecoeding();
+      // this.getShowRecoeding();
       this.$emit('changePageSize', data);
     },
     // 获取当前选择了第几页
     handleCurrentChange(data) {
       this.currentPageNum = data;
-      this.getShowRecoeding();
+      // this.getShowRecoeding();
 
       this.$emit('changeCurrentPage', data);
     },
@@ -101,26 +131,26 @@ export default {
     //   this.pagesNum = Math.ceil(this.$props.total / this.pageSize);
     // },
     // 计算当前显示的是多少条到多少条
-    getShowRecoeding() {
-      if(this.total == 0) {
-        this.startRecording = 0;
-        this.endRecoeding = 0;
-      } else {
-        if (this.currentPageNum == this.pagesNum) {
-          this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
-          this.endRecoeding = this.$props.total;
-        } else {
-          this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
-          this.endRecoeding = this.currentPageNum * this.pageSize;
-        }
-      }
-    }
+    // getShowRecoeding() {
+    //   if(this.total == 0) {
+    //     this.startRecording = 0;
+    //     this.endRecoeding = 0;
+    //   } else {
+    //     if (this.currentPageNum == this.pagesNum) {
+    //       this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+    //       this.endRecoeding = this.$props.total;
+    //     } else {
+    //       this.startRecording = (this.currentPageNum - 1) * this.pageSize + 1;
+    //       this.endRecoeding = this.currentPageNum * this.pageSize;
+    //     }
+    //   }
+    // }
   },
   mounted() {
     // 处理组件名称（讲传过来的字符串转化成数组）
     this.assembly = this.$props.layout.split(',');
     // this.getPagesNum();
-    this.getShowRecoeding();
+    // this.getShowRecoeding();
   }
 };
 </script>
@@ -132,5 +162,8 @@ export default {
   .page-right {
     font-size: 14px;
   }
+}
+/deep/ .el-input--suffix .el-input__inner{
+  padding-right: 21px;
 }
 </style>

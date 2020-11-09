@@ -1,10 +1,15 @@
 <template>
   <div class="editTask-box dialog-box button-box">
-    <el-dialog title="修改任务" :visible.sync="dialogEdit">
+    <el-dialog
+      title="修改任务"
+      :visible.sync="dialogEdit"
+      :close-on-click-modal="false"
+      :before-close="closeEdit"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeEdit">
+        <!-- <div class="cancel-box" @click="closeEdit">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="content_box">
           <div>
             <div class="list-item has-two-item">
@@ -53,10 +58,12 @@
                     <!-- <el-input type="inspectionArea" v-model="editForm.inspectionArea" autocomplete="off"></el-input> -->
                     <el-button
                       type="primary"
+                      class="choose-active"
+                      v-if="editPlanDetails.areaName != ''"
+                      v-model="editPlanDetails.areaName"
                       plain
-                      @click="chooseArea"
                     >
-                      选择片区
+                      {{ editPlanDetails.areaName }}
                     </el-button>
                   </div>
                 </div>
@@ -71,16 +78,12 @@
                     class="choose-active"
                     type="primary"
                     plain
-                    v-for="(item, index) in editPlanDetails.participant"
+                    v-for="(item, index) in editPlanDetails.user"
                     :key="index"
                   >
-                    {{ item.trueName }}
+                    {{ item.userName }}
                   </el-button>
-                  <el-button
-                    type="primary"
-                    plain
-                    @click="choosePar"
-                  >
+                  <el-button type="primary" plain @click="choosePar">
                     选择人员
                   </el-button>
                 </div>
@@ -93,12 +96,14 @@
                   <span>计划周期：</span>
                 </div>
                 <div class="content">
+                  {{ editPlanDetails.cycleStr }}
                 </div>
               </div>
             </div>
             <div
               v-if="editPlanDetails.cycle == 1 || editPlanDetails.cycle == 2"
-              class="list-item">
+              class="list-item"
+            >
               <div class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
@@ -109,6 +114,7 @@
                     v-model="editPlanDetails.endTime"
                     type="date"
                     format="yyyy-MM-dd"
+                    :picker-options="pickerOptions"
                     placeholder="请选择日期"
                   ></el-date-picker>
                 </div>
@@ -123,10 +129,26 @@
       </div>
     </el-dialog>
 
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
+
+    <!-- 负责人 -->
     <choose-people
       :dialog-charge="dialogCharge"
+      :select-type="'single'"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
+    ></choose-people>
+    <!-- 参与人弹窗 -->
+    <choose-people
+      :dialog-charge="dialogPar"
+      :select-type="'multiple'"
+      @closeChoosePeople="closePar"
+      @checkedPerson="checkedPar"
     ></choose-people>
     <choose-area
       :dialog-area="dialogArea"
@@ -137,31 +159,52 @@
 </template>
 
 <script>
-import ChoosePeople from '../public/ChoosePeople.vue';
-import ChooseArea from '../public/ChooseArea.vue';
+import ChoosePeople from '@/views/public/ChoosePeople.vue';
+import ChooseArea from '@/views/public/ChooseArea.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-const {mapState: planState} = createNamespacedHelpers('planManagement');
+const {mapState: planState, mapActions: planActions} = createNamespacedHelpers(
+  'planManagement'
+);
+import {judgeTime, parseTime, mGetDate} from '@/utils/index';
 export default {
   name: 'EditTask',
   props: ['dialogEdit'],
   components: {
     ChoosePeople,
-    ChooseArea
+    ChooseArea,
+    Message
   },
   data() {
     return {
+      // 是否显示提示消息弹窗
+      dialogMessage: false,
       // 负责人弹窗状态
       dialogCharge: false,
       // 巡检片区弹窗状态
-      dialogArea: false
+      dialogArea: false,
+      // 参与人弹窗
+      dialogPar: false,
+
+      // 选择的参与人
+      perData: [],
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   computed: {
-    ...planState(['editPlanDetails'])
+    ...planState(['editPlanDetails', 'messageText'])
   },
   methods: {
     ...xunjianActions(['getOrganizationData', 'getRoleData']),
+    ...planActions(['updatePlan', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       let data = false;
@@ -170,6 +213,8 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
+      this.getOrganizationData();
+      this.getRoleData();
       this.dialogCharge = true;
     },
     // 关闭选择负责人弹窗
@@ -179,7 +224,8 @@ export default {
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       this.dialogCharge = data.dialogCharge;
-      this.editForm.inCharge = data.name;
+      this.editPlanDetails.person = data.personinfo[0].trueName;
+      this.editPlanDetails.personId = data.personinfo[0].id;
     },
     // 点击选择片区按钮
     chooseArea() {
@@ -191,6 +237,42 @@ export default {
       this.getRoleData();
       this.dialogPar = true;
     },
+    // 关闭参与人弹窗
+    closePar(data) {
+      this.dialogPar = data.dialogCharge;
+    },
+    // 参与人
+    checkedPar(data) {
+      console.log(data);
+      this.dialogPar = data.dialogCharge;
+      this.perData = [];
+      data.personinfo.forEach(item => {
+        this.perData.push({
+          userId: item.id,
+          userName: item.trueName
+        })
+      });
+      console.log(this.perData);
+      this.editPlanDetails.user = this.perData;
+
+      // for (var i = 0; i < this.perData.length; i++) {
+      //   for (var j = 0; j < this.editPlanDetails.user.length; j++) {
+      //     if (this.editPlanDetails.user[j].userId == this.perData[i].userId) {
+      //       break;
+      //     } else {
+      //       this.editPlanDetails.user
+      //     }
+      //   }
+      // }
+
+      // for (var i = 0; i < this.editPlanDetails.user.length; i++) {
+      //   for (var j = 0; j < this.perData.length; j++) {
+      //     if (this.editPlanDetails.user[i].userId == this.perData[j].userId) {
+      //       break;
+      //     }
+      //   }
+      // }
+    },
     // 关闭选择片区弹窗
     closeChooseArea(data) {
       this.dialogArea = data.dialogArea;
@@ -201,10 +283,96 @@ export default {
       this.dialogArea = data.dialogArea;
       // this.editForm.inCharge = data.name;
     },
-
+    // 关闭消息提示弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
     // 保存
     determine() {
-      console.log(this.editPlanDetails.name);
+      if (this.editPlanDetails.name == '') {
+        this.setMessage('请输入计划名称');
+        this.dialogMessage = true;
+        return;
+      }
+      if (!this.editPlanDetails.endTime) {
+        this.setMessage('请输入计划时效');
+        this.dialogMessage = true;
+        return;
+      }
+      if (this.editPlanDetails.user.length == 0) {
+        this.setMessage('请选择参与人');
+        this.dialogMessage = true;
+        return;
+      }
+      if (this.editPlanDetails.person == '') {
+        this.setMessage('请选择负责人');
+        this.dialogMessage = true;
+        return;
+      }
+
+      //当前日期
+      let startTime = new Date();
+      let start = parseTime(startTime, '{y}-{m}-{d}');
+      
+
+      // 计划时效日期
+      let limitTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+      if (this.editPlanDetails.cycle == 1) {
+        // 每周
+        // 计划时效超过当前日期一周以上
+        let interval = 7 * 24;
+        if (judgeTime(start, limitTime, interval)) {
+          // dayStr = this.selectWeek;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一周');
+          this.dialogMessage = true;
+          return;
+        }
+      } else if (this.editPlanDetails.cycle == 2) {
+        // 每月
+        // 计划时效必须大于等于一个月
+        let day = mGetDate();
+        let interval = day * 24;
+        if (judgeTime(start, limitTime, interval)) {
+          // dayStr = this.selectMonth;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一个月');
+          this.dialogMessage = true;
+          return;
+        };
+      } else if (this.editPlanDetails.cycle == 3) {
+        // 自定义
+        // 必须大于自定义的最后一次结束时间
+        if (judgeTime(this.editPlanDetails.dateTimeLists[this.editPlanDetails.dateTimeLists.length - 1].endTime, limitTime)) {
+          // dayStr = this.selectMonth;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一个月');
+          this.dialogMessage = true;
+          return;
+        };
+      }
+      console.log(this.editPlanDetails);
+
+      let param = {
+        id: this.editPlanDetails.id,
+        name: this.editPlanDetails.name,
+        personId: this.editPlanDetails.personId,
+        person: this.editPlanDetails.person,
+        endTime: this.editPlanDetails.endTime,
+        areaId: this.editPlanDetails.areaId,
+        user: this.editPlanDetails.user
+      }
+      this.updatePlan(param).then(res => {
+        if (res.success) {
+          this.$emit('closeEdit', false);
+          this.$parent.getData()
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     }
   }
 };
@@ -263,7 +431,8 @@ export default {
                 display: flex;
                 .time-box {
                   width: 180px;
-                  /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
+                  /deep/ .el-date-editor.el-input,
+                  .el-date-editor.el-input__inner {
                     width: 100%;
                   }
                 }

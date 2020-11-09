@@ -28,6 +28,7 @@
       <div class="table-box">
         <el-table
           ref="multipleTable"
+          v-loading="loading"
           :data="personList"
           :stripe="true"
           tooltip-effect="dark"
@@ -132,12 +133,11 @@ export default {
     Message
   },
   computed: {
-    ...mapState(['personList', 'attendanceList']),
+    ...mapState(['personList', 'attendanceList', 'loading']),
   },
   data() {
     return {
       searchWords: '',
-      
 
       // table选中
       multipleSelection: [],
@@ -329,16 +329,19 @@ export default {
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
       console.log(data);
+      this.pageSize = data;
     },
 
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
+      this.currentPage = data;
     },
 
     // 关闭工作情况弹窗
     getWorkingData(data) {
-      this.dialogWorking = data.dialogWorking;
+      console.log(data);
+      this.dialogWorking = data;
     },
 
     // 关闭出勤弹窗

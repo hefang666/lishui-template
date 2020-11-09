@@ -3,6 +3,7 @@
     <el-dialog
       title="设备点巡检任务详情"
       :visible.sync="dialogEqui"
+      :close-on-click-modal="false"
       :before-close="closeEqui"
     >
       <div class="content-box form-box">

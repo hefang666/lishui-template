@@ -9,7 +9,8 @@
       class="index-map-archor-img"
       v-show="item.isOnline"
     >
-      <img src="@/assets/icon-location-gray.png"
+      <img
+        src="@/assets/icon-location-active.png"
         @mouseenter="() => handleAnchorEnter(item)"
         @mouseleave="() => handleAnchorLeave(item)"
       />
@@ -24,8 +25,8 @@
       @mouseleave="() => handleOverlayLeave(item)"
     >
       <div class="task-title clearfix">
-        {{item.userName}}（{{item.onlineTime || ''}}）
-        <span class="fr">时长：{{item.duration}} h</span>
+        {{ item.userName }}（{{ item.onlineTime || '' }}）
+        <span class="fr">时长：{{ item.duration }} h</span>
       </div>
       <el-tabs
         tab-position="bottom"
@@ -35,32 +36,38 @@
       >
         <el-tab-pane label="任务" name="first">
           <el-carousel trigger="click" :autoplay="autoplay" height="145px">
-            <el-carousel-item v-for="(task, index) in item.taskLists" :key="'index_task_' + index">
+            <el-carousel-item
+              v-for="(task, index) in item.taskLists"
+              :key="'index_task_' + index"
+            >
               <div class="bg-white">
-                <p>任务名称：{{task.taskName}}<label class="m-l-5">进行中</label></p>
                 <p>
-                  任务类别：{{task.type}}
+                  任务名称：{{ task.taskName
+                  }}<label class="m-l-5">进行中</label>
                 </p>
-                <p>
-                  预计开始时间：{{task.planStartTime}}
-                </p>
-                <p>
-                  预计结束时间：{{task.planEndTime}}
-                </p>
-                <p>巡检片区：{{task.taskAreaName}}</p>
+                <p>任务类别：{{ task.type }}</p>
+                <p>预计开始时间：{{ task.planStartTime }}</p>
+                <p>预计结束时间：{{ task.planEndTime }}</p>
+                <p>巡检片区：{{ task.taskAreaName }}</p>
               </div>
             </el-carousel-item>
           </el-carousel>
         </el-tab-pane>
         <el-tab-pane label="工单" name="second">
           <el-carousel trigger="click" :autoplay="autoplay" height="145px">
-            <el-carousel-item  v-for="(order, index) in item.workOrderLists" :key="'index_order_' + index">
+            <el-carousel-item
+              v-for="(order, index) in item.workOrderLists"
+              :key="'index_order_' + index"
+            >
               <div class="bg-white">
-                <p>工单类型：{{order.workTypeStr}}<label class="m-l-5">进行中</label></p>
+                <p>
+                  工单类型：{{ order.workTypeStr
+                  }}<label class="m-l-5">进行中</label>
+                </p>
                 <p>
                   <span class="order-title fl">工单内容：</span>
                   <span class="order-content">
-                   {{order.content}}
+                    {{ order.content }}
                   </span>
                 </p>
               </div>
@@ -82,6 +89,7 @@ export default {
       zoomMap: '12',
       isOverlayEnter: false,
       position: [],
+      clickarr: [],
       autoplay: false,
       memberIndex: -1
     };
@@ -128,44 +136,44 @@ export default {
       this.position = [...this.position, ...position];
       // 将默认的第一个人设为中心位置
       if (position[0]) this.map.getView().setCenter(position[0]);
-
       // 循环每一个人象地图中添加人的位置及信息
       data.forEach((member, index) => {
-        const overlayDom = document.querySelector(`#overlay-element-${member.id}`);
-        const imgDom = document.querySelector(`#img-${member.id}`);
-
+        const overlayDom = document.querySelector(
+          `#overlay-element-${member.userId}`
+        );
+        const imgDom = document.querySelector(`#img-${member.userId}`);
         const overlay = new window.ol.Overlay({
           element: overlayDom,
           className: `customer-overlay customer-overlay-${index}`,
           position: position[index],
           offset: [30, -35]
         });
+<<<<<<< HEAD
         
 
+=======
+>>>>>>> c384f50a31b7a2ae692723d6d9ed2fe865b47297
         const anchor = new window.ol.Overlay({
           element: imgDom,
           className: `customer-anchor customer-anchor-${index}`,
           positioning: 'center-center',
           position: position[index]
         });
-
-        this.overlays = {...this.overlays, [`${member.id}`]: overlay};
-
-        this.anchors = {...this.anchors, [`${member.id}`]: anchor};
-
+        this.overlays = {...this.overlays, [`${member.userId}`]: overlay};
+        this.anchors = {...this.anchors, [`${member.userId}`]: anchor};
         // this.map.addOverlay(overlay);
         this.map.addOverlay(anchor);
       });
     },
     handleAnchorEnter(member) {
-      this.map.addOverlay(this.overlays[member.id]);
+      this.map.addOverlay(this.overlays[member.userId]);
     },
     // 移除人员时删除人员信息
     handleAnchorLeave(member) {
-      console.log(member)
+      console.log(member);
       setTimeout(() => {
         if (!this.isOverlayEnter) {
-          this.map.removeOverlay(this.overlays[member.id]);
+          this.map.removeOverlay(this.overlays[member.userId]);
         }
       }, 200);
     },
@@ -173,15 +181,23 @@ export default {
       this.isOverlayEnter = true;
     },
     handleOverlayLeave(member) {
-      console.log(member)
+      console.log(member);
       this.isOverlayEnter = false;
-      this.map.removeOverlay(this.overlays[member.id]);
+      this.map.removeOverlay(this.overlays[member.userId]);
     },
-
     // 将地图聚焦到选中人选的位置
-    focusOnCurrentMember (index) {
-      this.map.getView().setCenter(this.position[index]);
+    focusOnCurrentMember(index) {
+      let newmemberList = [];
+      newmemberList.push(this.memberList[index]);
       this.memberIndex = index;
+      if (this.memberList[index].isOnline) {
+        if (this.clickarr.indexOf(newmemberList[0].userId) != -1) {
+          this.map.getView().setCenter(this.position[index]);
+        } else {
+          this.clickarr.push(this.memberList[index].userId);
+          this.addMember(newmemberList);
+        }
+      }
     }
   }
 };

@@ -6,11 +6,13 @@ import Element from 'element-ui';
 import Print from 'vue-print-nb';
 import './styles/element-variables.scss';
 import '@/styles/index.scss';
+import jsCookie from 'js-cookie';
 // import Blob from "@/excel/Blob.js";
 // import Export2Excel from '@/excel/Export2Excel.js';
 
 Vue.use(Element);
 Vue.use(Print);
+Vue.prototype.$cookie = jsCookie;
 
 // 初始化地图的用户名和密码
 window.SNTGIS.userName = 'admin';

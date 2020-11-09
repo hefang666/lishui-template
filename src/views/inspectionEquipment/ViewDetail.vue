@@ -1,10 +1,15 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="任务详情" :visible.sync="dialogView">
+    <el-dialog
+      title="任务详情"
+      :visible.sync="dialogView"
+      :close-on-click-modal="false"
+      :before-close="closeView"
+    >
       <div class="content-box form-box">
-        <div class="cancel-box" @click="closeView">
+        <!-- <div class="cancel-box" @click="closeView">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="tabs-box">
           <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
             <el-tab-pane label="综合情况" name="basicInfo">
@@ -69,6 +74,7 @@
                     :stripe="true"
                     tooltip-effect="dark"
                     :show-overflow-tooltip="true"
+                    border
                     height="400"
                     style="width: 100%"
                     :highlight-current-row="true"
@@ -77,31 +83,37 @@
                       align="center"
                       prop="name"
                       label="任务名称"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="typeStr"
                       label="任务类别"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="person"
                       label="负责人"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="endTime"
                       label="实际完成时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="suspendTimeStr"
                       label="暂停时长"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="statusStr"
                       label="任务状态"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column width="100" align="center" label="操作">
                       <template slot-scope="scope">
@@ -116,8 +128,8 @@
                   </el-table>
                 </div>
                 <page
-                  :page-data="[30, 40, 50, 100]"
-                  :total="equipmentTaskPageInfo.total"
+                  :page-data="equipmentTaskPage"
+                  :total="equipmentTaskTotal"
                   @changePageSize="changeTaskPageSize"
                   @changeCurrentPage="changeTaskCurrentPage"
                 ></page>
@@ -131,6 +143,7 @@
                     :stripe="true"
                     tooltip-effect="dark"
                     :show-overflow-tooltip="true"
+                    border
                     height="400"
                     style="width: 100%"
                     :highlight-current-row="true"
@@ -139,26 +152,31 @@
                       align="center"
                       prop="typeStr"
                       label="事件类型"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="person"
                       label="报告人"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="creationTime"
                       label="提交时间"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="errorType"
                       label="异常类型"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column
                       align="center"
                       prop="statusStr"
                       label="事件状态"
+                      show-overflow-tooltip
                     ></el-table-column>
                     <el-table-column width="100" align="center" label="操作">
                       <template slot-scope="scope">
@@ -173,8 +191,8 @@
                   </el-table>
                 </div>
                 <page
-                  :page-data="[30, 40, 50, 100]"
-                  :total="equipmentEventPageInfo.total"
+                  :page-data="equipmentEventPage"
+                  :total="equipmentEventTotal"
                   @changePageSize="changeEventPageSize"
                   @changeCurrentPage="changeEventCurrentPage"
                 ></page>
@@ -223,8 +241,10 @@ export default {
       'equipmentTaskList',
       'equipmentEventList',
       'equipmentDetails',
-      'equipmentTaskPageInfo',
-      'equipmentEventPageInfo'
+      'equipmentTaskTotal',
+      'equipmentTaskPage',
+      'equipmentEventTotal',
+      'equipmentEventPage'
     ])
   },
   data() {
@@ -400,8 +420,8 @@ export default {
         padding: 0 15px;
         .table-box {
           margin: 0 0 10px 0;
-          border: 1px solid #ddd;
-          box-sizing: border-box;
+          /* border: 1px solid #ddd;
+          box-sizing: border-box; */
         }
       }
     }

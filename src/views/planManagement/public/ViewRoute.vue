@@ -1,6 +1,11 @@
 <template>
   <div class="addTask-box dialog-box button-box">
-    <el-dialog title="查看路线" :visible.sync="dialogRoute">
+    <el-dialog
+      title="查看路线"
+      :visible.sync="dialogRoute"
+      :close-on-click-modal="false"
+      :before-close="closeRoute"
+    >
       <div class="content-box form-box">
         <div class="cancel-box" @click="closeRoute">
           <i class="el-dialog__close el-icon el-icon-close"></i>

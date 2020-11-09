@@ -84,6 +84,7 @@
     <div class="content-box">
       <div class="table-box">
         <el-table
+          v-loading="loading"
           ref="multipleTable"
           :data="taskList"
           :stripe="true"
@@ -148,15 +149,13 @@
               <div class="operate-box">
                 <el-button
                   type="text"
-                  :class="
-                    [
-                      'operate-button',
-                      scope.row['status'] != 3 ?
-                      'operate-button-active' :
-                        ''
-                    ]
+                  :class="[
+                    'operate-button',
+                    scope.row['status'] != 3 ? 'operate-button-active' : ''
+                  ]"
+                  :disabled="
+                    scope.row['status'] != 3 ? disabledTrue : disabledFalse
                   "
-                  :disabled="scope.row['status'] != 3 ? disabledTrue : disabledFalse"
                   @click="handleClose(scope.row)"
                   >关闭</el-button
                 >
@@ -164,14 +163,14 @@
                   type="text"
                   :class="[
                     'operate-button',
-                    (scope.row['status'] == 2 ||
-                    scope.row['status'] == 4)
-                    ? ''
-                    : 'operate-button-active'
+                    scope.row['status'] == 2 || scope.row['status'] == 4
+                      ? ''
+                      : 'operate-button-active'
                   ]"
                   :disabled="
-                    (scope.row['status'] == 2 ||
-                    scope.row['status'] == 4) ? disabledTrue : disabledFalse
+                    scope.row['status'] == 2 || scope.row['status'] == 4
+                      ? disabledTrue
+                      : disabledFalse
                   "
                   @click="handleComplete(scope.row)"
                   >完成</el-button
@@ -180,15 +179,15 @@
                   type="text"
                   :class="[
                     'operate-button',
-                    (scope.row['status'] == 1 ||
-                    scope.row['status'] == 3) 
-                    ? '' 
-                    : 'operate-button-active']"
-                  :disabled="(
-                    scope.row['status'] == 1 ||
-                    scope.row['status'] == 3) 
-                    ? disabledFalse
-                    : disabledTrue"
+                    scope.row['status'] == 1 || scope.row['status'] == 3
+                      ? ''
+                      : 'operate-button-active'
+                  ]"
+                  :disabled="
+                    scope.row['status'] == 1 || scope.row['status'] == 3
+                      ? disabledFalse
+                      : disabledTrue
+                  "
                   @click="handleEdit(scope.row)"
                   >修改</el-button
                 >
@@ -205,7 +204,7 @@
       </div>
       <div class="page-box">
         <page
-          :page-data="[30, 40, 50, 100]"
+          :page-data="pageData"
           :total="listTotalCount"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
@@ -217,6 +216,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -255,7 +255,9 @@ import EditTask from './editTask/EditTask.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
+  'taskManagement'
+);
 import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'TaskManagement',
@@ -268,7 +270,13 @@ export default {
     Operate
   },
   computed: {
-    ...taskState(['taskList', 'listTotalCount', 'messageText'])
+    ...taskState([
+      'taskList',
+      'listTotalCount',
+      'messageText',
+      'pageData',
+      'loading'
+    ])
   },
   data() {
     return {
@@ -288,7 +296,7 @@ export default {
       currentPage: 1,
 
       // 当前页的页数
-      pageSize: 30,
+      pageSize: 1,
 
       // 传入store的page的信息
       // pageInfo: {
@@ -341,7 +349,10 @@ export default {
       operateType: '',
 
       // 操作提示文字
-      messageT: '请确认操作'
+      messageT: '请确认操作',
+
+      // icon的class
+      iconStr: 'el-icon-warning-outline'
     };
   },
   methods: {
@@ -363,10 +374,12 @@ export default {
     onlyOne() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
         this.setMessage('只能选择一行数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else {
@@ -388,6 +401,7 @@ export default {
         } else {
           // 只能选择一行数据
           this.setMessage('该状态不能重启');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -397,17 +411,20 @@ export default {
     del() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
         let flag = false;
         this.multipleSelection.forEach(item => {
+          console.log('item :>> ', item);
           if (item.status == 3 || item.status == 5) {
             // 执行删除操作
             flag = true;
           } else {
             flag = false;
             this.setMessage('只允许删除已暂停和已关闭的任务');
+            this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           }
         });
@@ -426,6 +443,7 @@ export default {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 2) {
           this.setMessage('该状态不能暂停');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -442,6 +460,7 @@ export default {
         if (this.multipleSelection[0].statusList != 3) {
           // 关闭任务只能对已暂停状态的任务进行
           this.setMessage('该状态不能关闭');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else {
           // 操作弹窗
@@ -474,6 +493,7 @@ export default {
           this.dialogOperate = true;
         } else {
           this.setMessage('该状态不能完成');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -485,13 +505,17 @@ export default {
         Id: row.id,
         operate: 2
       };
-      this.UpdateTaskStatus(param).then(res => {
-        if (res.success) {
+      this.UpdateTaskStatus(param)
+        .then(res => {
+          if (res.success) {
+            this.iconStr = 'el-icon-circle-check';
+            this.dialogMessage = true;
+          }
+        })
+        .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+        });
     },
 
     // 修改任务
@@ -506,15 +530,19 @@ export default {
           let param = {
             Id: this.multipleSelection[0].id
           };
-          this.GetTaskDetails(param).then(res => {
-            if (res.success) {
-              this.dialogEdit = true;
-            }
-          }).catch(() => {
-            this.dialogMessage = true;
-          });
+          this.GetTaskDetails(param)
+            .then(res => {
+              if (res.success) {
+                this.dialogEdit = true;
+              }
+            })
+            .catch(() => {
+              this.iconStr = 'el-icon-warning-outline';
+              this.dialogMessage = true;
+            });
         } else {
           this.setMessage('该状态不能修改');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -525,13 +553,16 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param).then(res => {
-        if (res.success) {
-          this.dialogEdit = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.GetTaskDetails(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogEdit = true;
+          }
+        })
+        .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
     },
 
     // 查看任务
@@ -541,13 +572,16 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetTaskDetails(param).then(res => {
-          if (res.success) {
-            this.dialogView = true;
-          }
-        }).catch(() => {
-          this.dialogMessage = true;
-        });
+        this.GetTaskDetails(param)
+          .then(res => {
+            if (res.success) {
+              this.dialogView = true;
+            }
+          })
+          .catch(() => {
+            this.iconStr = 'el-icon-warning-outline';
+            this.dialogMessage = true;
+          });
       }
     },
 
@@ -556,13 +590,16 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param).then(res => {
-        if (res.success) {
-          this.dialogView = true;
-        }
-      }).catch(() => {
-        this.dialogMessage = true;
-      });
+      this.GetTaskDetails(param)
+        .then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        })
+        .catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
     },
 
     // 关闭提示消息弹窗
@@ -606,6 +643,7 @@ export default {
           endTime: this.endTime
         };
         this.searchTask(data).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         });
         this.clearSearch();
@@ -634,7 +672,8 @@ export default {
     getAddData(data) {
       console.log(data);
       this.dialogAdd = data;
-      this.dialogMessage = true;
+      // this.iconStr = 'el-icon-circle-check';
+      // this.dialogMessage = true;
       this.getData();
     },
     // 关闭查看弹窗
@@ -648,7 +687,8 @@ export default {
     // 修改后的操作
     getEditData(data) {
       this.dialogEdit = data;
-      this.dialogMessage = true;
+      // this.iconStr = 'el-icon-circle-check';
+      // this.dialogMessage = true;
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(num) {
@@ -669,40 +709,80 @@ export default {
     // 操作弹窗点击了确定
     determine(data) {
       this.dialogOperate = data.flag;
-      let param;
+      let param = {};
       if (data.type == 'restart') {
         // 重启
         param.id = this.multipleSelection[0].id;
         param.operate = 5;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'del') {
         // 删除
-        this.multipleSelection.forEach(item => {
-          let param = {
-            id: item.id
-          };
-          this.deleteTask(param);
+        let newidarr = [];
+        this.multipleSelection.map(item => {
+          newidarr.push(item.id);
         });
+        let param = {
+          id: newidarr
+        };
+        this.deleteTask(param)
+          .then(res => {
+            if (res.success) {
+              this.getData();
+            }
+          })
+          .catch(() => {
+            this.iconStr = 'el-icon-warning-outline';
+            this.dialogMessage = true;
+          });
       } else if (data.type == 'suspend') {
         // 暂停
+        console.log(this.multipleSelection[0].id);
         param.id = this.multipleSelection[0].id;
         param.operate = 1;
-        this.UpdateTaskStatus(param);
+        console.log(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'close') {
         // 关闭
         param.id = this.multipleSelection[0].id;
         param.operate = 4;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'complete') {
         // 完成
         param.id = this.multipleSelection[0].id;
         param.operate = 2;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       }
     },
     // 获取数据
     getData() {
-      
       console.log(this.currentPage);
       let param = {
         currentPage: this.currentPage,
@@ -710,6 +790,7 @@ export default {
         status: this.currentState
       };
       this.getTaskList(param).catch(() => {
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
       });
     },
@@ -737,7 +818,7 @@ export default {
         'endTime',
         'suspendTimeStr',
         'statusStr'
-      ]
+      ];
       let tableData;
       let tableName = '任务列表';
       if (this.multipleSelection.length == 0) {
@@ -750,6 +831,7 @@ export default {
   },
   mounted() {
     console.log(this.currentPage);
+    this.pageSize = this.pageData[0];
     this.getData();
   }
 };
@@ -802,7 +884,7 @@ export default {
           font-size: 12px;
           margin-right: 5px;
           .tips {
-            color: red;;
+            color: red;
           }
         }
 

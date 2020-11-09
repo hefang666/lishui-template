@@ -4,6 +4,7 @@
       <el-dialog
         title="转工单"
         :visible.sync="dialogTransfer"
+        :close-on-click-modal="false"
         :before-close="closeTransfer"
       >
         <div class="content-box form-box">
@@ -61,6 +62,7 @@
                     <el-date-picker
                       v-model="endTime"
                       type="datetime"
+                      :picker-options="pickerOptions"
                       format="yyyy-MM-dd HH:mm"
                       placeholder="预计完成时间"
                     ></el-date-picker>
@@ -225,6 +227,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :close-on-click-modal="false"
       @closeMessage="closeMessage"
     ></message>
 
@@ -252,7 +255,8 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState, mapActions: eventActions} = createNamespacedHelpers('eventManagement');
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-import {parseTime} from '@/utils/index';
+const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
+import {parseTime, judgeTime} from '@/utils/index';
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 export default {
   name: 'TransferOrder',
@@ -264,7 +268,8 @@ export default {
     Message
   },
   computed: {
-    ...eventState(['orderTypeData', 'eventDetails', 'messageText'])
+    ...eventState(['orderTypeData', 'eventDetails', 'messageText']),
+    ...uploadState(['fileListData'])
   },
   data() {
     return {
@@ -292,16 +297,24 @@ export default {
       dialogMessage: false,
 
       // 预计完成时间
-      endTime: ''
+      endTime: '',
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          // return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   methods: {
-    ...eventActions(['UpdateEvent']),
+    ...eventActions(['UpdateEvent', 'setMessage']),
     ...xunjianActions([
       'getOrganizationData',
-      'getRoleData',
-      'setMessage'
+      'getRoleData'
     ]),
+    ...uploadActions(['clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       console.log('点击了取消');
@@ -369,6 +382,13 @@ export default {
       }
 
       let time = parseTime(this.endTime, '{y}-{m}-{d} {h}:{i}');
+      let nowDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}');
+
+      if (!judgeTime(nowDate, time)) {
+        this.setMessage('预计完成时间不能小于当前时间');
+        this.dialogMessage = true;
+        return;
+      }
 
       let param = {
         Id: this.eventDetails.id,
@@ -377,13 +397,29 @@ export default {
         personId: this.personInfo.id,
         person: this.personInfo.trueName,
         planCompleteTime: time,
-        content: this.remarks
+        content: this.remarks,
+        resourceInfoList: this.fileListData
       };
-      this.UpdateEvent(param).catch(() => {
+      this.UpdateEvent(param).then(res=>{
+        if(res.success){
+          let data = false;
+          console.log('data :>> ', data);
+          this.$emit('checkedTransfer', data);
+        }
+      }).catch(() => {
         this.dialogMessage = true;
       });
-
-      this.$emit('checkedTransfer', false);
+      // console.log('要执行关闭弹窗了');
+      
+    },
+    // 点击确定或取消后清除数据填入的数据
+    clearData() {
+      this.orderType = 1;
+      this.personInfo  = {};
+      this.inCharge = '';
+      this.remarks = '';
+      this.endTime = '';
+      this.clearFileDate();
     }
   }
 };

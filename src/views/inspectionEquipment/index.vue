@@ -46,12 +46,22 @@
             label="今年转工单次数"
             show-overflow-tooltip
           ></el-table-column>
+          <el-table-column width="100" align="center" label="操作">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                class="operate-button"
+                @click="handleSee(scope.row)"
+                >查看</el-button
+              >
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="page-box">
         <page
-          :page-data="[30, 40, 50, 100]"
-          :total="400"
+          :page-data="equipmentPage"
+          :total="equipmentTotal"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
         ></page>
@@ -86,7 +96,7 @@ export default {
     Message
   },
   computed: {
-    ...mapState(['equipmentList'])
+    ...mapState(['equipmentList', 'equipmentPage', 'equipmentTotal'])
   },
   data() {
     return {
@@ -148,6 +158,15 @@ export default {
       }
     },
 
+    // 行；里的查看
+    handleSee(row) {
+      let param = {
+        Id: row.id
+      };
+      this.GetDeviceInspectionDetails(param);
+      this.dialogView = true;
+    },
+
     // 关闭提示消息弹窗
     closeMessage(data) {
       this.dialogMessage = data;
@@ -175,6 +194,8 @@ export default {
     }
   },
   mounted() {
+    this.pageSize = this.equipmentPage[0];
+
     this.getData();
   }
 };

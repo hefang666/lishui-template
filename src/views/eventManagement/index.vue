@@ -87,13 +87,14 @@
       </div>
       <div class="button-group-box">
         <el-button type="primary" plain @click="search">搜索</el-button>
-        <el-button type="primary" plain>清空</el-button>
+        <el-button type="primary" plain @click="clearData">清空</el-button>
       </div>
     </div>
     <div class="content-box">
       <div class="table-box">
         <el-table
           ref="multipleTable"
+          v-loading="loading"
           :data="eventList"
           :stripe="true"
           border
@@ -180,7 +181,7 @@
       </div>
       <div class="page-box">
         <page
-          :page-data="[30, 40, 50, 100]"
+          :page-data="eventPageData"
           :total="eventListTotal"
           @changePageSize="changePageSize"
           @changeCurrentPage="changeCurrentPage"
@@ -216,7 +217,7 @@
     <transfer-order
       :dialog-transfer="dialogTransfer"
       @closeTransfer="closeTransfer"
-      @checkedTansfer="checkedTransfer"
+      @checkedTransfer="checkedTransfer"
     ></transfer-order>
 
     <!-- 工单详情弹窗 -->
@@ -260,7 +261,9 @@ export default {
       'exceptionTypeData',
       'eventList',
       'messageText',
-      'eventListTotal'
+      'eventListTotal',
+      'loading',
+      'eventPageData'
     ])
   },
   data() {
@@ -287,9 +290,9 @@ export default {
       // 选择人员
       person: '',
       // 人员信息
-      personInfo: '',
+      personInfo: {},
       // 异常类型
-      exceptionType: 0,
+      exceptionType: 1,
       // 提交时间
       submissionTime: '',
 
@@ -372,16 +375,35 @@ export default {
 
     // 搜索
     search() {
+      console.log(this.exceptionType);
+      console.log(this.exceptionType == '');
+
+      if (this.exceptionType == '') {
+        this.setMessage('异常类型不能为空');
+        this.dialogMessage = true;
+        return;
+      }
+
       let time = parseTime(this.submissionTime, '{y}-{m}-{d}');
       let param = {
         errorType: this.exceptionType,
         creationName: this.personInfo.trueName,
         creationTime: time,
-        pageIndex: 1,
-        maxResultCount: 30,
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize,
       };
+      console.log(param);
       this.GetEventList(param);
+      this.clearData();
+    },
+    // 点击搜索后，搜索框内容置为原样
+    clearData() {
+      this.exceptionType = 1;
+      this.personInfo = {};
+      this.person = '';
+      this.submissionTime = '';
       this.isScreen = !this.isScreen;
+      this.screen = '筛选';
     },
 
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
@@ -528,7 +550,10 @@ export default {
 
     // 确定转工单
     checkedTransfer(data) {
+      // console.log(data);
+      console.log('data++++ :>> ', data);
       this.dialogTransfer = data;
+      this.getData();
     },
 
     // 多选选择后拿到的数据
@@ -585,10 +610,18 @@ export default {
     },
 
     getData() {
-      let param = {
-        pageIndex: this.currentPage,
-        maxResultCount: this.pageSize,
-        status: this.currentIndex
+      let param;
+      if (this.currentIndex == 0) {
+        param = {
+          pageIndex: this.currentPage,
+          maxResultCount: this.pageSize,
+        }
+      } else {
+        param = {
+          pageIndex: this.currentPage,
+          maxResultCount: this.pageSize,
+          status: this.currentIndex,
+        }
       }
       this.GetEventList(param).catch(() => {
         this.dialogMessage = true;
@@ -624,6 +657,7 @@ export default {
     }
   },
   mounted() {
+    this.pageSize = this.eventPageData[0];
     this.getData();
   }
 }

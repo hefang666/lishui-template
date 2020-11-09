@@ -27,7 +27,7 @@
         <template slot-scope="scope">
           <el-button type="primary" @click="showPreview(scope.row)">预览</el-button>
           <el-button type="primary" @click="download(scope.row)">下载</el-button>
-          <el-button type="primary">删除</el-button>
+          <el-button type="primary" @click="deletePic(scope.$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -60,7 +60,7 @@ export default {
     ...mapState(['fileListData', 'actionUrl'])
   },
   methods: {
-    ...mapActions(['setFileListData', 'downloadFile']),
+    ...mapActions(['setFileListData', 'downloadFile', 'delFil']),
     // 上传成功后
     handleSuccess(response) {
       response.result.items.forEach(item => {
@@ -91,6 +91,14 @@ export default {
         downLoadName: row.fileName
       }
       this.downloadFile(param);
+    },
+    // 删除
+    deletePic(index) {
+      console.log(index);
+      var arr = ['a', 'b', 'c', 'd'];
+      arr.splice(0, 1);
+      console.log(arr);
+      this.delFil(index);
     }
   }
 }

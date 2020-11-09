@@ -1,6 +1,11 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
-    <el-dialog title="选择人员" :visible.sync="dialogCharge">
+    <el-dialog
+      title="选择人员"
+      :visible.sync="dialogCharge"
+      :close-on-click-modal="false"
+      :before-close="closeChoosePeople"
+    >
       <div class="content-box">
         <div class="cancel-box" @click="closeChoosePeople">
           <i class="el-dialog__close el-icon el-icon-close"></i>

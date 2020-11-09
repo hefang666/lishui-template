@@ -509,3 +509,13 @@ export function exportExcel(header, fieldName, data, tableName) {
 export function formatJson(filterVal, jsonData) {
   return jsonData.map(v => filterVal.map(j => v[j]));
 }
+
+/**
+ * 验证输入内容是否包含特殊字符
+ * @param {data} 字符串
+ */
+export function hasSpecialCharts(data) {
+  var reg = /[\'\"\\<>;&=#]/;
+  // var reg = /[`~!#$%^&*()_\-+=<>?:\"{}|,.\/;'\\[\]]/im;
+  return reg.test(data);
+}

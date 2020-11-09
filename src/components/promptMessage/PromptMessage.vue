@@ -11,7 +11,7 @@
         </div> -->
         <div class="message-box">
           <div class="icon-box">
-            <i class="el-icoon el-icon-warning-outline"></i>
+            <i :class="['el-icoon',icon]"></i>
           </div>
           <div class="message">{{ message }}</div>
         </div>
@@ -25,7 +25,20 @@
 
 <script>
 export default {
-  props: ['dialogMessage', 'message'],
+  props: {
+    dialogMessage: {
+      type: Boolean,
+      default: false
+    },
+    message: {
+      type: String,
+      default: ''
+    },
+    icon: {
+      type: String,
+      default: 'el-icon-warning-outline'
+    }
+  },
   methods: {
     closeMessage() {
       let data = false;
@@ -89,6 +102,12 @@ export default {
         text-align: center;
         font-size: 33px;
         color: #e6ae35;
+      }
+      .el-icon-warning-outline {
+        color: #e6ae35;
+      }
+      .el-icon-circle-check {
+        color: green;
       }
       .message {
         text-align: center;

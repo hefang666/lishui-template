@@ -1,10 +1,15 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
-    <el-dialog title="选择路线" :visible.sync="dialogArea">
+    <el-dialog
+      title="选择路线"
+      :visible.sync="dialogArea"
+      :close-on-click-modal="false"
+      :before-close="closeChooseArea"
+    >
       <div class="content-box">
-        <div class="cancel-box" @click="closeChooseArea">
+        <!-- <div class="cancel-box" @click="closeChooseArea">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="content_box">
           <div class="table-box">
             <el-table

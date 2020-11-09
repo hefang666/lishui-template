@@ -1,5 +1,8 @@
 <template>
-  <div class="choosePeople-box dialog-box button-box">
+  <div
+    class="choosePeople-box dialog-box button-box"
+    @click.stop="closeShowBox"
+  >
     <el-dialog
       title="选择人员"
       :visible="dialogCharge"
@@ -61,7 +64,7 @@
           </div>
           <div class="content-right">
             <div class="content-right-top">
-              <div class="search-box">
+              <!-- <div class="search-box">
                 <el-input
                   placeholder="请输入内容"
                   prefix-icon="el-icon-search"
@@ -70,14 +73,14 @@
                 <el-button
                   class="search-button"
                   type="primary"
-                  @click="searchPeople"
+                  @click.stop="searchPeople"
                 >
                   查询
                 </el-button>
-              </div>
+              </div> -->
               <div class="selected-person-box">
                 <div class="selected-button">
-                  <el-button type="primary" @click="changeShowBox">
+                  <el-button type="primary" @click.stop="changeShowBox">
                     已选人员
                     <i
                       :class="
@@ -104,6 +107,7 @@
             <div class="table-box">
               <el-table
                 v-if="selectType == 'single'"
+                v-loading="loading"
                 :data="personList"
                 :stripe="true"
                 tooltip-effect="dark"
@@ -115,16 +119,27 @@
                 <el-table-column
                   prop="loginAccount"
                   label="账号"
+                  show-overflow-tooltip
                 ></el-table-column>
-                <el-table-column prop="nickName" label="姓名"></el-table-column>
-                <el-table-column prop="orgName" label="部门"></el-table-column>
+                <el-table-column
+                  prop="nickName"
+                  label="姓名"
+                  show-overflow-tooltip
+                ></el-table-column>
+                <el-table-column
+                  prop="orgName"
+                  label="部门"
+                  show-overflow-tooltip
+                ></el-table-column>
                 <el-table-column
                   prop="mobile"
                   label="联系方式"
+                  show-overflow-tooltip
                 ></el-table-column>
               </el-table>
               <el-table
                 v-if="selectType == 'multiple'"
+                v-loading="loading"
                 ref="multipleTable"
                 :data="personList"
                 :stripe="true"
@@ -138,18 +153,28 @@
                 <el-table-column
                   prop="loginAccount"
                   label="账号"
+                  show-overflow-tooltip
                 ></el-table-column>
-                <el-table-column prop="nickName" label="姓名"></el-table-column>
-                <el-table-column prop="orgName" label="部门"></el-table-column>
+                <el-table-column
+                  prop="nickName"
+                  label="姓名"
+                  show-overflow-tooltip
+                ></el-table-column>
+                <el-table-column
+                  prop="orgName"
+                  label="部门"
+                  show-overflow-tooltip
+                ></el-table-column>
                 <el-table-column
                   prop="mobile"
                   label="联系方式"
+                  show-overflow-tooltip
                 ></el-table-column>
               </el-table>
             </div>
             <div v-if="personList.length != 0" class="page-box">
               <page
-                :page-data="[30, 40, 50, 100]"
+                :page-data="personPageData"
                 :total="persontotalCount"
                 @changePageSize="changePageSize"
                 @changeCurrentPage="changeCurrentPage"
@@ -166,24 +191,42 @@
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="closeChoosePeople">取 消</el-button>
-        <el-button type="primary" @click="determine">确 定</el-button>
+        <el-button @click.stop="closeChoosePeople">取 消</el-button>
+        <el-button type="primary" @click.stop="determine">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page.vue';
 import LayerTree from '@/components/tree/LayerTree.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('xunjianPublic');
 export default {
   name: 'ChoosePeople',
-  props: ['dialogCharge', 'selectType'],
+  // props: ['dialogCharge', 'selectType'],
+  props:{
+    dialogCharge:{
+      type:Boolean
+    },
+    selectType:{
+      type:String,
+      default:'single'
+    }
+  },
   components: {
     Page,
-    LayerTree
+    LayerTree,
+    Message
   },
   data() {
     return {
@@ -207,7 +250,7 @@ export default {
         }
       ],
       // 返回的人员总数据有多少条
-      total: 100,
+      // total: 100,
       // 已经选中的人员
       selectedData: [],
       // 多选后的数据
@@ -225,8 +268,14 @@ export default {
       pageSize: 30,
       // 当前dialog是否显示了
       dialogShow: false,
-      typeId: 0
+      typeId: 0,
+
+      // 是否显示提示消息弹窗
+      dialogMessage: false
     };
+  },
+  mounted() {
+    this.pageSize = this.personPageData[0];
   },
   computed: {
     ...mapState([
@@ -234,11 +283,14 @@ export default {
       'organizationData',
       'pinData',
       'roleData',
-      'persontotalCount'
+      'persontotalCount',
+      'loading',
+      'personPageData',
+      'messageText'
     ])
   },
   methods: {
-    ...mapActions(['getPeopleList', 'getOrganizationData']),
+    ...mapActions(['getPeopleList', 'getOrganizationData', 'setMessage']),
     closeChoosePeople() {
       let data = {
         dialogCharge: false
@@ -259,8 +311,11 @@ export default {
     },
     // 点击确定
     determine() {
+      console.log(this.selectedData);
       if (this.selectedData.length == 0) {
-        alert('请选择负责人！');
+        this.setMessage('请选择负责人！');
+        this.dialogMessage = true;
+        // alert('请选择负责人！');
         return;
       } else {
         let data = {
@@ -270,7 +325,12 @@ export default {
         };
 
         this.$emit('checkedPerson', data);
+        this.clearPerson();
       }
+    },
+    // 清除选中的数据
+    clearPerson(){
+      this.selectedData = [];
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -286,6 +346,10 @@ export default {
     // 是否显示已选人员
     changeShowBox() {
       this.showSelectBox = !this.showSelectBox;
+    },
+    // 点击其他位置关闭已选人员
+    closeShowBox() {
+      this.showSelectBox = false;
     },
     // 选择搜索类型
     getType(val) {
@@ -326,7 +390,7 @@ export default {
         alert('请输入选择关键字');
         return;
       }
-
+      
       let param = {
         SelectType: this.typeSelectValue,
         TypeId: this.typeId,
@@ -335,6 +399,10 @@ export default {
         IsContainSublevel: false
       };
       this.getPeopleList(param);
+    },
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
     }
   }
 };
@@ -343,7 +411,7 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/public.scss';
 .choosePeople-box {
-  /deep/ .el-dialog {
+  /deep/ & > .el-dialog {
     width: 900px !important;
   }
   .content-box {
@@ -393,8 +461,9 @@ export default {
         flex: 1;
 
         .content-right-top {
-          display: flex;
-          justify-content: space-between;
+          /* display: flex;
+          justify-content: space-between; */
+          text-align: right;
 
           .selected-person-box {
             position: relative;
@@ -439,6 +508,7 @@ export default {
     .table-box {
       margin: 10px 0;
       border: 1px solid #ddd;
+      border-bottom: none;
       box-sizing: border-box;
 
       .el-table--striped

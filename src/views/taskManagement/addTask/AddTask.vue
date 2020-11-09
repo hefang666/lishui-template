@@ -3,6 +3,7 @@
     <el-dialog
       title="新增任务"
       :visible.sync="dialogAdd"
+      :close-on-click-modal="false"
       :before-close="closeAdd"
     >
       <div class="content-box form-box">
@@ -110,15 +111,12 @@
                     plain
                     v-if="areaInfo.name != ''"
                     v-model="areaInfo.name"
-                    >{{ areaInfo.name }}</el-button
                   >
-                  <el-button
-                    type="primary"
-                    plain
-                    @click="chooseArea"
-                  >
+                    {{ areaInfo.name }}
+                  </el-button>
+                  <el-button type="primary" plain @click="chooseArea">
                     选择片区
-                  </el-button >
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -151,6 +149,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -176,7 +175,9 @@ import ChooseArea from '@/views/public/ChooseArea.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
-const {mapState: taskState ,mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
+  'taskManagement'
+);
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   props: ['dialogAdd'],
@@ -201,7 +202,7 @@ export default {
 
       // 开始时间
       estimatedStartTime: '',
-      
+
       // 结束时间
       estimatedEndTime: '',
 
@@ -217,7 +218,7 @@ export default {
         id: '',
         name: '',
         pipelineLength: 0,
-        pointCount: 0,
+        pointCount: 0
       },
 
       // 备注
@@ -242,23 +243,22 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
-          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+          return time.getTime() <= Date.now(); //禁用今天以及以前的日期
         }
-      }
+      },
+
+      iconStr: 'el-icon-warning-outline'
     };
   },
   methods: {
-    ...xunjianActions([
-      'getOrganizationData',
-      'getRoleData',
-      'getAreaLists'
-    ]),
+    ...xunjianActions(['getOrganizationData', 'getRoleData', 'getAreaLists']),
     ...taskActions(['addTask', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       let data = false;
       console.log(data);
       this.$emit('closeAdd', data);
+      this.clearData();
     },
     // 点击选择负责人按钮
     choosePerson() {
@@ -283,30 +283,40 @@ export default {
       // 验证
       if (this.taskName == '') {
         this.setMessage('任务名称不能为空');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.personId == '') {
         this.setMessage('请选择负责人！');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.estimatedStartTime == '') {
         this.setMessage('请选择任务开始时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       } else {
-        this.estimatedStartTime = parseTime(this.estimatedStartTime, '{y}-{m}-{d} {h}:{i}');
+        this.estimatedStartTime = parseTime(
+          this.estimatedStartTime,
+          '{y}-{m}-{d} {h}:{i}'
+        );
       }
 
       if (this.estimatedEndTime == '') {
         this.setMessage('请选择任务结束时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       } else {
-        this.estimatedEndTime = parseTime(this.estimatedEndTime, '{y}-{m}-{d} {h}:{i}');
+        this.estimatedEndTime = parseTime(
+          this.estimatedEndTime,
+          '{y}-{m}-{d} {h}:{i}'
+        );
       }
 
       let now = new Date();
@@ -314,29 +324,34 @@ export default {
       if (judgeTime(now, this.estimatedStartTime)) {
         if (!judgeTime(this.estimatedStartTime, this.estimatedEndTime)) {
           this.setMessage('任务结束时间必须大于等于开始时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
           return;
         }
       } else {
         this.setMessage('任务开始时间必须大于当前时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.taskType == '') {
         this.setMessage('请选择任务类型');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
-      if (this.areaInfo.name == '') {
+      if (this.areaInfo.id == '') {
         this.setMessage('请选择任务片区');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.remarks == '') {
         this.setMessage('请输入任务备注');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
@@ -350,25 +365,54 @@ export default {
         type: this.taskType,
         person: this.inCharge,
         remark: this.remarks
-      }
+      };
 
-      this.addTask(param).then(res => {
-        if (res.success) {
-          let data = false;
-          console.log(data);
-          this.$emit('getAddData', data);
-        }
-      });
+      this.addTask(param)
+        .then(res => {
+          if (res.success) {
+            let data = false;
+            this.setMessage('修改成功');
+            this.iconStr = 'el-icon-circle-check';
+            this.dialogMessage = true;
+            this.$emit('getAddData', data);
+            this.clearData();
+          }
+        })
+        .catch(() => {
+          this.dialogMessage = true;
+        });
     },
+
+    // 清除数据
+    clearData() {
+      this.taskName = '';
+      this.personId = '';
+      this.estimatedStartTime = '';
+      this.estimatedEndTime = '';
+      this.areaInfo = {
+        areaPoint: '',
+        id: '',
+        name: '',
+        pipelineLength: 0,
+        pointCount: 0
+      };
+      this.taskType = '';
+      this.inCharge = '';
+      this.remarks = '';
+    },
+
     // 点击选择片区按钮
     chooseArea() {
       let param = {
         pageIndex: 1,
         maxResultCount: 30
-      }
+      };
       console.log(param);
-      this.getAreaLists(param);
-      this.dialogArea = true;
+      this.getAreaLists(param).then(res => {
+        if (res.success) {
+          this.dialogArea = true;
+        }
+      });
     },
     // 关闭选择片区弹窗
     closeChooseArea(data) {

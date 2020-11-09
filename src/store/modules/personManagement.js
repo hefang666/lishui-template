@@ -42,7 +42,9 @@ var state = {
   checkedId: '',
 
   // 下载文件地址
-  httpUrl: 'http://192.168.9.44:9090/'
+  httpUrl: 'http://192.168.9.44:9090/',
+  // 请求列表时的加载状态
+  loading: false
 };
 
 var mutations = {
@@ -97,12 +99,17 @@ var mutations = {
   // 设置选中的人员id
   set_checkedId: function(state, data) {
     state.checkedId = data;
+  },
+  // 改变加载状态
+  set_loading: function(state, data) {
+    state.loading = data;
   }
 };
 
 var actions = {
   // 获取今天的列表
   GetByDay({commit}, data) {
+    commit('set_loading', true);
     return new Promise((resolve, reject) => {
       GetByDay(data)
         .then(response => {
@@ -110,11 +117,13 @@ var actions = {
           if (response.success) {
             commit('set_personList', response.result.items);
             commit('set_personTotal', response.result.totalCount);
+            commit('set_loading', false);
             resolve(response);
           }
         })
         .catch(error => {
           commit('set_message', error.message);
+          commit('set_loading', false);
           reject(error);
         });
     });

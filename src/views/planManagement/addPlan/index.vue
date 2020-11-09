@@ -1,8 +1,9 @@
 <template>
   <div class="addTask-box dialog-box button-box">
     <el-dialog
-      title="新增任务"
+      title="新增计划"
       :visible.sync="dialogAdd"
+      :close-on-click-modal="false"
       :before-close="closeAdd"
     >
       <div class="content-box form-box">
@@ -448,7 +449,7 @@ export default {
         target = ev.target || ev.srcElement,
         opStr = target.getAttribute('data-op'),
         opIndex = target.getAttribute('data-index');
-      console.log(opIndex);
+      // console.log(opIndex);
       if (opStr == 'jia') {
         if (this.customNum < 12) {
           this.customDate.push({
@@ -457,7 +458,9 @@ export default {
           });
           this.customNum++;
         } else {
-          console.log('最多只能添加12条数据');
+          this.setMessage('最多只能添加12条数据');
+          this.dialogMessage = true;
+          // console.log('最多只能添加12条数据');
         }
       } else if (opStr == 'jian') {
         this.customDate.splice(opIndex, 1);
@@ -594,17 +597,16 @@ export default {
             let myDate = new Date();
             myDate = parseTime(myDate, '{y}-{m}-{d} {h}:{i}');
             if (judgeTime(myDate, this.customDate[i].beginTime)) {
-              console.log('符合条件');
+              // console.log('符合条件');
               if (
                 judgeTime(
                   this.customDate[i].beginTime,
-                  this.customDate[i].endTime,
-                  24
+                  this.customDate[i].endTime
                 )
               ) {
                 console.log('符合');
               } else {
-                this.setMessage('第' + (i + 1) + '次结束时间未大于开始时间24小时');
+                this.setMessage('第' + (i + 1) + '次结束时间未大于开始时间');
                 this.dialogMessage = true;
                 return;
               }
@@ -627,13 +629,12 @@ export default {
               if (
                 judgeTime(
                   this.customDate[i].beginTime,
-                  this.customDate[i].endTime,
-                  24
+                  this.customDate[i].endTime
                 )
               ) {
                 console.log('符合');
               } else {
-                this.setMessage('第' + (i + 1) + '次的开始时间未大于当前时间');
+                this.setMessage('第' + (i + 1) + '次的结束时间未大于开始时间');
                 this.dialogMessage = true;
                 return;
               }

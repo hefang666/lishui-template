@@ -19,6 +19,15 @@ export function addPlan(data) {
   });
 }
 
+// 修改计划
+export function updatePlan(data) {
+  return request({
+    url: api + 'PlanService/UpdatePlan',
+    method: 'post',
+    data
+  });
+}
+
 // 获取详情
 export function getPlanDetails(data) {
   return request({
