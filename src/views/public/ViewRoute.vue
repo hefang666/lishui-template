@@ -35,6 +35,7 @@
   </div>
 </template>
 
+
 <script>
 import ChooseEquip from '@/views/public/ChooseEquipment.vue';
 import MapRoute from '@/components/mapRoute/index.vue';
@@ -65,8 +66,8 @@ export default {
   },
   watch: {
     areaDetailsInfo: function(areaInfo) {
-      // console.log(this.areaDetailsInfo);
       if(!this.$refs.map) return false;
+      this.isArea = true;
       this.$refs.map.setAreaInfo({
         areaPoint: areaInfo.areaPoint,
         deviceLists: areaInfo.deviceLists,
@@ -75,7 +76,20 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      isArea: false
+    };
+  },
+  mounted() {
+    var areaInfo = this.areaDetailsInfo;
+    if(!this.isArea && areaInfo.areaPoint) {
+      this.isArea = true
+      this.$refs.map.setAreaInfo({
+        areaPoint: areaInfo.areaPoint,
+        deviceLists: areaInfo.deviceLists,
+        pipelineLists: areaInfo.pipelineLists
+      })
+    }
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗

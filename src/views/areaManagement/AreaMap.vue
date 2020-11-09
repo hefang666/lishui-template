@@ -197,6 +197,7 @@
           if (_this.drawMapAreaSource.getFeatures().length > 0) {
             event.preventDefault();
             let coordinate = _this.map.getEventCoordinate(event);
+            console.log(coordinate)
             menuOverlay.setPosition(coordinate);
           }
         })
