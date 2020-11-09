@@ -69,8 +69,8 @@
                     class="enclosure-item"
                   >
                     <div class="enclosure-title">{{ item.fileName}}</div>
-                    <div class="enclosure-download">下载</div>
-                    <div class="enclosure-preview">预览</div>
+                    <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
+                    <div class="enclosure-preview" @click="previewImg(item)">预览</div>
                   </div>
                 </div>
               </div>
@@ -228,23 +228,58 @@
         <el-button @click="closeView">返 回</el-button>
       </div>
     </el-dialog>
+
+    <!-- 预览弹窗 -->
+    <preview
+      :dialog-preview="dialogPreview"
+      :file-data="fileData"
+      @closePreview="closePreview"
+    ></preview>
   </div>
 </template>
 
 <script>
+import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('workOrderManagement');
+const {mapState: workOrderState} = createNamespacedHelpers('workOrderManagement');
+const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 export default {
   name: 'OrderDetail',
   props: ['dialogView'],
+  components: {
+    Preview
+  },
+  data() {
+    return {
+      // 是否显示预览弹窗
+      dialogPreview: false,
+
+      // 图片信息
+      fileData: {}
+    }
+  },
   computed: {
-    ...mapState(['orderDetail'])
+    ...workOrderState(['orderDetail'])
   },
   methods: {
+    ...uploadActions(['downloadFile']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
       let data = false;
       this.$emit('closeView', data);
+    },
+    // 关闭预览弹窗
+    closePreview(data) {
+      this.dialogPreview = data;
+    },
+    // 预览
+    previewImg(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
+    },
+    // 下载
+    downLoadPic(data) {
+      this.downloadFile(data);
     }
   }
 };

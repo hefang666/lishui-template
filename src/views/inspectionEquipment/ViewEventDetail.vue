@@ -111,10 +111,11 @@
                       @click="openPre(item)"
                       class="img-box"
                     >
-                    <el-image
-                      style="width: 100%; height: 100%"
-                      :src="httpUrl + item.url"
-                      fit="cover"></el-image>
+                      <el-image
+                        style="width: 100%; height: 100%"
+                        :src="httpUrl + item.url"
+                        fit="cover"
+                      ></el-image>
                     </div>
                   </div>
                 </div>

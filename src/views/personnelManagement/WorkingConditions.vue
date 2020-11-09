@@ -236,7 +236,7 @@
                     ></el-table-column>
                     <el-table-column
                       align="center"
-                      prop="createTime"
+                      prop="creationTime"
                       label="提交时间"
                       show-overflow-tooltip
                     ></el-table-column>

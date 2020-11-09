@@ -3,6 +3,7 @@
     <el-dialog
       title="查看路线"
       :visible.sync="dialogRoute"
+      :close-on-click-modal="false"
       :before-close="closeRoute"
     >
       <div class="content-box form-box">

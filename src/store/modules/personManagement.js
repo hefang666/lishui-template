@@ -222,9 +222,9 @@ var actions = {
           if (response.success) {
             if (response.result.items.length != 0) {
               response.result.items.forEach(item => {
-                if (item.createTime != null || item.createTime != '') {
-                  item.createTime = parseTime(
-                    item.createTime,
+                if (item.creationTime != null || item.creationTime != '') {
+                  item.creationTime = parseTime(
+                    item.creationTime,
                     '{y}-{m}-{d} {h}:{i}'
                   );
                 }

@@ -342,8 +342,14 @@ export default {
         id: row.id,
         status: row.status
       };
-      this.GetPointDetails(param);
-      this.dialogEqui = true;
+      this.GetPointDetails(param).then(res => {
+        if (res.success) {
+          this.dialogEqui = true;
+        }
+      }).catch(() => {
+        console.log('获取详情失败');
+      });
+      
     },
     // 获取从设备点详细信息弹窗传来的值
     getEquiData(data) {

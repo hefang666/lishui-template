@@ -312,7 +312,21 @@ export default {
     },
 
     // 出勤查看
-    attenadanceSee() {},
+    attenadanceSee() {
+      if (this.onlyOne()) {
+        this.setCheckedId(this.multipleSelection[0].userId);
+        let param = {
+          id: this.multipleSelection[0].userId
+        };
+        this.getDetails(param).then(res => {
+          if (res.success) {
+            this.dialogWorking = true;
+          }
+        }).catch(() => {
+          this.dialogMessage = true;
+        });
+      }
+    },
 
     // 点击表格里的出勤查看
     AttenadanceCheck(row) {

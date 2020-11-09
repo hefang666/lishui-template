@@ -54,6 +54,7 @@
             <div class="list-items">
               <div class="item-title">计划周期：</div>
               <div class="item-content">
+                <span>{{ planDetails.cycleStr }}</span>
                 <div
                   v-for="(item, index) in planDetails.taskLists"
                   :key="index"
@@ -82,6 +83,7 @@
 import ViewRoute from '@/views/public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: planState} = createNamespacedHelpers('planManagement');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'PlanDetail',
   props: ['dialogPlanDetail'],
@@ -97,6 +99,7 @@ export default {
     }
   },
   methods: {
+    ...areaActions(['getAreaDetailInfo']),
     closePlan(){
       let data = {
         dialogPlanDetail: false
@@ -105,7 +108,19 @@ export default {
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
-      this.dialogRoute = true;
+      // this.dialogRoute = true;
+      let param = {
+        Id: this.planDetails.areaId
+      }
+      this.getAreaDetailInfo(param).then(res => {
+        if (res.success) {
+          // console.log(res);
+          this.dialogRoute = true;
+        }
+      }).catch(() => {
+        // this.setMessage('未获取到区域id，无法查看路线');
+        // this.dialogMessage = true;
+      })
     },
     // 关闭查看路线弹窗
     getRouteData(data) {

@@ -78,10 +78,10 @@
     </el-dialog>
 
     <!-- 设备点详情弹窗 -->
-    <equipment-info
+    <!-- <equipment-info
       :dialog-equi="dialogEqui"
       @getEquiData="getEquiData"
-    ></equipment-info>
+    ></equipment-info> -->
 
     <!-- 查看路线弹窗 -->
     <view-route
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import EquipmentInfo from './EquipmentInformation.vue';
+// import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: planState} = createNamespacedHelpers('planManagement');
@@ -101,7 +101,7 @@ export default {
   name: 'AddTask',
   props: ['dialogView'],
   components: {
-    EquipmentInfo,
+    // EquipmentInfo,
     ViewRoute
   },
   computed: {
@@ -111,39 +111,11 @@ export default {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'basicInfo',
-      addForm: {
-        taskName: '巡检任务1',
-        inCharge: '测试人员',
-        estimatedStartTime: '2020-09-23 23:00:00',
-        estimatedEndTime: '2020-09-24 23:00:00',
-        taskType: '普通任务',
-        inspectionArea: '巡检片区1',
-        remarks: '这里是备注内容'
-      },
-      tableData: [
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '正常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '异常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '未知',
-          inspectionStatus: '未巡检'
-        }
-      ],
+      
       checkedName: '',
 
       // 是否显示设备点巡检信息详情弹窗
-      dialogEqui: false,
+      // dialogEqui: false,
 
       // 是否显示查看路线弹窗
       dialogRoute: false
@@ -195,9 +167,9 @@ export default {
       this.checkedName = val.name;
     },
     // 获取从设备点详细信息弹窗传来的值
-    getEquiData(data) {
-      this.dialogEqui = data.dialogEqui;
-    },
+    // getEquiData(data) {
+    //   this.dialogEqui = data.dialogEqui;
+    // },
     // 关闭查看路线弹窗
     getRouteData(data) {
       this.dialogRoute = data.dialogRoute;

@@ -89,8 +89,8 @@
                     class="enclosure-item"
                   >
                     <div class="enclosure-title">{{ item.fileName }}</div>
-                    <div class="enclosure-download">下载</div>
-                    <div class="enclosure-preview">预览</div>
+                    <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
+                    <div class="enclosure-preview" @click="previewImg(item)">预览</div>
                   </div>
                 </div>
               </div>
@@ -102,28 +102,60 @@
         <el-button @click="closeEqui">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 预览弹窗 -->
+    <preview
+      :dialog-preview="dialogPreview"
+      :file-data="fileData"
+      @closePreview="closePreview"
+    ></preview>
   </div>
 </template>
 
 <script>
+import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState} = createNamespacedHelpers('taskManagement');
+const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 export default {
   name: 'EquipmentInformation',
   props: ['dialogEqui'],
+  components: {
+    Preview
+  },
   data() {
-    return {};
+    return {
+      // 是否显示预览弹窗
+      dialogPreview: false,
+
+      // 图片信息
+      fileData: {}
+    };
   },
   computed: {
-    ...mapState(['pointDetails'])
+    ...taskState(['pointDetails'])
   },
   methods: {
+    ...uploadActions(['downloadFile']),
     closeEqui() {
       let data = {
         dialogEqui: false,
         data: []
       };
       this.$emit('getEquiData', data);
+    },
+    // 关闭预览弹窗
+    closePreview(data) {
+      this.dialogPreview = data;
+    },
+    // 预览
+    previewImg(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
+    },
+    // 下载
+    downLoadPic(data) {
+      this.downloadFile(data);
     }
   }
 };

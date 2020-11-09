@@ -42,8 +42,8 @@
                     class="enclosure-item"
                   >
                     <div class="enclosure-title">{{ item. fileName}}</div>
-                    <div class="enclosure-download">下载</div>
-                    <div class="enclosure-preview">预览</div>
+                    <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
+                    <div class="enclosure-preview" @click="previewImg(item)">预览</div>
                   </div>
                 </div>
               </div>
@@ -172,28 +172,45 @@
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
     ></view-route>
+
+    <!-- 预览弹窗 -->
+    <preview
+      :dialog-preview="dialogPreview"
+      :file-data="fileData"
+      @closePreview="closePreview"
+    ></preview>
   </div>
 </template>
 
 <script>
 import ViewRoute from '@/views/public/ViewRoute.vue';
+import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: orderState} = createNamespacedHelpers('workOrderManagement');
+const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 export default {
   name: 'OrderDetail',
   props: ['dialogOrderDetail'],
   components: {
-    ViewRoute
+    ViewRoute,
+    Preview
   },
   data() {
     return {
-      dialogRoute: false
+      dialogRoute: false,
+
+      // 是否显示预览弹窗
+      dialogPreview: false,
+
+      // 图片信息
+      fileData: {}
     }
   },
   computed: {
     ...orderState(['orderDetail'])
   },
   methods: {
+    ...uploadActions(['downloadFile']),
     closeOrder(){
       let data = {
         dialogOrderDetail: false
@@ -207,6 +224,19 @@ export default {
     // 关闭查看路线弹窗
     getRouteData(data) {
       this.dialogRoute = data.dialogRoute;
+    },
+    // 关闭预览弹窗
+    closePreview(data) {
+      this.dialogPreview = data;
+    },
+    // 预览
+    previewImg(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
+    },
+    // 下载
+    downLoadPic(data) {
+      this.downloadFile(data);
     }
   }
 }

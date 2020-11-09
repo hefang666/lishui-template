@@ -119,9 +119,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <el-form-item label="附件上传：" label-width="120px">
-                <upload ref="upload" @showPreview="showPreview"></upload>
-              </el-form-item> -->
             </el-form>
             <div v-if="orderDetails.eventDetails != null" class="list-box">
               <div class="list-item">
@@ -227,8 +224,8 @@
                         class="enclosure-item"
                       >
                         <div class="enclosure-title">{{ item.fileName }}</div>
-                        <div class="enclosure-download">下载</div>
-                        <div class="enclosure-preview">预览</div>
+                        <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
+                        <div class="enclosure-preview" @click="previewImg(item)">预览</div>
                       </div>
                     </div>
                   </div>
@@ -273,6 +270,7 @@ import Preview from '@/components/upLoad/Preview.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
+const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditOrder',
@@ -311,6 +309,7 @@ export default {
   },
   methods: {
     ...workOrderActions(['setMessage']),
+    ...uploadActions(['downloadFile']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       console.log('点击了取消');
@@ -390,6 +389,15 @@ export default {
       }
 
       // 修改工单操作
+    },
+    // 预览
+    previewImg(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
+    },
+    // 下载
+    downLoadPic(data) {
+      this.downloadFile(data);
     }
   }
 };
