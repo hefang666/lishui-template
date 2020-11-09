@@ -301,6 +301,9 @@ var actions = {
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
+            if (data.startTime != null || data.startTime != '') {
+              data.startTime = parseTime(data.startTime, '{y}-{m}-{d} {h}:{i}');
+            }
             if (data.endTime != null || data.endTime != '') {
               data.endTime = parseTime(data.endTime, '{y}-{m}-{d} {h}:{i}');
             }

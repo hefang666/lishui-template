@@ -114,6 +114,7 @@
                     v-model="editPlanDetails.endTime"
                     type="date"
                     format="yyyy-MM-dd"
+                    :picker-options="pickerOptions"
                     placeholder="请选择日期"
                   ></el-date-picker>
                 </div>
@@ -166,6 +167,7 @@ const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 const {mapState: planState, mapActions: planActions} = createNamespacedHelpers(
   'planManagement'
 );
+import {judgeTime, parseTime, mGetDate} from '@/utils/index';
 export default {
   name: 'EditTask',
   props: ['dialogEdit'],
@@ -183,7 +185,18 @@ export default {
       // 巡检片区弹窗状态
       dialogArea: false,
       // 参与人弹窗
-      dialogPar: false
+      dialogPar: false,
+
+      // 选择的参与人
+      perData: [],
+
+      // 日期限制
+      pickerOptions: {
+        disabledDate(time) {
+          // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
+          return time.getTime() <= Date.now();    //禁用今天以及以前的日期
+        }
+      }
     };
   },
   computed: {
@@ -200,6 +213,8 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
+      this.getOrganizationData();
+      this.getRoleData();
       this.dialogCharge = true;
     },
     // 关闭选择负责人弹窗
@@ -209,7 +224,8 @@ export default {
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
       this.dialogCharge = data.dialogCharge;
-      this.editForm.inCharge = data.name;
+      this.editPlanDetails.person = data.personinfo[0].trueName;
+      this.editPlanDetails.personId = data.personinfo[0].id;
     },
     // 点击选择片区按钮
     chooseArea() {
@@ -228,6 +244,34 @@ export default {
     // 参与人
     checkedPar(data) {
       console.log(data);
+      this.dialogPar = data.dialogCharge;
+      this.perData = [];
+      data.personinfo.forEach(item => {
+        this.perData.push({
+          userId: item.id,
+          userName: item.trueName
+        })
+      });
+      console.log(this.perData);
+      this.editPlanDetails.user = this.perData;
+
+      // for (var i = 0; i < this.perData.length; i++) {
+      //   for (var j = 0; j < this.editPlanDetails.user.length; j++) {
+      //     if (this.editPlanDetails.user[j].userId == this.perData[i].userId) {
+      //       break;
+      //     } else {
+      //       this.editPlanDetails.user
+      //     }
+      //   }
+      // }
+
+      // for (var i = 0; i < this.editPlanDetails.user.length; i++) {
+      //   for (var j = 0; j < this.perData.length; j++) {
+      //     if (this.editPlanDetails.user[i].userId == this.perData[j].userId) {
+      //       break;
+      //     }
+      //   }
+      // }
     },
     // 关闭选择片区弹窗
     closeChooseArea(data) {
@@ -255,13 +299,79 @@ export default {
         this.dialogMessage = true;
         return;
       }
+      if (this.editPlanDetails.user.length == 0) {
+        this.setMessage('请选择参与人');
+        this.dialogMessage = true;
+        return;
+      }
+      if (this.editPlanDetails.person == '') {
+        this.setMessage('请选择负责人');
+        this.dialogMessage = true;
+        return;
+      }
+
+      //当前日期
+      let startTime = new Date();
+      let start = parseTime(startTime, '{y}-{m}-{d}');
+      
+
+      // 计划时效日期
+      let limitTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+      if (this.editPlanDetails.cycle == 1) {
+        // 每周
+        // 计划时效超过当前日期一周以上
+        let interval = 7 * 24;
+        if (judgeTime(start, limitTime, interval)) {
+          // dayStr = this.selectWeek;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一周');
+          this.dialogMessage = true;
+          return;
+        }
+      } else if (this.editPlanDetails.cycle == 2) {
+        // 每月
+        // 计划时效必须大于等于一个月
+        let day = mGetDate();
+        let interval = day * 24;
+        if (judgeTime(start, limitTime, interval)) {
+          // dayStr = this.selectMonth;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一个月');
+          this.dialogMessage = true;
+          return;
+        };
+      } else if (this.editPlanDetails.cycle == 3) {
+        // 自定义
+        // 必须大于自定义的最后一次结束时间
+        if (judgeTime(this.editPlanDetails.dateTimeLists[this.editPlanDetails.dateTimeLists.length - 1].endTime, limitTime)) {
+          // dayStr = this.selectMonth;
+          this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
+        } else {
+          this.setMessage('时效日期必须超过当前日期一个月');
+          this.dialogMessage = true;
+          return;
+        };
+      }
       console.log(this.editPlanDetails);
-      this.updatePlan(this.editPlanDetails).then(res => {
-        console.log('res :>> ', res);
+
+      let param = {
+        id: this.editPlanDetails.id,
+        name: this.editPlanDetails.name,
+        personId: this.editPlanDetails.personId,
+        person: this.editPlanDetails.person,
+        endTime: this.editPlanDetails.endTime,
+        areaId: this.editPlanDetails.areaId,
+        user: this.editPlanDetails.user
+      }
+      this.updatePlan(param).then(res => {
         if (res.success) {
           this.$emit('closeEdit', false);
           this.$parent.getData()
         }
+      }).catch(() => {
+        this.dialogMessage = true;
       });
     }
   }

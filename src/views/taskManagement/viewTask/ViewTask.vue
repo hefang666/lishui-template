@@ -35,7 +35,13 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">参与人：</div>
                     <div class="item-content">
-                      <span>{{ taskDetail.participant }}</span>
+                      <span
+                        v-for="(item, index) in taskDetail.participant"
+                        :key="index"
+                      >
+                        <span v-if="index != 0">、</span>
+                        {{ item }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -71,7 +77,7 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">暂停时间：</div>
                     <div class="item-content">
-                      <span>{{ taskDetail.pauseTime }}</span>
+                      <span>{{ taskDetail.pauseTimeStr }}</span>
                     </div>
                   </div>
                   <div class="list-items has-two-item">
@@ -333,8 +339,14 @@ export default {
       let param = {
         Id: this.taskDetail.areaId
       }
-      this.getAreaDetailInfo(param)
-      this.dialogRoute = true;
+      this.getAreaDetailInfo(param).then(res => {
+        if (res.success) {
+          this.dialogRoute = true;
+        }
+      }).catch(() => {
+        this.setMessage('未获取到区域id，无法查看路线');
+        this.dialogMessage = true;
+      })
     },
 
     // tabs切换时的点击事件

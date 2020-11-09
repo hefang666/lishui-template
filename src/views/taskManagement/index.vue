@@ -672,8 +672,8 @@ export default {
     getAddData(data) {
       console.log(data);
       this.dialogAdd = data;
-      this.iconStr = 'el-icon-circle-check';
-      this.dialogMessage = true;
+      // this.iconStr = 'el-icon-circle-check';
+      // this.dialogMessage = true;
       this.getData();
     },
     // 关闭查看弹窗
@@ -687,8 +687,8 @@ export default {
     // 修改后的操作
     getEditData(data) {
       this.dialogEdit = data;
-      this.iconStr = 'el-icon-circle-check';
-      this.dialogMessage = true;
+      // this.iconStr = 'el-icon-circle-check';
+      // this.dialogMessage = true;
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(num) {
@@ -709,12 +709,19 @@ export default {
     // 操作弹窗点击了确定
     determine(data) {
       this.dialogOperate = data.flag;
-      let param;
+      let param = {};
       if (data.type == 'restart') {
         // 重启
         param.id = this.multipleSelection[0].id;
         param.operate = 5;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'del') {
         // 删除
         let newidarr = [];
@@ -734,27 +741,44 @@ export default {
             this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           });
-        // this.multipleSelection.forEach(item => {
-        //   let param = {
-        //     id: item.id
-        //   };
-        //   this.deleteTask(param);
-        // });
       } else if (data.type == 'suspend') {
         // 暂停
+        console.log(this.multipleSelection[0].id);
         param.id = this.multipleSelection[0].id;
         param.operate = 1;
-        this.UpdateTaskStatus(param);
+        console.log(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'close') {
         // 关闭
         param.id = this.multipleSelection[0].id;
         param.operate = 4;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       } else if (data.type == 'complete') {
         // 完成
         param.id = this.multipleSelection[0].id;
         param.operate = 2;
-        this.UpdateTaskStatus(param);
+        this.UpdateTaskStatus(param).then(res => {
+          if (res.success) {
+            this.getData();
+          }
+        }).catch(() => {
+          this.iconStr = 'el-icon-warning-outline';
+          this.dialogMessage = true;
+        });
       }
     },
     // 获取数据

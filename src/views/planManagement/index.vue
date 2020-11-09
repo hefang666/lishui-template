@@ -268,22 +268,32 @@ export default {
 
     // 点击了搜索
     search(data) {
-      console.log(data);
-      if (data == '') {
-        this.setMessage('请输入搜索关键字');
+      // console.log(data);
+      // if (data == '') {
+      //   this.setMessage('请输入搜索关键字');
+      //   this.dialogMessage = true;
+      //   return;
+      // } else {
+      //   let param = {
+      //     pageIndex: 1,
+      //     maxResultCount: 30,
+      //     name: data
+      //   };
+      //   console.log(param);
+      //   this.searchPlan(param).catch(() => {
+      //     this.dialogMessage = true;
+      //   });
+      // }
+      let param = {
+        status: this.currentState,
+        pageIndex: 1,
+        maxResultCount: 30,
+        name: data
+      };
+      console.log(param);
+      this.searchPlan(param).catch(() => {
         this.dialogMessage = true;
-        return;
-      } else {
-        let param = {
-          pageIndex: 1,
-          maxResultCount: 30,
-          name: data
-        };
-        console.log(param);
-        this.searchPlan(param).catch(() => {
-          this.dialogMessage = true;
-        });
-      }
+      });
     },
 
     // 关闭新增页面

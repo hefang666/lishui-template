@@ -149,6 +149,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -244,7 +245,9 @@ export default {
           // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
           return time.getTime() <= Date.now(); //禁用今天以及以前的日期
         }
-      }
+      },
+
+      iconStr: 'el-icon-warning-outline'
     };
   },
   methods: {
@@ -280,18 +283,21 @@ export default {
       // 验证
       if (this.taskName == '') {
         this.setMessage('任务名称不能为空');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.personId == '') {
         this.setMessage('请选择负责人！');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.estimatedStartTime == '') {
         this.setMessage('请选择任务开始时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       } else {
@@ -303,6 +309,7 @@ export default {
 
       if (this.estimatedEndTime == '') {
         this.setMessage('请选择任务结束时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       } else {
@@ -317,29 +324,34 @@ export default {
       if (judgeTime(now, this.estimatedStartTime)) {
         if (!judgeTime(this.estimatedStartTime, this.estimatedEndTime)) {
           this.setMessage('任务结束时间必须大于等于开始时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
           return;
         }
       } else {
         this.setMessage('任务开始时间必须大于当前时间');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.taskType == '') {
         this.setMessage('请选择任务类型');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.areaInfo.id == '') {
         this.setMessage('请选择任务片区');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
 
       if (this.remarks == '') {
         this.setMessage('请输入任务备注');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return;
       }
@@ -359,7 +371,9 @@ export default {
         .then(res => {
           if (res.success) {
             let data = false;
-            console.log(data);
+            this.setMessage('修改成功');
+            this.iconStr = 'el-icon-circle-check';
+            this.dialogMessage = true;
             this.$emit('getAddData', data);
             this.clearData();
           }

@@ -202,10 +202,12 @@ export default {
     },
     // 设备查看按钮
     handleSeeEquipment(row) {
+      console.log(row);
       this.$emit('clickView', row);
     },
     // 管道查看按钮
     handleSeeConduit(row) {
+      console.log(row);
       this.$emit('clickView', row);
     }
   }

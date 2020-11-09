@@ -60,6 +60,7 @@
             <div class="list-items">
               <div class="item-title">计划周期：</div>
               <div class="item-content">
+                <span>{{ planDetails.cycleStr }}</span>
                 <div
                   v-for="(item, index) in planDetails.taskLists"
                   :key="index"
@@ -92,9 +93,10 @@
 
 <script>
 import EquipmentInfo from './EquipmentInformation.vue';
-import ViewRoute from '../public/ViewRoute.vue';
+import ViewRoute from '@/views/public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState} = createNamespacedHelpers('planManagement');
+const {mapState: planState} = createNamespacedHelpers('planManagement');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'AddTask',
   props: ['dialogView'],
@@ -103,7 +105,7 @@ export default {
     ViewRoute
   },
   computed: {
-    ...mapState(['planDetails'])
+    ...planState(['planDetails'])
   },
   data() {
     return {
@@ -149,6 +151,7 @@ export default {
   },
   methods: {
     // ...mapActions(['changeModalStatus']),
+    ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
       this.$emit('closeView', false);
@@ -159,7 +162,17 @@ export default {
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
-      this.dialogRoute = true;
+      let param = {
+        Id: this.planDetails.areaId
+      }
+      this.getAreaDetailInfo(param).then(res => {
+        if (res.success) {
+          this.dialogRoute = true;
+        }
+      }).catch(() => {
+        // this.setMessage('未获取到区域id，无法查看路线');
+        // this.dialogMessage = true;
+      })
     },
 
     // tabs切换时的点击事件

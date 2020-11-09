@@ -193,17 +193,19 @@ var actions = {
   },
   // 修改任务
   updatePlan({commit}, data){
-    return new Promise ((resolve,reject)=>{
-      updatePlan(data).then(response => {
-        if(response.success){
-          commit('set_message', '修改成功');
-          resolve(response);
-        }
-      }).catch(error => {
-        commit('set_message', error.message);
+    return new Promise((resolve, reject) => {
+      updatePlan(data)
+        .then(response => {
+          if (response.success) {
+            commit('set_message', '修改成功');
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
           reject(error);
-      })
-    })
+        });
+    });
   },
   // 根据id获取任务详情
   getPlanDetails({commit}, data) {
@@ -242,7 +244,6 @@ var actions = {
             // console.log(array);
             // details.participant = array;
             // console.log('details :>> ', details.user);
-            
             commit('set_planDetails', response.result);
             commit('set_editPlanDetails', response.result);
             resolve(response);

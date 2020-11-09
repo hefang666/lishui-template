@@ -311,6 +311,7 @@ export default {
     },
     // 点击确定
     determine() {
+      console.log(this.selectedData);
       if (this.selectedData.length == 0) {
         this.setMessage('请选择负责人！');
         this.dialogMessage = true;

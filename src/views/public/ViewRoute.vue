@@ -64,6 +64,7 @@ export default {
   },
   watch: {
     areaDetailsInfo: function(areaInfo) {
+      // console.log(this.areaDetailsInfo);
       if(!this.$refs.map) return false;
       this.$refs.map.setAreaInfo({
         areaPoint: areaInfo.areaPoint,
@@ -145,6 +146,7 @@ export default {
     },
     // 点击了查看
     views(data) {
+      console.log(data);
       this.$refs.map.getDeviceTooltip(data);
       // if (data.type == 1) {
       //   // 设备
