@@ -140,6 +140,7 @@ export default {
           position: position[index],
           offset: [30, -35]
         });
+        
 
         const anchor = new window.ol.Overlay({
           element: imgDom,
