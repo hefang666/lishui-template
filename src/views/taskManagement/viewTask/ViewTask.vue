@@ -153,11 +153,11 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="巡检路径" name="inspectionPath">
-              <inspection-path></inspection-path>
+              <!-- <inspection-path></inspection-path> -->
 
-              <!-- <div class="inspectionPath-box"> -->
+              <div class="inspectionPath-box"> 
 
-                <!-- <div class="map-box">
+                <div class="map-box">
                   <map-route ref="map" :areaInfo="areaDetailsInfo" :mapid="'sss_' + taskDetail.id"></map-route>
                 </div>
                 <div class="inspectionPath-info-box button-box">
@@ -187,56 +187,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="inspectionPath-info-item">
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        规划路径：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        <el-button type="primary" plain>
-                          显示
-                        </el-button>
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        预计里程：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        1.95km
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        预计花费时间：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        0.10小时
-                      </div>
-                    </div>
-                  </div>
-                  <div class="inspectionPath-info-item">
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        实际路径：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        <el-button type="primary" plain>
-                          隐藏
-                        </el-button>
-                      </div>
-                    </div>
-                    <div class="inspectionPath-info-items">
-                      <div class="inspectionPath-info-item-title">
-                        实际花费时间：
-                      </div>
-                      <div class="inspectionPath-info-item-content">
-                        0.00小时
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
-              <!-- </div> -->
+                  
+                </div>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -272,8 +225,8 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
-import InspectionPath from './InspectionPath.vue';
-// import MapRoute from '@/components/mapRoute/index.vue';
+// import InspectionPath from './InspectionPath.vue';
+import MapRoute from '@/components/mapRoute/route.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
@@ -285,8 +238,8 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute,
-    // MapRoute,
-    InspectionPath,
+    MapRoute,
+    // InspectionPath,
     Message
   },
   data() {
@@ -381,26 +334,30 @@ export default {
         this.getData();
       } else if (tab.name == 'inspectionPath') {
         
-        // 巡检路径信息
-        let param = {
-          Id: this.taskDetail.id
-        };
-        this.GetAreaByTaskId(param).then(res => {
-          if (res.success) {
-            if(this.$refs.map) {
-          // this.$nextTick(() => {
-            let areainfo = this.areaDetailsInfo;
-            let data = {
-              areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
-              deviceLists: areainfo.deviceLists,
-              pipelineLists: areainfo.pipelineLists
-            }
-            console.log(data.areaPoint)
-            this.$refs.map.setAreaInfo(data);
-          // })
-        }
+        this.$nextTick(()=> {
+          let areainfo = this.areaDetailsInfo;
+          let data = {
+            areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+            deviceLists: areainfo.deviceLists,
+            pipelineLists: areainfo.pipelineLists
           }
-        });
+          // console.log(data.areaPoint)
+          this.$refs.map.setMapArea(data);
+        })
+
+        // 巡检路径信息
+        // let param = {
+        //   Id: this.taskDetail.id
+        // };
+        // this.GetAreaByTaskId(param).then(res => {
+        //   if (res.success) {
+        //     // if(this.$refs.map) {
+        //   // this.$nextTick(() => {
+            
+        //   // })
+        // // }
+        //   }
+        // });
         // if(this.$refs.map) {
         //   // this.$nextTick(() => {
         //     let areainfo = this.areaDetailsInfo;

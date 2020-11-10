@@ -10,16 +10,6 @@
         <p>坐标:{{ currentDevice.devicePoint }}</p>
         <p>地址:{{ currentDevice.address }}</p>
       </div>
-      <!-- <div v-if="featureType == 'point'" class="pop-container">
-        <p>设备名称：{{ currentFeature.values_.PointName }}</p>
-        <p>坐标:{{ currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1] }}</p>
-        <p>地址:{{ currentFeature.values_.Location }}</p>
-      </div>
-      <div v-if="featureType== 'line'" class="pop-container">
-        <p>设备名称：{{ currentFeature.values_.Material }}</p>
-        <p>坐标:{{ currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1] }}</p>
-        <p>地址:{{ currentFeature.values_.Location }}</p>
-      </div> -->
     </div>
   </div>
 </template>
@@ -127,49 +117,15 @@ export default {
       drawLineLayer: {},
       drawAreaLayer: {},
       // 区域居中位置
-      mapLocation: []
+      mapLocation: [],
+      initMapStatus: false
     };
   },
   // computed: {
   //   ...mapState(['mapdata'])
   // },
   mounted() {
-    console.log('渲染地图了')
-    // 初始化地图
-    const SNTGIS = window.SNTGIS;
-    var pointLayer = new SNTGIS.layer.TileWMS({
-      url: mapwms,
-      layers: 'OpenGIS:GisPoint',
-      layerName: '管点图'
-    });
-    this.pointLayer = pointLayer;
-    pointLayer.setMaxResolution(0.0000107288);
-    var lineLayer = new SNTGIS.layer.TileWMS({
-      url: mapwms,
-      layers: 'OpenGIS:GisLine',
-      layerName: '管线图'
-    });
-    this.lineLayer = lineLayer;
-    const tdMap = new SNTGIS.layer.TDMap({
-      token: '7ab767e38fe3d9c04f144a091cff214f',
-      type: 1,
-      layerName: '天地图电子底图'
-    });
-    const dmLayer = new SNTGIS.layer.TDMap({
-      token: '7ab767e38fe3d9c04f144a091cff214f',
-      type: 4,
-      layerName: '天地图电子底图'
-    });
-    const zoomMap = this.zoomMap;
-    this.map = new SNTGIS.Map({
-      layers: [tdMap, dmLayer, pointLayer, lineLayer],
-      center: [104.1526230224237, 30.01244851052735],
-      zoom: zoomMap,
-      maxZoom: 18,
-      minZoom: 5,
-      target: this.mapid
-    });
-    this.init();
+    console.log('地图加载了')
     // this.$nextTick(() => {
     //   this.showRouteMsgInMap(this.mapdata);
     // });
@@ -187,6 +143,45 @@ export default {
   //   })
   // },
   methods: {  
+    // 初始化地图
+    initMap() { 
+      // 初始化地图
+      const SNTGIS = window.SNTGIS;
+      var pointLayer = new SNTGIS.layer.TileWMS({
+        url: mapwms,
+        layers: 'OpenGIS:GisPoint',
+        layerName: '管点图'
+      });
+      this.pointLayer = pointLayer;
+      pointLayer.setMaxResolution(0.0000107288);
+      var lineLayer = new SNTGIS.layer.TileWMS({
+        url: mapwms,
+        layers: 'OpenGIS:GisLine',
+        layerName: '管线图'
+      });
+      this.lineLayer = lineLayer;
+      const tdMap = new SNTGIS.layer.TDMap({
+        token: '7ab767e38fe3d9c04f144a091cff214f',
+        type: 1,
+        layerName: '天地图电子底图'
+      });
+      const dmLayer = new SNTGIS.layer.TDMap({
+        token: '7ab767e38fe3d9c04f144a091cff214f',
+        type: 4,
+        layerName: '天地图电子底图'
+      });
+      const zoomMap = this.zoomMap;
+      this.map = new SNTGIS.Map({
+        layers: [tdMap, dmLayer, pointLayer, lineLayer],
+        center: [104.1526230224237, 30.01244851052735],
+        zoom: zoomMap,
+        maxZoom: 18,
+        minZoom: 5,
+        target: this.mapid
+      });
+      this.init();
+    },
+
     // 初始化图层
     init() {
       this.drawAreaLayerFunc();
@@ -303,6 +298,17 @@ export default {
         devDtos 设备数组，
         pipDtos 管道数组
     */
+
+    // 地图渲染及片区渲染
+    setMapArea(areaInfo) {
+      console.log(this.initMapStatus + 'ccccccccccccc')
+      if(!this.initMapStatus) {
+        this.initMapStatus = true;
+        this.initMap();
+      }
+      this.setAreaInfo(areaInfo);
+    },
+
     setAreaInfo(areaInfo) {
       this.areaInfoNew = areaInfo
       if(!areaInfo.areaPoint) return false;
@@ -319,7 +325,8 @@ export default {
         deviceLists,
         pipelineLists
       } = areaInfo;
-
+      console.log(areaPoint)
+      // let _this = this;
       // 绘制区域
       let xArray = new Array();
       let yArray = new Array();
@@ -341,9 +348,10 @@ export default {
         let xmin = Math.min.apply(null, xArray);
         let ymax = Math.max.apply(null, yArray);
         let ymin = Math.min.apply(null, yArray);
-        this.$nextTick(() => {
-          this.map.getView().fit([xmin, ymin, xmax, ymax], this.map.getSize());
-        })
+        this.mapLocation.push(xmin, ymin, xmax, ymax)
+        this.map.getView().setZoom(this.zoomMap);
+        console.log(this.map.getView().getZoom())
+        this.map.getView().fit([xmin, ymin, xmax, ymax], this.map.getSize());
       }
 
       // 选中管点 及 管线
