@@ -64,17 +64,6 @@ export default {
   computed: {
     ...areaState(['areaDetailsInfo'])
   },
-  // watch: {
-  //   areaDetailsInfo: function(areaInfo) {
-  //     if(!this.$refs.map) return false;
-  //     this.isArea = true;
-  //     this.$refs.map.setAreaInfo({
-  //       areaPoint: areaInfo.areaPoint,
-  //       deviceLists: areaInfo.deviceLists,
-  //       pipelineLists: areaInfo.pipelineLists
-  //     })
-  //   }
-  // },
   data() {
     return {
       isArea: false

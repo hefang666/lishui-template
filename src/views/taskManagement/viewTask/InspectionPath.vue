@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import MapRoute from '@/components/mapRoute/index.vue';
+import MapRoute from '@/components/mapRoute/route.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState} = createNamespacedHelpers('taskManagement');
 const {mapState: areaState} = createNamespacedHelpers('area');
@@ -97,28 +97,33 @@ export default {
   },
   watch: {
     areaDetailsInfo(areainfo) {
-      console.log(111111);
-      if(this.$refs.map) {
-        let data = {
+      // console.log(111111);
+      let data = {
           areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
           deviceLists: areainfo.deviceLists,
           pipelineLists: areainfo.pipelineLists
         }
-        this.$refs.map.setAreaInfo(data);
-      }
+      this.$refs.map.setMapArea(data);
+      // if(this.$refs.map) {
+        // let data = {
+        //   areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+        //   deviceLists: areainfo.deviceLists,
+        //   pipelineLists: areainfo.pipelineLists
+        // }
+      //   this.$refs.map.setAreaInfo(data);
+      // }
     }
   },
   mounted() {
-    console.log(2222222222222);
-    if(this.$refs.map) {
-      let areainfo = this.areaDetailsInfo;
-      let data = {
-        areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
-        deviceLists: areainfo.deviceLists,
-        pipelineLists: areainfo.pipelineLists
-      }
-      this.$refs.map.setAreaInfo(data);
-    }
+    // if(this.$refs.map) {
+    //   let areainfo = this.areaDetailsInfo;
+    //   let data = {
+    //     areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+    //     deviceLists: areainfo.deviceLists,
+    //     pipelineLists: areainfo.pipelineLists
+    //   }
+    //   this.$refs.map.setAreaInfo(data);
+    // }
   }
 }
 </script>
