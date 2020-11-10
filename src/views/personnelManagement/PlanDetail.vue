@@ -75,6 +75,7 @@
     <view-route
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
+      ref="mapview"
     ></view-route>
   </div>
 </template>
@@ -108,19 +109,22 @@ export default {
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
+      this.dialogRoute = true;
+      this.$refs.mapview.setMapReview();
+
       // this.dialogRoute = true;
-      let param = {
-        Id: this.planDetails.areaId
-      }
-      this.getAreaDetailInfo(param).then(res => {
-        if (res.success) {
-          // console.log(res);
-          this.dialogRoute = true;
-        }
-      }).catch(() => {
-        // this.setMessage('未获取到区域id，无法查看路线');
-        // this.dialogMessage = true;
-      })
+      // let param = {
+      //   Id: this.planDetails.areaId
+      // }
+      // this.getAreaDetailInfo(param).then(res => {
+      //   if (res.success) {
+      //     // console.log(res);
+      //     this.dialogRoute = true;
+      //   }
+      // }).catch(() => {
+      //   // this.setMessage('未获取到区域id，无法查看路线');
+      //   // this.dialogMessage = true;
+      // })
     },
     // 关闭查看路线弹窗
     getRouteData(data) {

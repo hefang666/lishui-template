@@ -168,10 +168,11 @@
     </el-dialog>
     
     <!-- 查看路线弹窗 -->
-    <view-route
+    <!-- <view-route
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
-    ></view-route>
+      ref="mapview"
+    ></view-route> -->
 
     <!-- 预览弹窗 -->
     <preview
@@ -183,7 +184,7 @@
 </template>
 
 <script>
-import ViewRoute from '@/views/public/ViewRoute.vue';
+// import ViewRoute from '@/views/public/ViewRoute.vue';
 import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: orderState} = createNamespacedHelpers('workOrderManagement');
@@ -192,7 +193,7 @@ export default {
   name: 'OrderDetail',
   props: ['dialogOrderDetail'],
   components: {
-    ViewRoute,
+    // ViewRoute,
     Preview
   },
   data() {
@@ -218,13 +219,15 @@ export default {
       this.$emit('getOrderDetailData', data);
     },
     // 点击查看路线，打开查看路线弹窗
-    viewRoute() {
-      this.dialogRoute = true;
-    },
+    // viewRoute() {
+    //   // this.dialogRoute = true;
+    //   this.dialogRoute = true;
+    //   this.$refs.mapview.setMapReview();
+    // },
     // 关闭查看路线弹窗
-    getRouteData(data) {
-      this.dialogRoute = data.dialogRoute;
-    },
+    // getRouteData(data) {
+    //   this.dialogRoute = data.dialogRoute;
+    // },
     // 关闭预览弹窗
     closePreview(data) {
       this.dialogPreview = data;
@@ -236,7 +239,11 @@ export default {
     },
     // 下载
     downLoadPic(data) {
-      this.downloadFile(data);
+      var param = {
+        downLoadName: data.fileName,
+        fileName: data.url
+      };
+      this.downloadFile(param);
     }
   }
 }
@@ -285,6 +292,29 @@ export default {
           /deep/ .el-button:hover {
             background: #4b77be;
             color: #ffffff;
+          }
+
+          .enclosure-box {
+            .enclosure-item {
+              display: flex;
+
+              .enclosure-title,
+              .enclosure-download,
+              .enclosure-preview {
+                padding: 0 10px;
+              }
+
+              .enclosure-download,
+              .enclosure-preview {
+                color: #4b77be;
+              }
+
+              .enclosure-download:hover,
+              .enclosure-preview:hover {
+                color: #4288f8;
+                cursor: pointer;
+              }
+            }
           }
         }
       }

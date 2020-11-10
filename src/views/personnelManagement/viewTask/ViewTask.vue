@@ -78,7 +78,7 @@
                     <div class="item-title">巡检片区：</div>
                     <div class="item-content">
                       <span>{{ taskDetail.areaName }}</span>
-                      <el-button @click="viewRoute" class="view-button"
+                      <el-button @click="showRoute" class="view-button"
                         >查看路线</el-button
                       >
                     </div>
@@ -247,6 +247,7 @@
     <view-route
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
+      ref="mapview"
     ></view-route>
   </div>
 </template>
@@ -301,12 +302,15 @@ export default {
       this.$emit('getViewData', data);
     },
     // 点击查看路线，打开查看路线弹窗
-    viewRoute() {
-      let param = {
-        Id: this.taskDetail.areaId
-      }
-      this.getAreaDetailInfo(param);
+    showRoute() {
+      // let param = {
+      //   Id: this.taskDetail.areaId
+      // }
+      // this.getAreaDetailInfo(param);
+      console.log(2222)
       this.dialogRoute = true;
+      this.$refs.mapview.setMapReview()
+
     },
 
     // tabs切换时的点击事件

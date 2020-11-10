@@ -146,6 +146,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('planManagement');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 import {exportExcel} from '@/utils/index';
 export default {
   components: {
@@ -228,6 +229,7 @@ export default {
       'setMessage',
       'searchPlan'
     ]),
+    ...areaActions(['getAreaDetailInfo']),
     // 按状态筛选则并为input添加样式
     searchConditional(index) {
       this.currentState = index;
@@ -349,7 +351,17 @@ export default {
       this.getPlanDetails(param)
         .then(res => {
           if (res.success) {
-            this.dialogView = true;
+            let param = {
+              Id: res.result.areaId
+            }
+            console.log();
+            this.getAreaDetailInfo(param).then(res => {
+              console.log(res)
+              if (res.success) {
+                this.dialogView = true;
+              }
+            });
+            // this.dialogView = true;
           }
         })
         .catch(() => {

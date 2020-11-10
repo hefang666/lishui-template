@@ -176,7 +176,12 @@ export default {
     },
     // 下载
     downLoadPic(data) {
-      this.downloadFile(data);
+      console.log(data);
+      var param = {
+        downLoadName: data.fileName,
+        fileName: data.url
+      }
+      this.downloadFile(param);
     }
   }
 };
@@ -236,6 +241,17 @@ export default {
                 .enclosure-download,
                 .enclosure-preview {
                   padding: 0 10px;
+                }
+
+                .enclosure-download,
+                .enclosure-preview {
+                  color: #4b77be;
+                }
+
+                .enclosure-download:hover,
+                .enclosure-preview:hover {
+                  color: #4288f8;
+                  cursor: pointer;
                 }
               }
             }

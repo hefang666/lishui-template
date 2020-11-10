@@ -64,32 +64,33 @@ export default {
   computed: {
     ...areaState(['areaDetailsInfo'])
   },
-  watch: {
-    areaDetailsInfo: function(areaInfo) {
-      if(!this.$refs.map) return false;
-      this.isArea = true;
-      this.$refs.map.setAreaInfo({
-        areaPoint: areaInfo.areaPoint,
-        deviceLists: areaInfo.deviceLists,
-        pipelineLists: areaInfo.pipelineLists
-      })
-    }
-  },
+  // watch: {
+  //   areaDetailsInfo: function(areaInfo) {
+  //     if(!this.$refs.map) return false;
+  //     this.isArea = true;
+  //     this.$refs.map.setAreaInfo({
+  //       areaPoint: areaInfo.areaPoint,
+  //       deviceLists: areaInfo.deviceLists,
+  //       pipelineLists: areaInfo.pipelineLists
+  //     })
+  //   }
+  // },
   data() {
     return {
       isArea: false
     };
   },
   mounted() {
-    var areaInfo = this.areaDetailsInfo;
-    if(!this.isArea && areaInfo.areaPoint) {
-      this.isArea = true
-      this.$refs.map.setAreaInfo({
-        areaPoint: areaInfo.areaPoint,
-        deviceLists: areaInfo.deviceLists,
-        pipelineLists: areaInfo.pipelineLists
-      })
-    }
+    console.log('进入查看地图了');
+    // var areaInfo = this.areaDetailsInfo;
+    // if(!this.isArea && areaInfo.areaPoint) {
+    //   this.isArea = true
+    //   this.$refs.map.setAreaInfo({
+    //     areaPoint: areaInfo.areaPoint,
+    //     deviceLists: areaInfo.deviceLists,
+    //     pipelineLists: areaInfo.pipelineLists
+    //   })
+    // }
   },
   methods: {
     // 点击取消或者右上角的×关闭新增弹窗
@@ -173,6 +174,18 @@ export default {
       //   // let str = data.deviceCode + ';' + data.deviceName;
       //   // this.$refs.map.ShowLineFunc(str);
       // }
+    },
+    setMapReview () {
+      if(this.$refs.map) {
+        let areainfo = this.areaDetailsInfo
+        let data = {
+          areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint: (areainfo.areaPoint+ ';'),
+          deviceLists: areainfo.deviceLists,
+          pipelineLists: areainfo.pipelineLists
+        }
+        this.$refs.map.setAreaInfo(data)
+
+      }
     }
   }
 };

@@ -238,6 +238,7 @@
 
     <!-- 查看任务弹窗 -->
     <view-task :dialog-view="dialogView" @getViewData="getViewData"></view-task>
+    
     <!-- 修改任务的弹窗 -->
     <edit-task
       :dialog-edit="dialogEdit"
@@ -258,6 +259,7 @@ import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
   'taskManagement'
 );
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 import {parseTime, exportExcel} from '@/utils/index';
 export default {
   name: 'TaskManagement',
@@ -364,6 +366,7 @@ export default {
       'UpdateTaskStatus',
       'setMessage'
     ]),
+    ...areaActions(['getAreaDetailInfo']),
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -575,7 +578,16 @@ export default {
         this.GetTaskDetails(param)
           .then(res => {
             if (res.success) {
-              this.dialogView = true;
+              let param = {
+                Id: res.result.areaId
+              }
+              this.getAreaDetailInfo(param).then(res => {
+                // console.log(res)
+                if (res.success) {
+                  this.dialogView = true;
+                }
+              });
+              // this.dialogView = true;
             }
           })
           .catch(() => {
@@ -593,7 +605,18 @@ export default {
       this.GetTaskDetails(param)
         .then(res => {
           if (res.success) {
-            this.dialogView = true;
+            let param = {
+              Id: res.result.areaId
+            }
+            this.getAreaDetailInfo(param).then(res => {
+              // console.log(res)
+              if (res.success) {
+                this.dialogView = true;
+              }
+            });
+            // this.dialogRoute = true;
+
+            
           }
         })
         .catch(() => {

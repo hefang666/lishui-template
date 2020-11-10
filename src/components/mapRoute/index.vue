@@ -73,16 +73,17 @@ export default {
       type: String,
       default: 'map'
     },
-    // areaInfo: {
-    //   type: Object,
-    //   default: () => {
-    //     return {};
-    //   }
-    // }
+
+    areaInfo: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {
-      areaInfo: {},
+      areaInfoNew: {},
       // 地图
       map: {},
       // 管点图层
@@ -133,6 +134,7 @@ export default {
   //   ...mapState(['mapdata'])
   // },
   mounted() {
+    console.log('渲染地图了')
     // 初始化地图
     const SNTGIS = window.SNTGIS;
     var pointLayer = new SNTGIS.layer.TileWMS({
@@ -172,7 +174,18 @@ export default {
     //   this.showRouteMsgInMap(this.mapdata);
     // });
   },
-  
+
+  // watch: {
+  //   areaInfo (areaInfo){
+  //     console.log(areaInfo)
+  //   }
+  // },
+  // updated () {
+  //   this.clearMapLayer();
+  //   this.$nextTick(() => {
+  //     this.setAreaInfo(this.areaInfo);
+  //   })
+  // },
   methods: {  
     // 初始化图层
     init() {
@@ -185,7 +198,9 @@ export default {
       this.mapOverlay();
       this.drawLineLayerFunc();
       this.drawPointLayerFunc();
+      this.setAreaInfo(this.areaInfo)
     },
+    
 
     // 绘制区域图层
     drawAreaLayerFunc() {
@@ -289,19 +304,22 @@ export default {
         pipDtos 管道数组
     */
     setAreaInfo(areaInfo) {
+      this.areaInfoNew = areaInfo
       if(!areaInfo.areaPoint) return false;
+      this.clearMapLayer();
       areaInfo.areaPoint = areaInfo.areaPoint.substring(0, areaInfo.areaPoint.length -1 )
-      this.areaInfo = areaInfo;
-      this.showAreaMap();
+      // this.areaInfo = areaInfo;
+      this.showAreaMap(areaInfo);
       
     },
-    showAreaMap() {
-      if(!this.areaInfo.areaPoint) return false;
+    showAreaMap(areaInfo) {
+      if(!areaInfo.areaPoint) return false;
       let {
         areaPoint,
         deviceLists,
         pipelineLists
-      } = this.areaInfo;
+      } = areaInfo;
+      console.log(areaPoint)
       // let _this = this;
       // 绘制区域
       let xArray = new Array();
@@ -325,7 +343,9 @@ export default {
         let ymax = Math.max.apply(null, yArray);
         let ymin = Math.min.apply(null, yArray);
         this.mapLocation.push(xmin, ymin, xmax, ymax)
-        this.map.getView().fit([xmin, ymin, xmax, ymax]);
+        this.map.getView().setZoom(this.zoomMap);
+        console.log(this.map.getView().getZoom())
+        this.map.getView().fit([xmin, ymin, xmax, ymax], this.map.getSize());
       }
 
       // 选中管点 及 管线
@@ -337,11 +357,13 @@ export default {
       let _this = this;
       // 获取选中的图层边界点
       let areaExtent = areaPoint.split(';').join(' ');
+      console.log(areaExtent)
       // areaExtent = areaExtent.substring(0, areaExtent.length - 1)
       window.SNTGIS.workSpace = workSpace;
 
       if(deviceLists.length > 0) {
         // 获取区域与管点图层相交的所有元素
+        console.log(_this.pointLayer)
         window.SNTGIS.NetWork.getFeaturesByCoords(_this.pointLayer, areaExtent, function (data) {
           _this.pointListInArea = data;
           let selectPointList = _this.getSelectPointList(data, deviceLists);

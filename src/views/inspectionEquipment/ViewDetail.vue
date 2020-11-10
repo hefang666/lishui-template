@@ -228,6 +228,7 @@ import {createNamespacedHelpers} from 'vuex';
 const {mapState: equipmentState, mapActions: equipmentActions} = createNamespacedHelpers('equipment');
 const {mapActions: taskActions} = createNamespacedHelpers('taskManagement');
 const {mapActions: eventActions} = createNamespacedHelpers('eventManagement');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'Viewdetail',
   props: ['dialogView'],
@@ -283,6 +284,7 @@ export default {
     ...equipmentActions(['GetDeviceTaskList', 'GetDeviceEventList']),
     ...taskActions(['GetTaskDetails']),
     ...eventActions(['GetEventDetails']),
+    ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
       let data = {
@@ -335,8 +337,20 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetTaskDetails(param);
-      this.dialogViewDetail = true;
+      this.GetTaskDetails(param).then(res => {
+        if (res.success) {
+          let param = {
+            Id: res.result.areaId
+          }
+          this.getAreaDetailInfo(param).then(res => {
+            // console.log(res)
+            if (res.success) {
+              this.dialogViewDetail = true;
+            }
+          });
+        }
+      });
+      // this.dialogViewDetail = true;
     },
     // 查看事件
     SeeEventDetail(row) {
@@ -344,7 +358,19 @@ export default {
       let param = {
         Id: row.id
       };
-      this.GetEventDetails(param);
+      this.GetEventDetails(param).then(res => {
+        if (res.success) {
+      //     let param = {
+      //       Id: res.result.areaId
+      //     }
+      //     this.getAreaDetailInfo(param).then(res => {
+      //       // console.log(res)
+      //       if (res.success) {
+              this.dialogEventView = true;
+      //       }
+      //     });
+        }
+      });
       this.dialogEventView = true;
     },
     // 关闭查看任务弹窗

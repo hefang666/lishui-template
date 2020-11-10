@@ -153,9 +153,12 @@
               </div>
             </el-tab-pane>
             <el-tab-pane label="巡检路径" name="inspectionPath">
-              <div class="inspectionPath-box">
-                <div class="map-box">
-                  <map-route ref="map" :mapid="'ss_' + taskDetail.id"></map-route>
+              <inspection-path></inspection-path>
+
+              <!-- <div class="inspectionPath-box"> -->
+
+                <!-- <div class="map-box">
+                  <map-route ref="map" :areaInfo="areaDetailsInfo" :mapid="'sss_' + taskDetail.id"></map-route>
                 </div>
                 <div class="inspectionPath-info-box button-box">
                   <div class="inspectionPath-info-item">
@@ -232,8 +235,8 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </div> -->
+              <!-- </div> -->
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -253,6 +256,7 @@
     <view-route
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
+      ref="mapview"
     ></view-route>
 
     <!-- 提示消息弹窗 -->
@@ -268,11 +272,12 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
-import MapRoute from '@/components/mapRoute/index.vue';
+import InspectionPath from './InspectionPath.vue';
+// import MapRoute from '@/components/mapRoute/index.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
-const {mapActions: areaActions} = createNamespacedHelpers('area');
+const {mapActions: areaActions, mapState: areaState} = createNamespacedHelpers('area');
 export default {
   name: 'ViewTask',
   props: ['dialogView'],
@@ -280,7 +285,8 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute,
-    MapRoute,
+    // MapRoute,
+    InspectionPath,
     Message
   },
   data() {
@@ -313,11 +319,24 @@ export default {
       'inspectionPointPage',
       'areaDetail',
       'messageText'
-    ])
+    ]),
+    ...areaState(['areaDetailsInfo'])
   },
   mounted() {
-    console.log(this.inspectionPointPage);
     this.pageSize = this.inspectionPointPage[0];
+  },
+  watch: {
+    areaDetailsInfo(areainfo) {
+      if(this.$refs.map) {
+        let data = {
+          areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+          deviceLists: areainfo.deviceLists,
+          pipelineLists: areainfo.pipelineLists
+        }
+        this.$refs.map.setAreaInfo(data);
+      }
+      
+    }
   },
   methods: {
     ...taskActions([
@@ -329,6 +348,7 @@ export default {
     ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
+      this.activeName = 'basicInfo';
       let data = {
         dialogView: false
       };
@@ -336,17 +356,21 @@ export default {
     },
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
-      let param = {
-        Id: this.taskDetail.areaId
-      }
-      this.getAreaDetailInfo(param).then(res => {
-        if (res.success) {
-          this.dialogRoute = true;
-        }
-      }).catch(() => {
-        this.setMessage('未获取到区域id，无法查看路线');
-        this.dialogMessage = true;
-      })
+      
+      this.dialogRoute = true;
+      this.$refs.mapview.setMapReview();
+      // let param = {
+      //   Id: this.taskDetail.areaId
+      // }
+      // this.getAreaDetailInfo(param).then(res => {
+      //   if (res.success) {
+      //     this.dialogRoute = true;
+      //     this.$refs.mapview.setMapReview()
+      //   }
+      // }).catch(() => {
+      //   this.setMessage('未获取到区域id，无法查看路线');
+      //   this.dialogMessage = true;
+      // })
     },
 
     // tabs切换时的点击事件
@@ -356,11 +380,39 @@ export default {
         // 获取设备点详情
         this.getData();
       } else if (tab.name == 'inspectionPath') {
+        
         // 巡检路径信息
         let param = {
           Id: this.taskDetail.id
         };
-        this.GetAreaByTaskId(param);
+        this.GetAreaByTaskId(param).then(res => {
+          if (res.success) {
+            if(this.$refs.map) {
+          // this.$nextTick(() => {
+            let areainfo = this.areaDetailsInfo;
+            let data = {
+              areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+              deviceLists: areainfo.deviceLists,
+              pipelineLists: areainfo.pipelineLists
+            }
+            console.log(data.areaPoint)
+            this.$refs.map.setAreaInfo(data);
+          // })
+        }
+          }
+        });
+        // if(this.$refs.map) {
+        //   // this.$nextTick(() => {
+        //     let areainfo = this.areaDetailsInfo;
+        //     let data = {
+        //       areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+        //       deviceLists: areainfo.deviceLists,
+        //       pipelineLists: areainfo.pipelineLists
+        //     }
+        //     console.log(data.areaPoint)
+        //     this.$refs.map.setAreaInfo(data);
+        //   // })
+        // }
       }
     },
     

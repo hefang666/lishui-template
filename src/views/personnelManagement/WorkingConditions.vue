@@ -306,6 +306,7 @@ const {mapState: personState, mapActions: personActions} = createNamespacedHelpe
 const {mapActions: planActions} = createNamespacedHelpers('planManagement');
 const {mapActions: taskActions} = createNamespacedHelpers('taskManagement');
 const {mapActions: orderActions} = createNamespacedHelpers('workOrderManagement');
+const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'AddTask',
   props: ['dialogWorking'],
@@ -361,6 +362,7 @@ export default {
     ...planActions(['getPlanDetails']),
     ...taskActions(['GetTaskDetails']),
     ...orderActions(['GetWorkOrderDetails']),
+    ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeWorking() {
       this.activeName = 'generalSituation';
@@ -459,7 +461,15 @@ export default {
       };
       this.getPlanDetails(param).then(res => {
         if (res.success) {
-          this.dialogPlanDetail = true;
+          let param = {
+            Id: res.result.areaId
+          }
+          this.getAreaDetailInfo(param).then(res => {
+            if (res.success) {
+              this.dialogPlanDetail = true;
+            }
+          });
+          // this.dialogPlanDetail = true;
         }
       }).catch(() => {
         console.log('获取失败了');
@@ -473,7 +483,15 @@ export default {
       };
       this.GetTaskDetails(param).then(res => {
         if (res.success) {
-          this.dialogView = true;
+          let param = {
+            Id: res.result.areaId
+          }
+          this.getAreaDetailInfo(param).then(res => {
+            if (res.success) {
+              this.dialogView = true;
+            }
+          });
+          // this.dialogView = true;
         }
       }).catch(() => {
         console.log('获取失败');
@@ -487,6 +505,14 @@ export default {
       };
       this.GetWorkOrderDetails(param).then(res => {
         if (res.success) {
+          // let param = {
+          //   Id: res.result.areaId
+          // }
+          // this.getAreaDetailInfo(param).then(res => {
+          //   if (res.success) {
+          //     this.dialogOrderDetail = true;
+          //   }
+          // });
           this.dialogOrderDetail = true;
         }
       }).catch(() => {

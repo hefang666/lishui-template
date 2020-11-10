@@ -247,6 +247,7 @@
     <view-route
       :dialog-route="dialogRoute"
       @getRouteData="getRouteData"
+      ref="mapview"
     ></view-route>
   </div>
 </template>
@@ -329,6 +330,8 @@ export default {
     // 点击查看路线，打开查看路线弹窗
     viewRoute() {
       this.dialogRoute = true;
+      this.$refs.mapview.setMapReview();
+      // this.dialogRoute = true;
     },
 
     // tabs切换时的点击事件

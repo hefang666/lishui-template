@@ -87,6 +87,7 @@ import ViewDetail from './ViewDetail.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('equipment');
+// const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'Equipment',
   components: {
@@ -153,8 +154,11 @@ export default {
         let param = {
           Id: this.multipleSelection[0].id
         };
-        this.GetDeviceInspectionDetails(param);
-        this.dialogView = true;
+        this.GetDeviceInspectionDetails(param).then(res => {
+          if (res.success) {
+            this.dialogView = true;
+          }
+        });
       }
     },
 
@@ -175,11 +179,14 @@ export default {
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
       console.log(data);
+      this.pageSize = data;
+      this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
       this.currentPage = data;
+      this.getData();
     },
     // 关闭查看
     closeView(data) {
