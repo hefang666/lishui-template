@@ -371,7 +371,7 @@ export default {
         .then(res => {
           if (res.success) {
             let data = false;
-            this.setMessage('修改成功');
+            this.setMessage('新增成功');
             this.iconStr = 'el-icon-circle-check';
             this.dialogMessage = true;
             this.$emit('getAddData', data);

@@ -444,7 +444,7 @@ export default {
     // 暂停任务
     suspend() {
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].status != 2) {
+        if (this.multipleSelection[0].status != 3) {
           this.setMessage('该状态不能暂停');
           this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
@@ -480,7 +480,14 @@ export default {
         Id: row.id,
         operate: 4
       };
-      this.UpdateTaskStatus(param);
+      this.UpdateTaskStatus(param).then(res => {
+        if (res.success) {
+          this.getData();
+        }
+      }).catch(() => {
+        this.iconStr = 'el-icon-warning-outline';
+        this.dialogMessage = true;
+      });
     },
 
     // 完成任务

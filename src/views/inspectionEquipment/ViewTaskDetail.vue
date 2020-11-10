@@ -38,7 +38,14 @@
                   <div class="list-items has-two-item">
                     <div class="item-title">参与人：</div>
                     <div class="item-content">
-                      <span>{{ taskDetail.participants }}</span>
+                      <!-- <span>{{ taskDetail.participants }}</span> -->
+                      <span
+                        v-for="(item, index) in taskDetail.participant"
+                        :key="index"
+                      >
+                        <span v-if="index != 0">、</span>
+                        {{ item }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -150,7 +157,9 @@
             </el-tab-pane>
             <el-tab-pane label="巡检路径" name="inspectionPath">
               <div class="inspectionPath-box">
-                <div class="map-box"></div>
+                <div class="map-box">
+                  <map-route ref="map" :areaInfo="areaDetailsInfo" :mapid="'sss_' + taskDetail.id"></map-route>
+                </div>
                 <div class="inspectionPath-info-box button-box">
                   <div class="inspectionPath-info-item">
                     <div class="inspectionPath-info-items">
@@ -158,7 +167,7 @@
                         巡检路线：
                       </div>
                       <div class="inspectionPath-info-item-content">
-                        *****巡检线路
+                        {{ taskDetail.areaName }}
                       </div>
                     </div>
                     <div class="inspectionPath-info-items">
@@ -166,7 +175,7 @@
                         设备点数：
                       </div>
                       <div class="inspectionPath-info-item-content">
-                        15个
+                        {{ areaDetail.pointCount }}
                       </div>
                     </div>
                     <div class="inspectionPath-info-items">
@@ -174,11 +183,11 @@
                         管道长度：
                       </div>
                       <div class="inspectionPath-info-item-content">
-                        5.78km
+                        {{ areaDetail.pipelineLength }}
                       </div>
                     </div>
                   </div>
-                  <div class="inspectionPath-info-item">
+                  <!-- <div class="inspectionPath-info-item">
                     <div class="inspectionPath-info-items">
                       <div class="inspectionPath-info-item-title">
                         规划路径：
@@ -225,7 +234,7 @@
                         0.00小时
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </el-tab-pane>
@@ -249,6 +258,13 @@
       @getRouteData="getRouteData"
       ref="mapview"
     ></view-route>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
@@ -256,52 +272,30 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
+import MapRoute from '@/components/mapRoute/route.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapState: areaState} = createNamespacedHelpers('area');
 export default {
   name: 'viewTask',
   props: ['dialogViewDetail'],
   components: {
     Page,
     EquipmentInfo,
-    ViewRoute
+    ViewRoute,
+    MapRoute,
+    Message
   },
   computed: {
-    ...mapState(['taskDetail', 'inspectionPointList'])
+    ...taskState(['taskDetail', 'inspectionPointList', 'areaDetail', 'messageText']),
+    ...areaState(['areaDetailsInfo'])
   },
   data() {
     return {
       // tabs当前聚焦在那一个上面
       activeName: 'basicInfo',
-      addForm: {
-        taskName: '巡检任务1',
-        inCharge: '测试人员',
-        estimatedStartTime: '2020-09-23 23:00:00',
-        estimatedEndTime: '2020-09-24 23:00:00',
-        taskType: '普通任务',
-        inspectionArea: '巡检片区1',
-        remarks: '这里是备注内容'
-      },
-      tableData: [
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '正常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '异常',
-          inspectionStatus: '已巡检'
-        },
-        {
-          equipmentName: '阀门',
-          equipmentNumber: '123456789',
-          equipmentPoints: '未知',
-          inspectionStatus: '未巡检'
-        }
-      ],
+     
       checkedName: '',
 
       // 是否显示设备点巡检信息详情弹窗
@@ -314,13 +308,30 @@ export default {
       currentPage: 1,
 
       // 当前每页数量
-      pageSize: 30
+      pageSize: 30,
+
+      // 是否显示提示弹窗
+      dialogMessage: false
     };
   },
+  watch: {
+    areaDetailsInfo(areainfo) {
+      if(this.$refs.map) {
+        let data = {
+          areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+          deviceLists: areainfo.deviceLists,
+          pipelineLists: areainfo.pipelineLists
+        }
+        this.$refs.map.setAreaInfo(data);
+      }
+      
+    }
+  },
   methods: {
-    ...mapActions(['GetInspectionPointList', 'GetInspectionPointList', 'GetPointDetails']),
+    ...taskActions(['GetInspectionPointList', 'GetInspectionPointList', 'GetPointDetails', 'setMessage']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeViewDetail() {
+      this.activeName = 'basicInfo';
       let data = {
         dialogViewDetail: false,
         data: []
@@ -339,6 +350,17 @@ export default {
       console.log(tab);
       if (tab.name == 'equipmentInfo') {
         this.getData();
+      } else if (tab.name == 'inspectionPath') {
+        this.$nextTick(()=> {
+          let areainfo = this.areaDetailsInfo;
+          let data = {
+            areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+            deviceLists: areainfo.deviceLists,
+            pipelineLists: areainfo.pipelineLists
+          }
+          // console.log(data.areaPoint)
+          this.$refs.map.setMapArea(data);
+        })
       }
     },
     // 获取数据
@@ -348,15 +370,23 @@ export default {
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       }
-      this.GetInspectionPointList(param);
+      this.GetInspectionPointList(param).then(() => {
+        console.log();
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
       console.log(data);
+      this.pageSize = data;
+      this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
       console.log(data);
+      this.currentPage = data;
+      this.getData();
     },
     // 查看按钮
     handleSee(row) {
@@ -372,18 +402,25 @@ export default {
       this.dialogEqui = true;
     },
     // 选中的行
-    clickRow(val) {
-      console.log(val);
-      this.checkedName = val.name;
-    },
+    // clickRow(val) {
+    //   console.log(val);
+    //   this.checkedName = val.name;
+    // },
     // 获取从设备点详细信息弹窗传来的值
     getEquiData(data) {
       this.dialogEqui = data.dialogEqui;
     },
+
     // 关闭查看路线弹窗
     getRouteData(data) {
       this.dialogRoute = data.dialogRoute;
-    }
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
+
   }
 };
 </script>

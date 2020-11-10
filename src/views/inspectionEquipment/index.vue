@@ -3,7 +3,7 @@
     <div class="header-box">
       <div class="header-left">
         <snt-search
-          :placeholder="'请输入任务名称'" 
+          :placeholder="'请输入设备名称或编码'" 
           @changeSearch="getSearchWord"
           @submit="searchInspect"
         />
@@ -11,7 +11,7 @@
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="See">查看</el-button>
-          <el-button type="primary" plain>导出</el-button>
+          <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
     </div>
@@ -93,6 +93,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('equipment');
 // const {mapActions: areaActions} = createNamespacedHelpers('area');
+import {exportExcel} from '@/utils/index';
 export default {
   name: 'Equipment',
   components: {
@@ -235,6 +236,31 @@ export default {
       console.log(data);
       this.searchWords = data;
       this.getData();
+    },
+    // 导出
+    exportData() {
+      let HeaderData = [
+        '设备名称',
+        '设备编号',
+        '今年巡检次数',
+        '今年触发事件次数',
+        '今年转工单次数'
+      ];
+      let TextName = [
+        'name',
+        'code',
+        'inspectionCount',
+        'eventCount',
+        'workCount'
+      ];
+      let tableData;
+      let tableName = '设备列表';
+      if (this.multipleSelection.length == 0) {
+        tableData = this.equipmentList;
+      } else {
+        tableData = this.multipleSelection;
+      }
+      exportExcel(HeaderData, TextName, tableData, tableName);
     }
   },
   mounted() {

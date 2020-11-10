@@ -31,7 +31,7 @@
                 <div class="list-item">
                   <div class="list-items has-two-item">
                     <div class="item-title">设备坐标：</div>
-                    <div class="item-content">
+                    <div class="item-content" style="overflow: hidden;">
                       <span>{{ equipmentDetails.point }}</span>
                     </div>
                   </div>
@@ -302,6 +302,7 @@ export default {
     ...areaActions(['getAreaDetailInfo']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeView() {
+      this.activeName = 'basicInfo';
       let data = {
         dialogView: false,
         data: []

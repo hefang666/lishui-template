@@ -4,7 +4,8 @@ import {
   GetDeviceTaskList,
   GetDeviceEventList
 } from '@/api/inspection';
-import { parseTime } from '../../utils';
+
+import {parseTime} from '../../utils';
 
 var state = {
   equipmentList: [
@@ -106,6 +107,7 @@ var actions = {
           }
         })
         .catch(error => {
+          console.log(error);
           commit('set_message', error.message || error);
           reject(error);
         });
