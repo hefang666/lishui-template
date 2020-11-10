@@ -169,8 +169,8 @@
                   ]"
                   :disabled="
                     scope.row['status'] == 2 || scope.row['status'] == 4
-                      ? disabledTrue
-                      : disabledFalse
+                      ? disabledFalse
+                      : disabledTrue
                   "
                   @click="handleComplete(scope.row)"
                   >完成</el-button
@@ -504,6 +504,7 @@ export default {
 
     // 操作栏里的完成
     handleComplete(row) {
+      console.log('点击了完成');
       let param = {
         Id: row.id,
         operate: 2
@@ -512,7 +513,9 @@ export default {
         .then(res => {
           if (res.success) {
             this.iconStr = 'el-icon-circle-check';
+            this.setMessage('修改成功');
             this.dialogMessage = true;
+            this.getData();
           }
         })
         .catch(() => {

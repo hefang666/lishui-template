@@ -46,3 +46,12 @@ export function InsertWorkOrder(data) {
     data
   });
 }
+
+// 修改工单
+export function UpdateWorkOrder(data) {
+  return request({
+    url: api + 'WorkOrderService/UpdateWorkOrder',
+    method: 'post',
+    data
+  });
+}

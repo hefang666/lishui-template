@@ -217,11 +217,19 @@
       :dialog-event-view="dialogEventView"
       @closeViewEvent="closeViewEvent"
     ></view-event-detail>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import ViewTaskDetail from './ViewTaskDetail.vue';
 import ViewEventDetail from './ViewEventDetail.vue';
 import {createNamespacedHelpers} from 'vuex';
@@ -235,7 +243,8 @@ export default {
   components: {
     Page,
     ViewTaskDetail,
-    ViewEventDetail
+    ViewEventDetail,
+    Message
   },
   computed: {
     ...equipmentState([
@@ -277,7 +286,13 @@ export default {
       eventCurrentPage: 1,
 
       // 事件列表当前页条数
-      eventPageSize: 30
+      eventPageSize: 30,
+      
+      // 是否显示消息提示框
+      dialogMessage: false,
+
+      // 提示消息
+      messageText: ''
     };
   },
   methods: {
@@ -293,43 +308,92 @@ export default {
       };
       this.$emit('closeView', data);
     },
-
+    // 获取任务列表
+    getTaskData() {
+      let param = {
+        Id: this.equipmentDetails.id,
+        pageIndex: this.taskCurrentPage,
+        MaxResultCount: this.taskPageSize
+      };
+      this.GetDeviceTaskList(param).then(() => {
+        console.log();
+      }).catch((err) => {
+        this.messageText = err.message;
+        this.dialogMessage = true;
+      });
+    },
+    // 获取事件列表
+    getEventData() {
+      let param = {
+        Id: this.equipmentDetails.id,
+        pageIndex: this.eventCurrentPage,
+        MaxResultCount: this.eventPageSize
+      };
+      this.GetDeviceEventList(param).then(() => {
+        console.log();
+      }).catch(err => {
+        this.messageText = err.message;
+        this.dialogMessage = true;
+      });
+    },
     // tabs切换时的点击事件
     handleClick(tab) {
       console.log(tab);
       if (tab.name == 'equipmentInfo') {
         // 获取任务列表
-        let param = {
-          Id: this.equipmentDetails.id,
-          pageIndex: this.taskCurrentPage,
-          MaxResultCount: this.taskPageSize
-        };
-        this.GetDeviceTaskList(param);
+        this.getTaskData();
+
+        // let param = {
+        //   Id: this.equipmentDetails.id,
+        //   pageIndex: this.taskCurrentPage,
+        //   MaxResultCount: this.taskPageSize
+        // };
+        // this.GetDeviceTaskList(param).then(() => {
+        //   console.log();
+        // }).catch((err) => {
+        //   this.messageText = err.message;
+        //   this.dialogMessage = true;
+        // });
       } else if (tab.name == 'inspectionPath') {
         // 获取事件列表
-        let param = {
-          Id: this.equipmentDetails.id,
-          pageIndex: this.eventCurrentPage,
-          MaxResultCount: this.eventPageSize
-        };
-        this.GetDeviceEventList(param);
+        this.getEventData();
+
+        // let param = {
+        //   Id: this.equipmentDetails.id,
+        //   pageIndex: this.eventCurrentPage,
+        //   MaxResultCount: this.eventPageSize
+        // };
+        // this.GetDeviceEventList(param).then(() => {
+        //   console.log();
+        // }).catch(err => {
+        //   this.messageText = err.message;
+        //   this.dialogMessage = true;
+        // });
       }
     },
     // 获取从分页传过来的每页多少条数据(任务)
     changeTaskPageSize(data) {
       console.log(data);
+      this.taskPageSize = data;
+      this.getTaskData();
     },
     // 获取从分页传过来的当前页数（任务）
     changeTaskCurrentPage(data) {
       console.log(data);
+      this.taskCurrentPage = data;
+      this.getTaskData();
     },
     // 获取从分页传过来的每页多少条数据（事件）
     changeEventPageSize(data) {
       console.log(data);
+      this.eventPageSize = data;
+      this.getEventData();
     },
     // 获取从分页传过来的当前页数（事件）
     changeEventCurrentPage(data) {
       console.log(data);
+      this.eventCurrentPage = data;
+      this.getEventData();
     },
     // 查看任务
     handleSee(row) {
@@ -347,7 +411,10 @@ export default {
             if (res.success) {
               this.dialogViewDetail = true;
             }
-          });
+          }).catch(err => {
+          this.messageText = err.message;
+          this.dialogMessage = true;
+        });
         }
       });
       // this.dialogViewDetail = true;
@@ -370,8 +437,11 @@ export default {
       //       }
       //     });
         }
-      });
-      this.dialogEventView = true;
+      }).catch(err => {
+          this.messageText = err.message;
+          this.dialogMessage = true;
+        });
+      // this.dialogEventView = true;
     },
     // 关闭查看任务弹窗
     closeViewDetail(data) {
@@ -381,7 +451,12 @@ export default {
     // 关闭查看事件弹窗
     closeViewEvent(data) {
       this.dialogEventView = data;
-    }
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
+    },
   }
 };
 </script>

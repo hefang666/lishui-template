@@ -3,7 +3,8 @@ import {
   GetWorkOrderDetails,
   DeleteWorkOrder,
   CloseWorkOrder,
-  InsertWorkOrder
+  InsertWorkOrder,
+  UpdateWorkOrder
 } from '@/api/order';
 import {parseTime} from '@/utils/index.js';
 
@@ -146,18 +147,21 @@ var actions = {
           console.log(response);
           if (response.success) {
             let details = response.result;
+            console.log(details);
             if (details.completeTime != '' || details.completeTime != null) {
               details.completeTime = parseTime(
                 details.completeTime,
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
+
             if (details.creationTime != '' || details.creationTime != null) {
               details.creationTime = parseTime(
                 details.creationTime,
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
+
             if (
               details.planCompleteTime != '' ||
               details.planCompleteTime != null
@@ -167,27 +171,33 @@ var actions = {
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
+
             if (details.time != '' || details.time != null) {
               details.time = parseTime(details.time, '{y}-{m}-{d} {h}:{i}');
             }
-            if (
-              details.eventDetails.creationTime != '' ||
-              details.eventDetails.creationTime != null
-            ) {
-              details.eventDetails.creationTime = parseTime(
-                details.eventDetails.creationTime,
-                '{y}-{m}-{d} {h}:{i}'
-              );
+
+            if (details.eventDetails != null) {
+              if (
+                details.eventDetails.creationTime != '' ||
+                details.eventDetails.creationTime != null
+              ) {
+                details.eventDetails.creationTime = parseTime(
+                  details.eventDetails.creationTime,
+                  '{y}-{m}-{d} {h}:{i}'
+                );
+              }
+
+              if (
+                details.eventDetails.planCompleteTime != '' ||
+                details.eventDetails.planCompleteTime != null
+              ) {
+                details.eventDetails.planCompleteTime = parseTime(
+                  details.eventDetails.planCompleteTime,
+                  '{y}-{m}-{d} {h}:{i}'
+                );
+              }
             }
-            if (
-              details.eventDetails.planCompleteTime != '' ||
-              details.eventDetails.planCompleteTime != null
-            ) {
-              details.eventDetails.planCompleteTime = parseTime(
-                details.eventDetails.planCompleteTime,
-                '{y}-{m}-{d} {h}:{i}'
-              );
-            }
+
             commit('set_orderDetails', response.result);
             resolve(response);
           }
@@ -214,7 +224,7 @@ var actions = {
     });
   },
   // 关闭工单 CloseWorkOrder
-  closeOrder({commit}, data) {
+  closeWorkOrder({commit}, data) {
     return new Promise((resolve, reject) => {
       CloseWorkOrder(data)
         .then(response => {
@@ -245,6 +255,20 @@ var actions = {
         });
     });
   },
+  // 修改工单
+  updateWorkOrder({commit}, data) {
+    return new Promise((resolve, reject) => {
+      UpdateWorkOrder(data)
+        .then(response => {
+          console.log(response);
+          resolve(response);
+        })
+        .catch(error => {
+          commit('set_message', error.message || error);
+          reject(error);
+        });
+    });
+  }
 };
 
 export default {

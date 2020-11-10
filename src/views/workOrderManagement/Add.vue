@@ -177,7 +177,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
-
+const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'AddOrder',
@@ -253,9 +253,11 @@ export default {
       'getRoleData',
       'getAreaLists'
     ]),
+    ...uploadActions(['clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       console.log('点击了取消');
+      this.clearFileDate();
       let data = {
         dialogAdd: false
       };
@@ -370,12 +372,13 @@ export default {
         content: this.remarks,
         source: 1,
         resourceInfoList: this.$refs.upload.fileListData,
-        deviceId: this.devInfo.id
+        deviceId: this.devInfo.id,
       };
       console.log(param);
       this.InsertWorkOrder(param).then(res => {
         // 成功
         if (res.success) {
+          this.clearFileDate();
           let data = false;
           this.$emit('getAdd', data);
         }

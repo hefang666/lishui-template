@@ -517,10 +517,12 @@ export default {
         Id: row.id
       };
       this.GetWorkOrderDetails(param).then(res => {
+        console.log(res);
         if (res.success) {
           this.dialogView = true;
         }
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err);
         this.dialogMessage = true;
       });
     },

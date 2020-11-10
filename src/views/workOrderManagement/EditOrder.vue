@@ -270,7 +270,7 @@ import Preview from '@/components/upLoad/Preview.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
-const {mapActions: uploadActions} = createNamespacedHelpers('upload');
+const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditOrder',
@@ -282,7 +282,8 @@ export default {
     Message,
   },
   computed: {
-    ...workOrderState(['orderTypeData', 'orderDetails', 'messageText'])
+    ...workOrderState(['orderTypeData', 'orderDetails', 'messageText']),
+    ...uploadState(['fileListData'])
   },
   data() {
     return {
@@ -308,11 +309,12 @@ export default {
     };
   },
   methods: {
-    ...workOrderActions(['setMessage']),
-    ...uploadActions(['downloadFile']),
+    ...workOrderActions(['setMessage', 'updateWorkOrder']),
+    ...uploadActions(['downloadFile', 'clearFileData']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       console.log('点击了取消');
+      this.clearFileDate();
       let data = {
         dialogEdit: false,
         data: []
@@ -389,6 +391,29 @@ export default {
       }
 
       // 修改工单操作
+      let param = {
+        id: this.orderDetails.id,
+        type: this.orderDetails.type,
+        personId: this.orderDetails.personId,
+        person: this.orderDetails.person,
+        planCompleteTime: this.orderDetails.planCompleteTime,
+        content: this.orderDetails.content,
+        areaId: this.orderDetails.areaId,
+        resourcelist: this.fileListData
+      }
+
+      console.log(param);
+
+      this.updateWorkOrder(param).then(res => {
+        console.log(res);
+        if (res.success) {
+          console.log(this.$parent);
+          this.$parent.getData();
+          this.closeEdit();
+        }
+      }).catch((err) => {
+        console.log(err);
+      })
     },
     // 预览
     previewImg(data) {

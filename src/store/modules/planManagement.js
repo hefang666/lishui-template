@@ -232,6 +232,16 @@ var actions = {
                 '{y}-{m}-{d} {h}:{i}'
               );
             }
+
+            if (response.result.taskLists.length != 0) {
+              response.result.taskLists.forEach(item => {
+                item.beginTime = parseTime(
+                  item.beginTime,
+                  '{y}-{m}-{d} {h}:{i}'
+                );
+                item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+              });
+            }
             // let details = response.result;
             // let arr = details.participant.split('、');
             // let array = [];

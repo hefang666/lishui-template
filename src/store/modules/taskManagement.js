@@ -325,8 +325,6 @@ var actions = {
           console.log(response);
           if (response.success) {
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -343,8 +341,6 @@ var actions = {
           console.log(response);
           if (response.success) {
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -399,8 +395,6 @@ var actions = {
           if (response.success) {
             commit('set_areaDetail', response.result);
             resolve(response);
-          } else {
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {
@@ -417,9 +411,6 @@ var actions = {
           if (response.success) {
             commit('set_message', '修改成功');
             resolve(response);
-          } else {
-            console.log(response);
-            commit('set_message', response.error.message);
           }
         })
         .catch(error => {

@@ -318,6 +318,7 @@ export default {
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       console.log('点击了取消');
+      this.clearFileDate();
       let data = {
         dialogTransfer: false,
         data: []
@@ -402,6 +403,7 @@ export default {
       };
       this.UpdateEvent(param).then(res=>{
         if(res.success){
+          this.clearFileDate();
           let data = false;
           console.log('data :>> ', data);
           this.$emit('checkedTransfer', data);

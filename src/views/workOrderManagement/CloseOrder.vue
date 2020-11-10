@@ -63,7 +63,7 @@ export default {
     ...orderState(['messageText'])
   },
   methods: {
-    ...orderActions(['setMessage', 'closeOrder']),
+    ...orderActions(['setMessage', 'closeWorkOrder']),
     closeOrder() {
       let data = false;
       this.$emit('closeOrder', data);
@@ -80,7 +80,12 @@ export default {
         Id: this.orderId,
         closeReason: this.reason
       }
-      this.closeOrder(param).catch(() => {
+      this.closeWorkOrder(param).then(res => {
+        if (res.success) {
+          this.closeOrder();
+          this.$parent.getData();
+        }
+      }).catch(() => {
         this.dialogMessage = true;
       });
 

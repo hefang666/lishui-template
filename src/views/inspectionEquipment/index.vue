@@ -2,7 +2,11 @@
   <div class="inspection-box button-box">
     <div class="header-box">
       <div class="header-left">
-        <snt-search :placeholder="'请输入任务名称'" />
+        <snt-search
+          :placeholder="'请输入任务名称'" 
+          @changeSearch="getSearchWord"
+          @submit="searchInspect"
+        />
       </div>
       <div class="header-right">
         <el-button-group>
@@ -14,6 +18,7 @@
     <div class="content-box">
       <div class="table-box">
         <el-table
+          v-loading="loading"
           ref="multipleTable"
           :data="equipmentList"
           :stripe="true"
@@ -121,6 +126,9 @@ export default {
 
       // 提示消息
       messageText: '',
+
+      // 加载状态
+      loading: true
     };
   },
   methods: {
@@ -158,17 +166,26 @@ export default {
           if (res.success) {
             this.dialogView = true;
           }
+        }).catch((err) => {
+          this.messageText = err.Message;
+          this.dialogMessage = true;
         });
       }
     },
 
-    // 行；里的查看
+    // 行里的查看
     handleSee(row) {
       let param = {
         Id: row.id
       };
-      this.GetDeviceInspectionDetails(param);
-      this.dialogView = true;
+      this.GetDeviceInspectionDetails(param).then(res => {
+        if (res.success) {
+          this.dialogView = true;
+        }
+      }).catch(err => {
+        this.messageText = err.Message;
+        this.dialogMessage = true;
+      });
     },
 
     // 关闭提示消息弹窗
@@ -194,10 +211,30 @@ export default {
     },
     getData() {
       let param = {
+        nameOrCode: this.searchWords,
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       }
-      this.GetDeviceInspectionList(param);
+      this.GetDeviceInspectionList(param).then(res => {
+        if (res.success) {
+          this.loading = false;
+        }
+      }).catch((err) => {
+        this.loading = false;
+        this.messageText = err.Message;
+        this.dialogMessage = true;
+      });
+    },
+    // 获得从搜索组件穿回来的搜索关键字
+    getSearchWord(data) {
+      this.searchWords = data;
+      console.log(this.searchWords);
+    },
+    // 点击搜索
+    searchInspect(data) {
+      console.log(data);
+      this.searchWords = data;
+      this.getData();
     }
   },
   mounted() {

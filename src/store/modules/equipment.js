@@ -4,6 +4,7 @@ import {
   GetDeviceTaskList,
   GetDeviceEventList
 } from '@/api/inspection';
+import { parseTime } from '../../utils';
 
 var state = {
   equipmentList: [
@@ -134,6 +135,14 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.endTime != null || item.endTime != '') {
+                  item.endTime = parseTime(item.endTime, '{y}-{m}-{d} {h}:{i}');
+                }
+              });
+            }
+
             commit('set_equipmentTaskList', response.result.items);
             commit('set_equipmentTaskPageInfo', response.result.totalCount);
             resolve(response);
@@ -152,6 +161,16 @@ var actions = {
         .then(response => {
           console.log(response);
           if (response.success) {
+            if (response.result.items.length != 0) {
+              response.result.items.forEach(item => {
+                if (item.creationTime != null || item.creationTime != '') {
+                  item.creationTime = parseTime(
+                    item.creationTime,
+                    '{y}-{m}-{d} {h}:{i}'
+                  );
+                }
+              });
+            }
             commit('set_equipmentEventList', response.result.items);
             commit('set_equipmentEventPageInfo', response.result.totalCount);
             resolve(response);

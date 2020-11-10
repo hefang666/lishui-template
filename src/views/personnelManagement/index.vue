@@ -85,7 +85,7 @@
       </div>
       <page
         :page-data="[30, 40, 50, 100]"
-        :total="total"
+        :total="personTotal"
         @changePageSize="changePageSize"
         @changeCurrentPage="changeCurrentPage"
       ></page>
@@ -133,7 +133,7 @@ export default {
     Message
   },
   computed: {
-    ...mapState(['personList', 'attendanceList', 'loading']),
+    ...mapState(['personList', 'attendanceList', 'loading', 'personTotal']),
   },
   data() {
     return {
