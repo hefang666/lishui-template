@@ -146,7 +146,7 @@
                 ></page>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="巡检路径" name="inspectionPath">
+            <!-- <el-tab-pane label="巡检路径" name="inspectionPath">
               <div class="inspectionPath-box">
                 <div class="map-box">
                   <map-route ref="map" :mapid="'ss_' + taskDetail.areaId"></map-route>
@@ -228,7 +228,7 @@
                   </div>
                 </div>
               </div>
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
         </div>
       </div>
@@ -256,7 +256,7 @@
 import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
-import MapRoute from '@/components/mapRoute/index.vue';
+// import MapRoute from '@/components/mapRoute/index.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
@@ -267,7 +267,7 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute,
-    MapRoute
+    // MapRoute
   },
   data() {
     return {
@@ -324,13 +324,14 @@ export default {
           maxResultCount: 30
         };
         this.GetInspectionPointList(param);
-      } else if (tab.name == 'inspectionPath') {
-        // 巡检路径信息
-        let param = {
-          Id: this.taskDetail.id
-        };
-        this.GetAreaByTaskId(param);
       }
+      //  else if (tab.name == 'inspectionPath') {
+      //   // 巡检路径信息
+      //   let param = {
+      //     Id: this.taskDetail.id
+      //   };
+      //   this.GetAreaByTaskId(param);
+      // }
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {

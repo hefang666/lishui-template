@@ -107,7 +107,7 @@ export default {
         color: #e6ae35;
       }
       .el-icon-circle-check {
-        color: green;
+        color: rgb(68, 167, 68);
       }
       .message {
         text-align: center;

@@ -47,7 +47,7 @@
         pointLayer: {},
         // 管线图层
         lineLayer: {},
-        zoomMap: 15,
+        zoomMap: 12,
         // 显示区域的图层
         drawAreaSource: {},
         drawAreaStyle: {},

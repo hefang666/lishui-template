@@ -36,7 +36,9 @@ let state = {
   // 复选框选中的管线和管点
   checkedPoint: [],
   checkedLine: [],
-  areaDetailsInfo: {}
+  areaDetailsInfo: {},
+  // 提示消息
+  messageText: ''
 };
 
 let mutations = {
@@ -85,6 +87,10 @@ let mutations = {
     state.areaInfo.selectLine.splice(index, 1);
     state.selectLine.splice(index, 1);
   }
+  // 设置提示消息
+  // setMessage: function(state, data) {
+  //   state.messageText = data;
+  // }
 };
 
 let actions = {
@@ -102,6 +108,7 @@ let actions = {
           }
         })
         .catch(error => {
+          commit('setMessage', error.message);
           reject(error);
         });
     });
@@ -144,6 +151,10 @@ let actions = {
           }
         })
         .catch(error => {
+          Message({
+            type: 'error',
+            message: error.message
+          });
           reject(error);
         });
     });

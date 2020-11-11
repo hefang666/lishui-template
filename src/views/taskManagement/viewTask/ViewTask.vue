@@ -152,8 +152,7 @@
                 ></page>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="巡检路径" name="inspectionPath">
-              <!-- <inspection-path></inspection-path> -->
+            <!-- <el-tab-pane label="巡检路径" name="inspectionPath">
 
               <div class="inspectionPath-box"> 
 
@@ -190,7 +189,7 @@
                   
                 </div>
               </div>
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
         </div>
       </div>
@@ -226,7 +225,7 @@ import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 // import InspectionPath from './InspectionPath.vue';
-import MapRoute from '@/components/mapRoute/route.vue';
+// import MapRoute from '@/components/mapRoute/route.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
@@ -238,7 +237,7 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute,
-    MapRoute,
+    // MapRoute,
     // InspectionPath,
     Message
   },
@@ -332,45 +331,46 @@ export default {
       if (tab.name == 'equipmentInfo') {
         // 获取设备点详情
         this.getData();
-      } else if (tab.name == 'inspectionPath') {
-        
-        this.$nextTick(()=> {
-          let areainfo = this.areaDetailsInfo;
-          let data = {
-            areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
-            deviceLists: areainfo.deviceLists,
-            pipelineLists: areainfo.pipelineLists
-          }
-          // console.log(data.areaPoint)
-          this.$refs.map.setMapArea(data);
-        })
-
-        // 巡检路径信息
-        // let param = {
-        //   Id: this.taskDetail.id
-        // };
-        // this.GetAreaByTaskId(param).then(res => {
-        //   if (res.success) {
-        //     // if(this.$refs.map) {
-        //   // this.$nextTick(() => {
-            
-        //   // })
-        // // }
-        //   }
-        // });
-        // if(this.$refs.map) {
-        //   // this.$nextTick(() => {
-        //     let areainfo = this.areaDetailsInfo;
-        //     let data = {
-        //       areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
-        //       deviceLists: areainfo.deviceLists,
-        //       pipelineLists: areainfo.pipelineLists
-        //     }
-        //     console.log(data.areaPoint)
-        //     this.$refs.map.setAreaInfo(data);
-        //   // })
-        // }
       }
+      //  else if (tab.name == 'inspectionPath') {
+        
+      //   this.$nextTick(()=> {
+      //     let areainfo = this.areaDetailsInfo;
+      //     let data = {
+      //       areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+      //       deviceLists: areainfo.deviceLists,
+      //       pipelineLists: areainfo.pipelineLists
+      //     }
+      //     // console.log(data.areaPoint)
+      //     this.$refs.map.setMapArea(data);
+      //   })
+
+      //   // 巡检路径信息
+      //   // let param = {
+      //   //   Id: this.taskDetail.id
+      //   // };
+      //   // this.GetAreaByTaskId(param).then(res => {
+      //   //   if (res.success) {
+      //   //     // if(this.$refs.map) {
+      //   //   // this.$nextTick(() => {
+            
+      //   //   // })
+      //   // // }
+      //   //   }
+      //   // });
+      //   // if(this.$refs.map) {
+      //   //   // this.$nextTick(() => {
+      //   //     let areainfo = this.areaDetailsInfo;
+      //   //     let data = {
+      //   //       areaPoint: areainfo.areaPoint.endsWith(';') ?  areainfo.areaPoint : (areainfo.areaPoint+ ';'),
+      //   //       deviceLists: areainfo.deviceLists,
+      //   //       pipelineLists: areainfo.pipelineLists
+      //   //     }
+      //   //     console.log(data.areaPoint)
+      //   //     this.$refs.map.setAreaInfo(data);
+      //   //   // })
+      //   // }
+      // }
     },
     
     // 关闭提示消息弹窗

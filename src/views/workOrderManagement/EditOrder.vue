@@ -408,8 +408,10 @@ export default {
         console.log(res);
         if (res.success) {
           console.log(this.$parent);
-          this.$parent.getData();
-          this.closeEdit();
+          // this.$parent.getData();
+          // this.closeEdit();
+          let data = false;
+          this.$emit('editSuccess', data);
         }
       }).catch((err) => {
         console.log(err);

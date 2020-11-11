@@ -239,6 +239,7 @@
     <message
       :dialog-message="dialogMessage"
       :message="messageText"
+      :icon="iconStr"
       @closeMessage="closeMessage"
     ></message>
 
@@ -255,6 +256,7 @@
     <edit-order
       :dialog-edit="dialogEdit"
       @closeEdit="closeEdit"
+      @editSuccess="editSuccess"
     ></edit-order>
 
     <!-- 查看 -->
@@ -373,6 +375,9 @@ export default {
 
       // 点击表格中的操作选中的行
       checkedId: '',
+
+      // 提示消息的icon
+      iconStr: 'el-icon-warning-outline'
     };
   },
   computed: {
@@ -419,15 +424,26 @@ export default {
     onlyOne() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
         this.setMessage('只能选择一行数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
         return false;
       } else {
         return true;
       }
+    },
+
+    // 修改成功
+    editSuccess(data) {
+      this.dialogEdit = data;
+      this.iconStr = 'el-icon-circle-check';
+      this.setMessage('修改成功');
+      this.dialogMessage = true;
+      this.getData();
     },
 
     // 关闭关闭工单弹窗
@@ -446,6 +462,7 @@ export default {
         } else {
           // 关闭任务只能对已暂停状态的任务进行
           this.setMessage('该状态不能关闭');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -475,6 +492,7 @@ export default {
           });
         } else {
           this.setMessage('该状态不能修改');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
       }
@@ -531,6 +549,7 @@ export default {
     del() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
+        this.iconStr = 'el-icon-warning-outline';
         this.dialogMessage = true;
       } else {
         // 判断选中的项里是否包含有不符合条件的列
@@ -542,6 +561,7 @@ export default {
           } else {
             flag = false;
             this.setMessage('只允许删除已暂停和已关闭的任务');
+            this.iconStr = 'el-icon-warning-outline';
             this.dialogMessage = true;
           }
         });
@@ -694,9 +714,11 @@ export default {
       } else {
         if (this.submissionStartTime == '') {
           this.setMessage('请选择工单提交的开始时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else if (this.submissionEndTime == '') {
           this.setMessage('请选择工单提交的结束时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
         return;
@@ -713,9 +735,11 @@ export default {
       } else {
         if (this.completionStartTime == '') {
           this.setMessage('请选择工单完成的开始时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         } else if (this.completionEndTime == '') {
           this.setMessage('请选择工单完成的结束时间');
+          this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;
         }
         return;
