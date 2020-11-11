@@ -444,7 +444,7 @@ export default {
     // 暂停任务
     suspend() {
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].status != 3) {
+        if (this.multipleSelection[0].status != 2) {
           this.setMessage('该状态不能暂停');
           this.iconStr = 'el-icon-warning-outline';
           this.dialogMessage = true;

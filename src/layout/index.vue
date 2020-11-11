@@ -3,11 +3,11 @@
     class="app-wrapper"
     :class="{hideSidebar: sideBarStatus, showBar: sideBarStatus === 2}"
   >
-    <sidebar class="sidebar-container" />
+    <!-- <sidebar class="sidebar-container" /> -->
     <div class="main-container">
-      <div class="fixed-header">
+      <!-- <div class="fixed-header">
         <tags-view />
-      </div>
+      </div> -->
       <div class="main-content">
         <router-view />
       </div>
@@ -16,12 +16,12 @@
 </template>
 
 <script>
-import sidebar from './components/Sidebar';
-import TagsView from './components/TagsView';
+// import sidebar from './components/Sidebar';
+// import TagsView from './components/TagsView';
 export default {
   components: {
-    sidebar,
-    TagsView
+    // sidebar,
+    // TagsView
   },
   computed: {
     sideBarStatus() {

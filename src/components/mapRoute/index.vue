@@ -53,8 +53,8 @@ import {
   mapwms,
   // workSpace,
   geoserverUrl,
-  geoserverUrlConstPoint,
-  geoserverUrlConstLine
+  // geoserverUrlConstPoint,
+  // geoserverUrlConstLine
 } from '@/api/api';
 // import {createNamespacedHelpers} from 'vuex';
 // const {mapState} = createNamespacedHelpers('mapdata');
@@ -94,9 +94,9 @@ export default {
       zoomMap: 16,
       geoserverUrl: geoserverUrl,
       // 设备服务地址
-      geoserverUrlConstPoint: geoserverUrlConstPoint,
+      // geoserverUrlConstPoint: geoserverUrlConstPoint,
       // 管线服务地址
-      geoserverUrlConstLine: geoserverUrlConstLine,
+      // geoserverUrlConstLine: geoserverUrlConstLine,
       // 开始区域数据源
       // drawStartSoure: {},
       // 结束区域数据源

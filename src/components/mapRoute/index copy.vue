@@ -26,7 +26,7 @@ import location from './location.png';
 import bufferfly from './bufferfly.png';
 import {isStringEmpty} from '@/utils';
 import {Base64} from 'js-base64';
-import {geoserverUrl, geoserverUrlConstPoint, geoserverUrlConstLine} from '@/api/api';
+import {geoserverUrl} from '@/api/api';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('mapdata');
 export default {
@@ -53,9 +53,9 @@ export default {
       zoomMap: '14',
       geoserverUrl: geoserverUrl,
       // 设备服务地址
-      geoserverUrlConstPoint: geoserverUrlConstPoint,
+      // geoserverUrlConstPoint: geoserverUrlConstPoint,
       // 管线服务地址
-      geoserverUrlConstLine: geoserverUrlConstLine,
+      // geoserverUrlConstLine: geoserverUrlConstLine,
       // 开始区域数据源
       drawStartSoure: {},
       // 结束区域数据源
@@ -386,98 +386,98 @@ export default {
     },
 
     // 通过设备名字添加图层到地图
-    addPointLayerByName(layername) {
-      let _this = this;
-      var layerList = this.map.getLayers().getArray();
-      for (let i = 0; i < layerList.length; i++) {
-        let url = layerList[i].values_.title;
-        if (url) {
-          if (url == layername) {
-            return;
-          }
-        }
-      }
-      let url = this.geoserverUrl + this.geoserverUrlConstPoint + layername;
-      let vectorSource = new window.ol.source.Vector({
-        format: new window.ol.format.GeoJSON(),
-        loader: function() {
-          var ajax = new XMLHttpRequest();
-          ajax.open('get', url);
-          // ajax.open("GET", url, true, userName, passWord);
-          ajax.withCredentials = true;
-          ajax.setRequestHeader(
-            'Authorization',
-            _this.authenticateUser('admin', 'Sntsoft123')
-          );
-          ajax.send();
-          ajax.onreadystatechange = function() {
-            if (ajax.readyState == 4 && ajax.status == 200) {
-              vectorSource.addFeatures(
-                vectorSource.getFormat().readFeatures(ajax.responseText));
-            }
-          };
-        }
-      });
-      var layer = new window.ol.layer.Vector({
-        source: vectorSource,
-        title: layername,
-        style: new window.ol.style.Style({
-          image: new window.ol.style.Icon({
-            size: [16, 16],
-            src: _this.mapImg[layername]
-          })
-        })
-      });
-      this.map.addLayer(layer);
-      return layer;
-    },
+    // addPointLayerByName(layername) {
+    //   let _this = this;
+    //   var layerList = this.map.getLayers().getArray();
+    //   for (let i = 0; i < layerList.length; i++) {
+    //     let url = layerList[i].values_.title;
+    //     if (url) {
+    //       if (url == layername) {
+    //         return;
+    //       }
+    //     }
+    //   }
+    //   let url = this.geoserverUrl + this.geoserverUrlConstPoint + layername;
+    //   let vectorSource = new window.ol.source.Vector({
+    //     format: new window.ol.format.GeoJSON(),
+    //     loader: function() {
+    //       var ajax = new XMLHttpRequest();
+    //       ajax.open('get', url);
+    //       // ajax.open("GET", url, true, userName, passWord);
+    //       ajax.withCredentials = true;
+    //       ajax.setRequestHeader(
+    //         'Authorization',
+    //         _this.authenticateUser('admin', 'Sntsoft123')
+    //       );
+    //       ajax.send();
+    //       ajax.onreadystatechange = function() {
+    //         if (ajax.readyState == 4 && ajax.status == 200) {
+    //           vectorSource.addFeatures(
+    //             vectorSource.getFormat().readFeatures(ajax.responseText));
+    //         }
+    //       };
+    //     }
+    //   });
+    //   var layer = new window.ol.layer.Vector({
+    //     source: vectorSource,
+    //     title: layername,
+    //     style: new window.ol.style.Style({
+    //       image: new window.ol.style.Icon({
+    //         size: [16, 16],
+    //         src: _this.mapImg[layername]
+    //       })
+    //     })
+    //   });
+    //   this.map.addLayer(layer);
+    //   return layer;
+    // },
 
     // 通过管道名字添加图层，并同时设置管道颜色
-    addLineLayerByName(layername, color) {
-      let _this = this;
-      var layerList = this.map.getLayers().getArray();
-      for (let i = 0; i < layerList.length; i++) {
-        let url = layerList[i].values_.title;
-        if (url) {
-          if (url == layername) {
-            return;
-          }
-        }
-      }
-      let url = this.geoserverUrl + this.geoserverUrlConstLine + layername;
-      let vectorSource = new window.ol.source.Vector({
-        format: new window.ol.format.GeoJSON(),
-        loader: function() {
-          var ajax = new XMLHttpRequest();
-          ajax.open('get', url);
-          // ajax.open("GET", url, true, userName, passWord);
-          ajax.withCredentials = true;
-          ajax.setRequestHeader(
-            'Authorization',
-            _this.authenticateUser('admin', 'Sntsoft123')
-          );
-          ajax.send();
-          ajax.onreadystatechange = function() {
-            if (ajax.readyState == 4 && ajax.status == 200) {
-              vectorSource.addFeatures(
-                vectorSource.getFormat().readFeatures(ajax.responseText));
-            }
-          };
-        }
-      });
-      var layer = new window.ol.layer.Vector({
-        source: vectorSource,
-        title: layername,
-        style: new window.ol.style.Style({
-          stroke: new window.ol.style.Stroke({
-            color: color,
-            width: 2
-          })
-        })
-      });
-      this.map.addLayer(layer);
-      return layer;
-    },
+    // addLineLayerByName(layername, color) {
+    //   let _this = this;
+    //   var layerList = this.map.getLayers().getArray();
+    //   for (let i = 0; i < layerList.length; i++) {
+    //     let url = layerList[i].values_.title;
+    //     if (url) {
+    //       if (url == layername) {
+    //         return;
+    //       }
+    //     }
+    //   }
+    //   let url = this.geoserverUrl + this.geoserverUrlConstLine + layername;
+    //   let vectorSource = new window.ol.source.Vector({
+    //     format: new window.ol.format.GeoJSON(),
+    //     loader: function() {
+    //       var ajax = new XMLHttpRequest();
+    //       ajax.open('get', url);
+    //       // ajax.open("GET", url, true, userName, passWord);
+    //       ajax.withCredentials = true;
+    //       ajax.setRequestHeader(
+    //         'Authorization',
+    //         _this.authenticateUser('admin', 'Sntsoft123')
+    //       );
+    //       ajax.send();
+    //       ajax.onreadystatechange = function() {
+    //         if (ajax.readyState == 4 && ajax.status == 200) {
+    //           vectorSource.addFeatures(
+    //             vectorSource.getFormat().readFeatures(ajax.responseText));
+    //         }
+    //       };
+    //     }
+    //   });
+    //   var layer = new window.ol.layer.Vector({
+    //     source: vectorSource,
+    //     title: layername,
+    //     style: new window.ol.style.Style({
+    //       stroke: new window.ol.style.Stroke({
+    //         color: color,
+    //         width: 2
+    //       })
+    //     })
+    //   });
+    //   this.map.addLayer(layer);
+    //   return layer;
+    // },
 
     addInteraction() {
       // 地图控件

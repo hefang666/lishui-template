@@ -82,6 +82,7 @@
 <script>
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('home');
+import {mapCenter, mapMaxZoom} from '@/api/api';
 export default {
   data() {
     return {
@@ -113,9 +114,10 @@ export default {
     const zoomMap = this.zoomMap;
     this.map = new SNTGIS.Map({
       layers: [tdMap, dmLayer],
-      center: [106.548293, 29.565552],
+      // center: [106.548293, 29.565552],
+      center: mapCenter,
       zoom: zoomMap,
-      maxZoom: 18,
+      maxZoom: mapMaxZoom,
       minZoom: 5,
       target: 'map'
     });

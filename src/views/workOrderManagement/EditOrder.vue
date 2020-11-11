@@ -69,10 +69,10 @@
                         class="choose-active"
                         type="primary"
                         plain
-                        v-if="orderDetails.person != ''"
-                        v-model="orderDetails.person"
+                        v-if="orderDetails.areaName != ''"
+                        v-model="orderDetails.areaName"
                       >
-                        {{ orderDetails.areaId }}
+                        {{ orderDetails.areaName }}
                       </el-button>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default {
   },
   methods: {
     ...workOrderActions(['setMessage', 'updateWorkOrder']),
-    ...uploadActions(['downloadFile', 'clearFileData']),
+    ...uploadActions(['downloadFile', 'clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       console.log('点击了取消');

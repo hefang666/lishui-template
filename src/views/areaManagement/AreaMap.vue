@@ -27,7 +27,9 @@
 <script>
   import {
     mapwms,
-    workSpace
+    workSpace,
+    mapCenter,
+    mapMaxZoom
   } from '@/api/api';
   import {
     isStringEmpty
@@ -115,9 +117,10 @@
         const zoomMap = this.zoomMap;
         this.map = new SNTGIS.Map({
           layers: [tdMap, dmLayer, pointLayer, lineLayer],
-          center: [104.1526230224237, 30.01244851052735],
+          // center: [104.1526230224237, 30.01244851052735],
+          center: mapCenter,
           zoom: zoomMap,
-          maxZoom: 18,
+          maxZoom: mapMaxZoom,
           minZoom: 5,
           target: 'areamap'
         });

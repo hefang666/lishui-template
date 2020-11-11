@@ -99,7 +99,8 @@ export default {
 <style lang="scss">
 .index-content {
   position: absolute;
-  top: 34px;
+  /* top: 34px; */
+  top: 0;
   bottom: 0;
   width: 100%;
 }
