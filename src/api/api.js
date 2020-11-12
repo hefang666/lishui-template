@@ -4,9 +4,9 @@
 let host = 'http://192.168.9.44:9090/';
 // let host = 'http://192.168.10.214:8091/';
 
-if (window.parent.apiUrl) {
+if (window.top.apiUrl) {
   // console.log('拿到窗口地址了');
-  host = window.parent.apiUrl;
+  host = window.top.apiUrl;
 }
 const baseURL = process.env.NODE_ENV === 'development' ? '/api' : host;
 console.log(baseURL);

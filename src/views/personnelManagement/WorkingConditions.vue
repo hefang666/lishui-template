@@ -504,6 +504,7 @@ export default {
         id: row.id
       };
       this.GetWorkOrderDetails(param).then(res => {
+        console.log(res);
         if (res.success) {
           // let param = {
           //   Id: res.result.areaId
@@ -514,6 +515,7 @@ export default {
           //   }
           // });
           this.dialogOrderDetail = true;
+          // console.log(this.dialogOrderDetail);
         }
       }).catch(() => {
         console.log('获取失败');

@@ -1,10 +1,14 @@
 <template>
   <div class="preview-box">
-    <el-dialog title="附件预览" :visible.sync="dialogPreview">
+		<el-dialog
+			title="附件预览"
+			:visible.sync="dialogPreview"
+			:before-close="closePreview"
+			>
       <div class="content-box">
-        <div class="cancel-box" @click="closePreview">
+        <!-- <div class="cancel-box" @click="closePreview">
           <i class="el-dialog__close el-icon el-icon-close"></i>
-        </div>
+        </div> -->
         <div class="content_box">
           <img class="img" :src="httpUrl + fileData.url" alt="">
         </div>
@@ -62,7 +66,7 @@ export default {
 	}
 	/deep/ .el-dialog__body {
 		padding:0;
-		height: 880px;
+		height: 90% !important;
 	}
 	/deep/ .el-dialog__footer {
 		border-top: 1px solid #e5e5e5;

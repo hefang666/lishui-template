@@ -143,6 +143,7 @@
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
+
     <!-- 参与人弹窗 -->
     <choose-people
       :dialog-charge="dialogPar"
@@ -150,6 +151,7 @@
       @closeChoosePeople="closePar"
       @checkedPerson="checkedPar"
     ></choose-people>
+    
     <choose-area
       :dialog-area="dialogArea"
       @closeChooseArea="closeChooseArea"

@@ -322,6 +322,7 @@ export default {
 
     // 表格里的修改
     handleEdit(row) {
+      console.log(row);
       if (row.status == 2) {
         let param = {
           Id: row.id

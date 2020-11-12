@@ -313,7 +313,12 @@ export default {
     determine() {
       console.log(this.selectedData);
       if (this.selectedData.length == 0) {
-        this.setMessage('请选择负责人！');
+        if (this.selectType == 'single') {
+          this.setMessage('请选择负责人！');
+        } else {
+          this.setMessage('请选择参与人！');
+        }
+        
         this.dialogMessage = true;
         // alert('请选择负责人！');
         return;

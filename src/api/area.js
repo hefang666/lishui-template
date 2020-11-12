@@ -14,6 +14,7 @@ export function insetArea(data) {
   return request({
     url: api + 'AreaService/InsertArea',
     method: 'post',
+    timeout: 300000,
     data
   });
 }
@@ -23,6 +24,7 @@ export function updateArea(data) {
   return request({
     url: api + 'AreaService/UpdateArea',
     method: 'post',
+    timeout: 300000,
     data
   });
 }
@@ -36,10 +38,12 @@ export function getAreaList(data) {
   });
 }
 
+// 删除片区
 export function deleteArea(data) {
   return request({
     url: api + 'AreaService/DeleteArea',
     method: 'post',
+    timeout: 300000,
     data
   });
 }

@@ -49,7 +49,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null" class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">设备名称：</div>
               <div class="item-content">
@@ -63,7 +63,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">设备坐标点：</div>
               <div class="item-content">
@@ -77,7 +77,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">设备点状态：</div>
               <div class="item-content">
@@ -91,7 +91,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">异常类型：</div>
               <div class="item-content">
@@ -105,7 +105,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">报告人：</div>
               <div class="item-content">
@@ -119,7 +119,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">事件状态：</div>
               <div class="item-content">
@@ -133,7 +133,7 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
             <div class="list-items has-two-item">
               <div class="item-title">巡检内容：</div>
               <div class="item-content">
