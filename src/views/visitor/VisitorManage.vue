@@ -7,7 +7,7 @@
             :class="{active: currentIndex === index}" 
             v-for="(item, index) in pointPowerData" 
             :key="index" 
-            @click="changeList(index)">
+            @click="changeList(item.pointName)">
             <span>{{item.pointName}}</span>
           </div>
         </div>
@@ -354,14 +354,15 @@ export default {
         // console.log(res)
         if(res.success){
           this.pointPowerData = res.result
-          this.changeList(0)
+          console.log(res.result)
+          this.changeList(res.result[0].pointName)
         }
       })
     },
     // 点击切换列表事件
     changeList(index) {
-      this.currentIndex = index
-      this.form.codes[0] = this.pointPowerData[this.currentIndex].pointName
+      // this.currentIndex = index
+      this.form.codes[0] = index
       // console.log(this.form.codes[0])
       this.getList()
     },
@@ -381,7 +382,7 @@ export default {
     },
     // 获取列表
     getList() {
-      this.loading = true
+      this.loading = true;
       GetPageList(this.form).then(res => {
         // console.log(res)
         if(res.success){

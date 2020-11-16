@@ -25,6 +25,17 @@ export default {
   props: {
     treeData: Array
   },
+  watch: {
+    treeData: {
+      handler(o) {
+        // console.log(o)
+        this.$nextTick(function () {
+          this.$refs.tree.setCurrentKey(o[0].id);
+        });
+      },
+      deep: true,
+    },
+  },
   data() {
     return {
       // 默认data数组参数

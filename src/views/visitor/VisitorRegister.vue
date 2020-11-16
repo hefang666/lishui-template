@@ -233,7 +233,7 @@ export default {
         reason: '',
         company: '',
         interviewees: '',
-        visitorCount: '',
+        visitorCount: 0,
         remark: '',
         visitTime: '',
         leaveTime:'',
@@ -252,7 +252,7 @@ export default {
           { required: true, message: "证件类型不能为空", trigger: "blur" }
         ],
         idCardNumber: [
-          { required: true, min: 18, max: 18, message: "长度必须在18个字符", trigger: "blur" }
+          { required: true, min: 18, max: 20, message: "长度必须在20个字符以内", trigger: "blur" }
         ],
         phoneNumber: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
