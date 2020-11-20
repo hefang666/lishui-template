@@ -76,8 +76,8 @@ var actions = {
       getMemberList(options)
         .then(response => {
           if (response.success) {
-            resolve(response);
             commit('update_memberList', response.result.items);
+            resolve(response);
           }
         })
         .catch(error => {

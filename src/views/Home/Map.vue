@@ -7,9 +7,10 @@
       :key="index + 'img'"
       style="min-width: 20px; cursor: pointer;"
       class="index-map-archor-img"
+      v-show="item.location"
     >
       <img
-        src="@/assets/icon-location-active.png"
+        :src="item.isOnline ? locationActive : locationGray"
         @mouseenter="() => handleAnchorEnter(item)"
         @mouseleave="() => handleAnchorLeave(item)"
       />
@@ -18,6 +19,7 @@
       class="task-container overlay-element"
       v-for="(item, index) in memberList"
       :key="index + 'overlay'"
+      v-show="item.location"
       :id="`overlay-element-${item.userId}`"
       @mouseenter="() => handleOverlayEnter(item)"
       @mouseleave="() => handleOverlayLeave(item)"
@@ -33,7 +35,7 @@
         class="snt-tabs-bottom"
       >
         <el-tab-pane label="任务" name="first">
-          <el-carousel trigger="click" :autoplay="autoplay" height="145px">
+          <el-carousel v-if="item.taskLists && item.taskLists.length > 0" trigger="click" :autoplay="autoplay" height="145px">
             <el-carousel-item
               v-for="(task, index) in item.taskLists"
               :key="'index_task_' + index"
@@ -52,7 +54,7 @@
           </el-carousel>
         </el-tab-pane>
         <el-tab-pane label="工单" name="second">
-          <el-carousel trigger="click" :autoplay="autoplay" height="145px">
+          <el-carousel v-if="item.workOrderLists && item.workOrderLists.length > 0" trigger="click" :autoplay="autoplay" height="145px">
             <el-carousel-item
               v-for="(order, index) in item.workOrderLists"
               :key="'index_order_' + index"
@@ -81,6 +83,8 @@
 import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('home');
 import {mapCenter, mapMaxZoom} from '@/api/api';
+import locationActive from '@/assets/icon-location-active.png';
+import locationGray from '@/assets/icon-location-gray.png'
 export default {
   data() {
     return {
@@ -90,7 +94,10 @@ export default {
       position: [],
       clickarr: [],
       autoplay: false,
-      memberIndex: -1
+      memberIndex: -1,
+      currentMemberId: -1,
+      locationActive,
+      locationGray
     };
   },
   computed: {
@@ -119,9 +126,6 @@ export default {
       minZoom: 5,
       target: 'map'
     });
-    this.$nextTick(() => {
-      this.addMember(this.memberList);
-    })
   },
   methods: {
     routePush(path) {
@@ -129,10 +133,12 @@ export default {
     },
     // 向地图中增加人员位置
     addMember(data) {
-      const position = data.map(item => {
-        console.log(item)
-        const location = [119.0319, 31.6655];
-        // const location = item.location.split(',');
+      const position = data.map((item) => {
+        console.log(111)
+        if(!item.location)
+          return;
+        // const location = [(119.0319 +  0.01 * index), (31.6655 + 0.01 * index)];
+        const location = item.location.split(',');
         const x = Number(location[0]);
         const y = Number(location[1]);
         return [x, y];
@@ -142,6 +148,7 @@ export default {
       if (position[0]) this.map.getView().setCenter(position[0]);
       // 循环每一个人象地图中添加人的位置及信息
       data.forEach((member, index) => {
+        if(!member.location) return;
         const overlayDom = document.querySelector(
           `#overlay-element-${member.userId}`
         );
@@ -150,7 +157,7 @@ export default {
           element: overlayDom,
           className: `customer-overlay customer-overlay-${index}`,
           position: position[index],
-          offset: [30, -35]
+          offset: [10, -10]
         });
         const anchor = new window.ol.Overlay({
           element: imgDom,
@@ -158,13 +165,17 @@ export default {
           positioning: 'center-center',
           position: position[index]
         });
-        this.map.addOverlay(overlay);
+        // this.map.addOverlay(overlay);
         this.map.addOverlay(anchor);
         this.overlays = {...this.overlays, [`${member.userId}`]: overlay};
         this.anchors = {...this.anchors, [`${member.userId}`]: anchor};
       });
     },
     handleAnchorEnter(member) {
+      if(this.currentMemberId >= 0) {
+        this.map.removeOverlay(this.overlays[this.currentMemberId]);
+        this.currentMemberId = -1;
+      }  
       this.map.addOverlay(this.overlays[member.userId]);
     },
     // 移除人员时删除人员信息
@@ -180,24 +191,17 @@ export default {
       this.isOverlayEnter = true;
     },
     handleOverlayLeave(member) {
-      // console.log(member);
       this.isOverlayEnter = false;
       this.map.removeOverlay(this.overlays[member.userId]);
     },
     // 将地图聚焦到选中人选的位置
-    focusOnCurrentMember(index) {
-      console.log(index);
-      let newmemberList = [];
-      newmemberList.push(this.memberList[index]);
-      this.memberIndex = index;
-      // if (this.memberList[index].isOnline) {
-      if (this.clickarr.indexOf(newmemberList[0].userId) != -1) {
-        this.map.getView().setCenter(this.position[index]);
-      } else {
-        this.clickarr.push(this.memberList[index].userId);
-        this.addMember(newmemberList);
-      }
-      // }
+    focusOnCurrentMember(member, index) {
+      if(!member.location) return false;
+      if(this.currentMemberId >= 0)
+        this.map.removeOverlay(this.overlays[this.currentMemberId]);
+      this.map.addOverlay(this.overlays[member.userId])
+      this.currentMemberId = member.userId;
+      this.map.getView().setCenter(this.position[index]);
     }
   }
 };

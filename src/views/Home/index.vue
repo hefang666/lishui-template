@@ -66,13 +66,16 @@ export default {
   },
   mounted() {
     // console.log(this.pageCount)
-    this.getMemberList();
+    this.getMemberList().then(() => {
+      console.log(this.memberList)
+      this.$refs.map.addMember(this.memberList)
+    });
   },
   methods: {
     ...mapActions(['getMemberList', 'changeSearchName', 'changePageCount', 'changePageNum']),
     changeMember(index) {
       this.currentIndex = index;
-      this.$refs.map.focusOnCurrentMember(index);
+      this.$refs.map.focusOnCurrentMember(this.memberList[index], index);
     },
 
     // 输入框回车或点击搜索处理事件
