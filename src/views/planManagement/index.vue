@@ -57,12 +57,12 @@
           ></el-table-column>
           <el-table-column prop="cycleStr" label="巡检周期"></el-table-column>
           <el-table-column
-            prop="participant"
+            prop="person"
             label="负责人"
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
-            prop="person"
+            prop="participant"
             label="参与人"
             show-overflow-tooltip
           ></el-table-column>
@@ -103,7 +103,12 @@
           </el-table-column>
         </el-table>
       </div>
-      <page :page-data="[30, 40, 50, 100]" :total="planTotal"></page>
+      <page
+        :page-data="[30, 40, 50, 100]"
+        :total="planTotal"
+        @changePageSize="changePageSize"
+        @changeCurrentPage="changeCurrentPage"
+      ></page>
     </div>
     <!-- 新增任务弹框 -->
     <add-plan
@@ -261,6 +266,18 @@ export default {
       this.getPlanList(param).catch(() => {
         this.dialogMessage = true;
       });
+    },
+
+     // 获取从分页传过来的每页多少条数据
+     changePageSize(num) {
+      this.pageSize = num;
+      this.getData();
+    },
+    
+    // 获取从分页传过来的当前页数
+    changeCurrentPage(cur) {
+      this.currentPage = cur;
+      this.getData();
     },
 
     // 获取搜索文字

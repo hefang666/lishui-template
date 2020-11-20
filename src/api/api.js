@@ -8,7 +8,7 @@ if (window.top.apiUrl) {
   // console.log('拿到窗口地址了');
   host = window.top.apiUrl;
 }
-const baseURL = process.env.NODE_ENV === 'development' ? 'http://221.226.213.42:9090' : host;
+const baseURL = process.env.NODE_ENV === 'development' ? '/api' : host;
 // console.log(baseURL);
 
 // const baseURLS = process.env.NODE_ENV == 'development' ? baseURL : baseURL;
