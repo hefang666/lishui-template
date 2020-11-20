@@ -31,7 +31,7 @@
                   @click="viewRoute"
                   class="view-button"
                 >
-                  查看路线
+                  查看片区
                 </el-button>
               </div>
             </div>

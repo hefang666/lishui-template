@@ -137,7 +137,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      // console.log(this.multipleSelection);
     },
     download() {},
     handleSee() {},
@@ -147,7 +147,7 @@ export default {
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.currentPage = data;
     },
 
@@ -157,7 +157,7 @@ export default {
     }
   },
   mounted() {
-    console.log(this.componentName);
+    // console.log(this.componentName);
   }
 };
 </script>

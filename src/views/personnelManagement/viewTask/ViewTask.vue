@@ -79,7 +79,7 @@
                     <div class="item-content">
                       <span>{{ taskDetail.areaName }}</span>
                       <el-button @click="showRoute" class="view-button"
-                        >查看路线</el-button
+                        >查看片区</el-button
                       >
                     </div>
                   </div>
@@ -140,7 +140,7 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :total="inspectionPointTotal"
                   @changePageSize="changePageSize"
                   @changeCurrentPage="changeCurrentPage"
                 ></page>
@@ -249,6 +249,13 @@
       @getRouteData="getRouteData"
       ref="mapview"
     ></view-route>
+
+    <!-- 提示消息弹窗 -->
+    <message
+      :dialog-message="dialogMessage"
+      :message="messageText"
+      @closeMessage="closeMessage"
+    ></message>
   </div>
 </template>
 
@@ -257,6 +264,7 @@ import Page from '@/components/page/Page.vue';
 import EquipmentInfo from './EquipmentInformation.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 // import MapRoute from '@/components/mapRoute/index.vue';
+import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
@@ -267,6 +275,7 @@ export default {
     Page,
     EquipmentInfo,
     ViewRoute,
+    Message
     // MapRoute
   },
   data() {
@@ -280,11 +289,19 @@ export default {
       dialogEqui: false,
 
       // 是否显示查看路线弹窗
-      dialogRoute: false
+      dialogRoute: false,
+
+      curentPage: 1,
+
+      pageSize: 30,
+
+      dialogMessage: false,
+
+      messageText: ''
     };
   },
   computed: {
-    ...taskState(['taskDetail', 'inspectionPointList', 'areaDetail'])
+    ...taskState(['taskDetail', 'inspectionPointList', 'areaDetail', 'inspectionPointTotal'])
   },
   methods: {
     ...taskActions([
@@ -307,23 +324,18 @@ export default {
       //   Id: this.taskDetail.areaId
       // }
       // this.getAreaDetailInfo(param);
-      console.log(2222)
+      // console.log(2222)
       this.dialogRoute = true;
       this.$refs.mapview.setMapReview()
 
     },
 
     // tabs切换时的点击事件
-    handleClick(tab, event) {
-      console.log(tab, event);
+    handleClick(tab) {
+      // console.log(tab, event);
       if (tab.name == 'equipmentInfo') {
         // 获取设备点详情
-        let param = {
-          Id: this.taskDetail.id,
-          pageIndex: 1,
-          maxResultCount: 30
-        };
-        this.GetInspectionPointList(param);
+        this.getInspectionData();
       }
       //  else if (tab.name == 'inspectionPath') {
       //   // 巡检路径信息
@@ -333,28 +345,57 @@ export default {
       //   this.GetAreaByTaskId(param);
       // }
     },
+    // 获取设备详情列表
+    getInspectionData() {
+      let param = {
+          Id: this.taskDetail.id,
+          pageIndex: this.curentPage,
+          maxResultCount: this.pageSize
+        };
+        this.GetInspectionPointList(param).then(() => {
+          console.log();
+        }).catch(err => {
+          this.messageText = err.message;
+          this.dialogMessage = true;
+        });
+    },
+
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
+      this.pageSize = data;
+      this.getInspectionData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
+      this.curentPage = data;
+      this.getInspectionData();
     },
     // 查看按钮
     handleSee(row) {
       let param = {
-        id: row.id,
-        status: row.status
+        deviceId: row.id,
+        status: row.status,
+        taskId: this.taskDetail.id,
+        inspectionStatus: row.inspectionStatus
       };
       this.GetPointDetails(param).then(res => {
         if (res.success) {
           this.dialogEqui = true;
         }
-      }).catch(() => {
-        console.log('获取详情失败');
+      }).catch((err) => {
+        // console.log(err);
+        this.messageText = err.message;
+        this.dialogMessage = true;
+        // console.log('获取详情失败');
       });
       
+    },
+
+    // 关闭提示消息弹窗
+    closeMessage(data) {
+      this.dialogMessage = data;
     },
     // 获取从设备点详细信息弹窗传来的值
     getEquiData(data) {

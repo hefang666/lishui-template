@@ -1,15 +1,15 @@
 // 根据开发环境或者生产环境判断使用的地址  地址不定
 // const baseURL = 'http://192.168.9.44:9090/'
 
-let host = 'http://192.168.9.44:9090/';
+let host = 'http://221.226.213.42:9090/';
 // let host = 'http://192.168.10.214:8091/';
 
 if (window.top.apiUrl) {
   // console.log('拿到窗口地址了');
   host = window.top.apiUrl;
 }
-const baseURL = process.env.NODE_ENV === 'development' ? '/api' : host;
-console.log(baseURL);
+const baseURL = process.env.NODE_ENV === 'development' ? 'http://221.226.213.42:9090' : host;
+// console.log(baseURL);
 
 // const baseURLS = process.env.NODE_ENV == 'development' ? baseURL : baseURL;
 // console.log(baseURLS);
@@ -19,11 +19,11 @@ const api = baseURL + '/api/services/Inspection/';
 const downloadApi = baseURL;
 
 // 正式的时候用这个
-// const gsApi = baseURL + '/api/services/SNTGIS/';
+const gsApi = baseURL + '/api/services/SNTGIS/';
 
 // 测试用这个，因为测试环境里没有这个接口
 // const gsApi = 'http://221.226.213.42:9090/api/services/SNTGIS/';
-const gsApi = 'http://192.168.9.44:9090/api/services/SNTGIS/';
+// const gsApi = 'http://192.168.9.44:9090/api/services/SNTGIS/';
 // 获取人员（云平台）
 const personApi = baseURL + '/api/services/app/';
 // 管网管线获取地址
@@ -54,5 +54,6 @@ export {
   geoserverUrl,
   downloadApi,
   mapCenter,
-  mapMaxZoom
+  mapMaxZoom,
+  baseURL
 };

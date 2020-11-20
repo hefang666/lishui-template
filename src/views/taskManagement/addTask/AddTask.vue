@@ -256,7 +256,7 @@ export default {
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
       let data = false;
-      console.log(data);
+      // console.log(data);
       this.$emit('closeAdd', data);
       this.clearData();
     },
@@ -268,12 +268,12 @@ export default {
     },
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.inCharge = data.personinfo[0].trueName;
       this.personId = data.personinfo[0].id;
@@ -407,7 +407,7 @@ export default {
         pageIndex: 1,
         maxResultCount: 30
       };
-      console.log(param);
+      // console.log(param);
       this.getAreaLists(param).then(res => {
         if (res.success) {
           this.dialogArea = true;
@@ -420,7 +420,7 @@ export default {
     },
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogArea = data.dialogArea;
       this.areaInfo = data.areaInfo;
 
@@ -436,7 +436,7 @@ export default {
     },
     //  关闭消息提示框
     closeMessage(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogMessage = data;
     }
   }

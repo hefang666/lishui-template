@@ -313,7 +313,7 @@ export default {
     ...uploadActions(['downloadFile', 'clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
-      console.log('点击了取消');
+      // console.log('点击了取消');
       this.clearFileDate();
       let data = {
         dialogEdit: false,
@@ -328,12 +328,12 @@ export default {
 
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.orderDetails.person = data.personinfo[0].trueName;
       this.personInfo = data.personinfo;
@@ -354,7 +354,7 @@ export default {
     // 修改工单类型
     selectType(val) {
       this.orderDetails.type = val;
-      console.log(this.orderDetails.type);
+      // console.log(this.orderDetails.type);
     },
     // 点击确定修改工单
     determine() {
@@ -402,12 +402,12 @@ export default {
         resourcelist: this.fileListData
       }
 
-      console.log(param);
+      // console.log(param);
 
       this.updateWorkOrder(param).then(res => {
         console.log(res);
         if (res.success) {
-          console.log(this.$parent);
+          // console.log(this.$parent);
           // this.$parent.getData();
           // this.closeEdit();
           let data = false;

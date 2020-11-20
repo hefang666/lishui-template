@@ -374,31 +374,31 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据(任务)
     changeTaskPageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.taskPageSize = data;
       this.getTaskData();
     },
     // 获取从分页传过来的当前页数（任务）
     changeTaskCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.taskCurrentPage = data;
       this.getTaskData();
     },
     // 获取从分页传过来的每页多少条数据（事件）
     changeEventPageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.eventPageSize = data;
       this.getEventData();
     },
     // 获取从分页传过来的当前页数（事件）
     changeEventCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.eventCurrentPage = data;
       this.getEventData();
     },
     // 查看任务
     handleSee(row) {
-      console.log(row);
+      // console.log(row);
       let param = {
         Id: row.id
       };

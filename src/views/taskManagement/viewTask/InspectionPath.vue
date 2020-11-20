@@ -7,7 +7,7 @@
       <div class="inspectionPath-info-item">
         <div class="inspectionPath-info-items">
           <div class="inspectionPath-info-item-title">
-            巡检路线：
+            片区名称：
           </div>
           <div class="inspectionPath-info-item-content">
             {{ taskDetail.areaName }}

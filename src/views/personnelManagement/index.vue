@@ -163,7 +163,7 @@ export default {
       // 是否显示查看出勤
       dialogAttend: false,
 
-      // 查看出勤(携带id)
+      // 查看出勤(携带人员id)
       dialogAttendID: 0,
 
       // 查看出勤(总页数)
@@ -214,12 +214,12 @@ export default {
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       };
-      console.log(data);
+      // console.log(data);
       this.GetByDay(data);
     },
-    caozuo() {
-      console.log('拿到了函数');
-    },
+    // caozuo() {
+    //   console.log('拿到了函数');
+    // },
     // 选择月(出勤导出)
     handechange() {
       if (this.onlyOne()) {
@@ -235,7 +235,7 @@ export default {
         } else {
           date = parseTime(this.month, '{y}-{m}');
         }
-        console.log(this.month);
+        // console.log(this.month);
         let param = {
           oneMonth: date,
           userId: this.multipleSelection[0].userId
@@ -249,14 +249,14 @@ export default {
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
+        // console.log('请选择要操作数据');
         this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
+        // console.log('只能选择一行数据');
         return false;
       } else {
         return true;
@@ -314,13 +314,15 @@ export default {
     // 出勤查看
     attenadanceSee() {
       if (this.onlyOne()) {
-        this.setCheckedId(this.multipleSelection[0].userId);
+        this.dialogAttendID = this.multipleSelection[0].userId;
         let param = {
-          id: this.multipleSelection[0].userId
+          id: this.multipleSelection[0].userId,
+          pageIndex: 1,
+          maxResultCount: 10
         };
-        this.getDetails(param).then(res => {
+        this.GetByUserId(param).then(res => {
           if (res.success) {
-            this.dialogWorking = true;
+            this.dialogAttend = true;
           }
         }).catch(() => {
           this.dialogMessage = true;
@@ -336,25 +338,33 @@ export default {
         pageIndex: 1,
         maxResultCount: 10
       };
-      this.GetByUserId(param);
-      this.dialogAttend = true;
+      this.GetByUserId(param).then(res => {
+        if (res.success) {
+          this.dialogAttend = true;
+        }
+      }).catch(() => {
+        this.dialogMessage = true;
+      });
+      
     },
 
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.pageSize = data;
+      this.tableinfo();
     },
 
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.currentPage = data;
+      this.tableinfo();
     },
 
     // 关闭工作情况弹窗
     getWorkingData(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogWorking = data;
     },
 

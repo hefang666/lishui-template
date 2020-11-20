@@ -1,7 +1,7 @@
 <template>
   <div class="viewRoute-box dialog-box button-box">
     <el-dialog
-      title="查看路线"
+      title="查看片区"
       :visible.sync="dialogRoute"
       :close-on-click-modal="false"
       :before-close="closeRoute"
@@ -70,7 +70,7 @@ export default {
     };
   },
   mounted() {
-    console.log('进入查看地图了');
+    // console.log('进入查看地图了');
     // var areaInfo = this.areaDetailsInfo;
     // if(!this.isArea && areaInfo.areaPoint) {
     //   this.isArea = true
@@ -85,7 +85,7 @@ export default {
     // 点击取消或者右上角的×关闭新增弹窗
     closeRoute() {
       this.$refs.map.clearMapLayer();
-      console.log('点击了X');
+      // console.log('点击了X');
       let data = {
         dialogRoute: false,
         data: []
@@ -94,13 +94,13 @@ export default {
     },
 
     // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
-      console.log(data);
-    },
+    // changePageSize(data) {
+    //   console.log(data);
+    // },
     // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
-      console.log(data);
-    },
+    // changeCurrentPage(data) {
+    //   console.log(data);
+    // },
     // 点击确定
     determine() {
       // 判断是单选还是多选
@@ -151,7 +151,7 @@ export default {
     },
     // 点击了查看
     views(data) {
-      console.log(data);
+      // console.log(data);
       this.$refs.map.getDeviceTooltip(data);
       // if (data.type == 1) {
       //   // 设备

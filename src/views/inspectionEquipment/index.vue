@@ -137,20 +137,20 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      // console.log(this.multipleSelection);
     },
 
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
     onlyOne() {
       if (this.multipleSelection.length == 0) {
-        console.log('请选择要操作数据');
+        // console.log('请选择要操作数据');
         this.messageText = '请选择要操作数据';
         this.dialogMessage = true;
         return false;
       } else if (this.multipleSelection.length > 1) {
         this.messageText = '只能选择一行数据';
         this.dialogMessage = true;
-        console.log('只能选择一行数据');
+        // console.log('只能选择一行数据');
         return false
       } else {
         return true;
@@ -196,13 +196,13 @@ export default {
     
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.pageSize = data;
       this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.currentPage = data;
       this.getData();
     },
@@ -229,11 +229,11 @@ export default {
     // 获得从搜索组件穿回来的搜索关键字
     getSearchWord(data) {
       this.searchWords = data;
-      console.log(this.searchWords);
+      // console.log(this.searchWords);
     },
     // 点击搜索
     searchInspect(data) {
-      console.log(data);
+      // console.log(data);
       this.searchWords = data;
       this.getData();
     },

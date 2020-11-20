@@ -222,7 +222,8 @@ import ChoosePeople from '@/views/public/ChoosePeople.vue';
 // import ChooseArea from '@/views/public/ChooseArea.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState, mapActions} = createNamespacedHelpers('taskManagement');
+const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers('taskManagement');
+const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditTask',
@@ -265,10 +266,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(['taskDetails', 'messageText'])
+    ...taskState(['taskDetails', 'messageText'])
   },
   methods: {
-    ...mapActions(['UpdateTask', 'setMessage']),
+    ...taskActions(['UpdateTask', 'setMessage']),
+    ...xunjianActions(['getOrganizationData', 'getRoleData']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       let data = false;
@@ -278,20 +280,24 @@ export default {
     choosePerson() {
       this.selectType = 'single';
       this.dialogCharge = true;
+      this.getOrganizationData();
+      this.getRoleData();
     },
     // 点击选择参与人按钮
     choosePart() {
       this.selectType = 'multiple';
       this.dialogCharge = true;
+      this.getOrganizationData();
+      this.getRoleData();
     },
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
     // 选择人员弹窗选择了人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       if (data.type == 'single') {
         // 负责人
         this.person = data.personinfo;

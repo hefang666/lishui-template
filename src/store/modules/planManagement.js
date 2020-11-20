@@ -175,7 +175,7 @@ var actions = {
     }
     commit('set_monthlyData', monthData);
   },
-  // 新增任务
+  // 新增计划
   addPlan({commit}, data) {
     return new Promise((resolve, reject) => {
       addPlan(data)
@@ -191,7 +191,7 @@ var actions = {
         });
     });
   },
-  // 修改任务
+  // 修改计划
   updatePlan({commit}, data){
     return new Promise((resolve, reject) => {
       updatePlan(data)

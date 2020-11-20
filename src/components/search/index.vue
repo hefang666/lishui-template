@@ -75,7 +75,7 @@ export default {
     border: 1px solid #4b77be;
   }
   .el-input__icon {
-    line-height: 32px;
+    line-height: 28px;
   }
   .el-input.is-active .el-input__inner,
   .el-input__inner:focus {
@@ -83,13 +83,13 @@ export default {
     outline: 0;
   }
   .el-input--mini .el-input__inner {
-    height: 30px;
-    line-height: 30px;
+    height: 28px;
+    line-height: 28px;
     padding: 0 10px;
   }
   .search-button {
-    height: 32px;
-    line-height: 32px;
+    height: 28px;
+    line-height: 28px;
     padding: 0 20px;
     vertical-align: top;
     background: #4b77be;

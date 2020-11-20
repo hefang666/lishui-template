@@ -256,7 +256,7 @@ export default {
     ...uploadActions(['clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeAdd() {
-      console.log('点击了取消');
+      // console.log('点击了取消');
       this.clearFileDate();
       let data = {
         dialogAdd: false
@@ -276,7 +276,7 @@ export default {
         pageIndex: 1,
         maxResultCount: 30
       }
-      console.log(param);
+      // console.log(param);
       this.getAreaLists(param);
       this.dialogArea = true;
     },
@@ -310,7 +310,7 @@ export default {
     },
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogArea = data.dialogArea;
       this.areaInfo = data.areaInfo;
       if (data.typestr == 'single') {
@@ -323,8 +323,8 @@ export default {
     },
     // 点击确定新增工单
     determine() {
-      console.log(this.completionTime);
-      console.log(this.$refs.upload.fileListData);
+      // console.log(this.completionTime);
+      // console.log(this.$refs.upload.fileListData);
 
       if (this.orderType == '') {
         this.setMessage('请选择工单类型');
@@ -374,7 +374,7 @@ export default {
         resourceInfoList: this.$refs.upload.fileListData,
         deviceId: this.devInfo.id,
       };
-      console.log(param);
+      // console.log(param);
       this.InsertWorkOrder(param).then(res => {
         // 成功
         if (res.success) {

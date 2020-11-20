@@ -375,8 +375,8 @@ export default {
 
     // 搜索
     search() {
-      console.log(this.exceptionType);
-      console.log(this.exceptionType == '');
+      // console.log(this.exceptionType);
+      // console.log(this.exceptionType == '');
 
       if (this.exceptionType == '') {
         this.setMessage('异常类型不能为空');
@@ -392,7 +392,7 @@ export default {
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize,
       };
-      console.log(param);
+      // console.log(param);
       this.GetEventList(param);
       this.clearData();
     },
@@ -521,13 +521,13 @@ export default {
 
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
 
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       this.person = data.personinfo[0].trueName;
       this.personInfo = data.personinfo;
       this.dialogCharge = data.dialogCharge;
@@ -551,7 +551,7 @@ export default {
     // 确定转工单
     checkedTransfer(data) {
       // console.log(data);
-      console.log('data++++ :>> ', data);
+      // console.log('data++++ :>> ', data);
       this.dialogTransfer = data;
       this.getData();
     },
@@ -559,7 +559,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
+      // console.log(this.multipleSelection)
     },
 
     // 获取从分页传过来的每页多少条数据

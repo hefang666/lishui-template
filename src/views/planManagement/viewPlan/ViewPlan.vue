@@ -31,7 +31,7 @@
                   @click="viewRoute"
                   class="view-button"
                 >
-                  查看路线
+                  查看片区
                 </el-button>
               </div>
             </div>
@@ -151,22 +151,22 @@ export default {
     },
 
     // tabs切换时的点击事件
-    handleClick(tab, event) {
-      console.log(tab, event);
-    },
+    // handleClick(tab, event) {
+    //   console.log(tab, event);
+    // },
     // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
-      console.log(data);
-    },
+    // changePageSize(data) {
+    //   console.log(data);
+    // },
     // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
-      console.log(data);
-    },
+    // changeCurrentPage(data) {
+    //   console.log(data);
+    // },
     // 查看按钮
-    handleSee() {},
+    // handleSee() {},
     // 选中的行
     clickRow(val) {
-      console.log(val);
+      // console.log(val);
       this.checkedName = val.name;
     },
     // 获取从设备点详细信息弹窗传来的值

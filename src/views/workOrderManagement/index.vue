@@ -535,12 +535,12 @@ export default {
         Id: row.id
       };
       this.GetWorkOrderDetails(param).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.success) {
           this.dialogView = true;
         }
-      }).catch((err) => {
-        console.log(err);
+      }).catch(() => {
+        // console.log(err);
         this.dialogMessage = true;
       });
     },
@@ -590,7 +590,7 @@ export default {
       this.dialogOperate = data.flag;
       if (data.type == 'del') {
         // 删除
-        console.log(' this.multipleSelection :>> ',  this.multipleSelection);
+        // console.log(' this.multipleSelection :>> ',  this.multipleSelection);
         let newidarr = []
         this.multipleSelection.map(item => {
           newidarr.push(item.id)
@@ -623,7 +623,7 @@ export default {
 
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
     },
 
@@ -642,7 +642,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      // console.log(this.multipleSelection);
     },
 
     // 获取从分页传过来的每页多少条数据
@@ -659,7 +659,7 @@ export default {
 
     // 关闭修改
     closeEdit(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogEdit = data.dialogEdit;
     },
 
@@ -691,7 +691,7 @@ export default {
 
     // 搜索
     search() {
-      console.log(this.submissionEndTime);
+      // console.log(this.submissionEndTime);
       let subStartTime = '',
         subEndTime = '',
         comStartTime = '',

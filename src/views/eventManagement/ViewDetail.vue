@@ -176,7 +176,7 @@ export default {
     },
     // 下载
     downLoadPic(data) {
-      console.log(data);
+      // console.log(data);
       var param = {
         downLoadName: data.fileName,
         fileName: data.url

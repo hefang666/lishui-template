@@ -5,7 +5,8 @@ import {
   GetTaskList,
   GetPlanByUserId,
   GetWorkOrderByUserId,
-  ExportMonthList
+  ExportMonthList,
+  GetLocationList
 } from '@/api/personnel';
 import {parseTime} from '@/utils/index';
 import {downloadApi} from '@/api/api.js';
@@ -44,7 +45,10 @@ var state = {
   // 下载文件地址
   httpUrl: 'http://192.168.9.44:9090/',
   // 请求列表时的加载状态
-  loading: false
+  loading: false,
+
+  // 轨迹列表
+  localList: []
 };
 
 var mutations = {
@@ -103,6 +107,10 @@ var mutations = {
   // 改变加载状态
   set_loading: function(state, data) {
     state.loading = data;
+  },
+  // 设置位置列表
+  set_localList: function(state, data) {
+    state.localList = data;
   }
 };
 
@@ -122,8 +130,9 @@ var actions = {
           }
         })
         .catch(error => {
-          commit('set_message', error.message);
+          console.log(error);
           commit('set_loading', false);
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -261,6 +270,21 @@ var actions = {
             var downLoadUrl = downloadApi + response.result.dataUrl;
             window.open(downLoadUrl);
           }
+          resolve(response);
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
+  },
+  // 获取人员某天的所有轨迹
+  GetLocationList({commit}, data) {
+    return new Promise((resolve, reject) => {
+      GetLocationList(data)
+        .then(response => {
+          console.log(response);
+          commit('set_localList', response.result);
           resolve(response);
         })
         .catch(error => {

@@ -60,7 +60,9 @@ var state = {
   },
   // 工单详情
   orderDetail: {
-    eventDetails: {}
+    eventDetails: {},
+    workTranfer: [],
+    deviceDetails: {}
   },
 
   // 请求列表时的加载状态

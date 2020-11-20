@@ -94,7 +94,7 @@ export default {
     changeSwitchStatus(index, status) {
       let _this = this;
       let routeData = this.areaList[index];
-      console.log(routeData)
+      // console.log(routeData)
       let map = this.$parent.$parent.$parent.$parent.$refs.map;
       if(status) {
         this.getAreaDetailInfo({

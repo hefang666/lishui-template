@@ -1,7 +1,7 @@
 <template>
   <div class="choosePeople-box dialog-box button-box">
     <el-dialog
-      title="选择路线"
+      title="选择片区"
       :visible.sync="dialogArea"
       :before-close="closeChooseArea"
     >
@@ -82,7 +82,7 @@
 import Page from '@/components/page/Page.vue';
 import ViewRoute from '@/views/public/ViewRoute.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapState: xunjianState} = createNamespacedHelpers('xunjianPublic');
+const {mapState: xunjianState, mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
 export default {
   name: 'ChooseArea',
@@ -125,7 +125,13 @@ export default {
       conInfo: [],
 
       // 单选的设备信息（设备或管道）
-      devInfo: ''
+      devInfo: '',
+
+      // 当前分页
+      currentPage: 1,
+
+      // 每页数量
+      pageSize: 30
     };
   },
   computed: {
@@ -133,6 +139,7 @@ export default {
   },
   methods: {
     ...areaActions(['getAreaDetailInfo']),
+    ...xunjianActions(['getAreaLists']),
     closeChooseArea() {
       let data = {
         dialogArea: false
@@ -145,6 +152,14 @@ export default {
       this.equiInfo = '';
       this.conInfo = '';
       this.devInfo = '';
+    },
+    // 获取分页数据
+    getData() {
+      let param = {
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize
+      }
+      this.getAreaLists(param);
     },
     // 点击确定
     determine() {
@@ -201,15 +216,19 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(this.areaTotal);
+      this.pageSize = data;
+      this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(this.areaTotal);
+      this.currentPage = data;
+      this.getData();
     },
     // 查看按钮
     handleSee(row) {
-      console.log('row :>> ', row);
+      // console.log('row :>> ', row);
       let param = {
         Id: row.id
       };
@@ -235,7 +254,7 @@ export default {
     },
     // 关闭查看路线弹窗
     getRouteData(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogRoute = data.dialogRoute;
       // this.chooseType = data.type;
 

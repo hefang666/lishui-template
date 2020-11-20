@@ -55,6 +55,7 @@
                     class="item-li"
                     v-for="(item, index) in pinData"
                     :key="index"
+                    @click="getPeopleUpper(item)"
                   >
                     {{ item }}
                   </li>
@@ -122,7 +123,7 @@
                   show-overflow-tooltip
                 ></el-table-column>
                 <el-table-column
-                  prop="nickName"
+                  prop="trueName"
                   label="姓名"
                   show-overflow-tooltip
                 ></el-table-column>
@@ -271,7 +272,9 @@ export default {
       typeId: 0,
 
       // 是否显示提示消息弹窗
-      dialogMessage: false
+      dialogMessage: false,
+      // 字母
+      checkedUpper: 'A'
     };
   },
   mounted() {
@@ -311,7 +314,7 @@ export default {
     },
     // 点击确定
     determine() {
-      console.log(this.selectedData);
+      // console.log(this.selectedData);
       if (this.selectedData.length == 0) {
         if (this.selectType == 'single') {
           this.setMessage('请选择负责人！');
@@ -339,15 +342,29 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
+      this.pageSize = data;
+      this.searchByPage();
+      // this.nodeClick();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
+      this.currentPage = data;
+      this.searchByPage();
+      // this.nodeClick();
     },
-    handleNodeClick(data) {
-      console.log(data);
+    // 通过分页查询
+    searchByPage() {
+      if (this.typeSelectValue == 3) {
+        this.getPeopleData();
+      } else {
+        this.getPersonData();
+      }
     },
+    // handleNodeClick(data) {
+    //   console.log(data);
+    // },
     // 是否显示已选人员
     changeShowBox() {
       this.showSelectBox = !this.showSelectBox;
@@ -362,16 +379,17 @@ export default {
     },
     // 点击树形节点(组织)并查询人员
     nodeClick(data) {
-      console.log(data.nodeData);
+      // console.log(data.nodeData);
       this.typeId = data.nodeData.id;
-      let param = {
-        SelectType: this.typeSelectValue,
-        TypeId: data.nodeData.id,
-        PageIndex: this.currentPage,
-        MaxResultCount: this.pageSize,
-        IsContainSublevel: false
-      };
-      this.getPeopleList(param);
+      // let param = {
+      //   SelectType: this.typeSelectValue,
+      //   TypeId: data.nodeData.id,
+      //   PageIndex: this.currentPage,
+      //   MaxResultCount: this.pageSize,
+      //   IsContainSublevel: false
+      // };
+      // this.getPeopleList(param);
+      this.getPersonData();
     },
     // 点击树形节点（角色）并查询人员
     getRoleNode(data) {
@@ -380,9 +398,20 @@ export default {
         return;
       }
       this.typeId = data.nodeData.id;
+      // let param = {
+      //   SelectType: this.typeSelectValue,
+      //   TypeId: data.nodeData.roleId,
+      //   PageIndex: this.currentPage,
+      //   MaxResultCount: this.pageSize,
+      //   IsContainSublevel: false
+      // };
+      // this.getPeopleList(param);
+      this.getPersonData();
+    },
+    getPersonData() {
       let param = {
         SelectType: this.typeSelectValue,
-        TypeId: data.nodeData.roleId,
+        TypeId: this.typeId,
         PageIndex: this.currentPage,
         MaxResultCount: this.pageSize,
         IsContainSublevel: false
@@ -408,6 +437,23 @@ export default {
     // 关闭提示消息弹窗
     closeMessage(data) {
       this.dialogMessage = data;
+    },
+    // 字母
+    getPeopleData() {
+      let param = {
+        SelectType: this.typeSelectValue,
+        PinYin: this.checkedUpper,
+        PageIndex: this.currentPage,
+        MaxResultCount: this.pageSize,
+        IsContainSublevel: false
+      }
+      this.getPeopleList(param);
+    },
+    // 按字母选择
+    getPeopleUpper(item) {
+      // console.log(item);
+      this.checkedUpper = item;
+      this.getPeopleData();
     }
   }
 };

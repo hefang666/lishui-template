@@ -317,7 +317,7 @@ export default {
     ...uploadActions(['clearFileDate']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
-      console.log('点击了取消');
+      // console.log('点击了取消');
       this.clearFileDate();
       let data = {
         dialogTransfer: false,
@@ -338,7 +338,7 @@ export default {
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.inCharge = data.personinfo[0].trueName;
       this.personInfo = data.personinfo[0];
@@ -362,8 +362,8 @@ export default {
     },
     // 点击确定，进行转工单操作
     determineTransfer() {
-      console.log(this.orderType);
-      console.log(this.inCharge);
+      // console.log(this.orderType);
+      // console.log(this.inCharge);
       if (this.inCharge == '') {
         this.setMessage('请选择负责人');
         this.dialogMessage = true;
@@ -405,7 +405,7 @@ export default {
         if(res.success){
           this.clearFileDate();
           let data = false;
-          console.log('data :>> ', data);
+          // console.log('data :>> ', data);
           this.$emit('checkedTransfer', data);
         }
       }).catch(() => {

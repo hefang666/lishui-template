@@ -1,7 +1,7 @@
 <template>
   <div class="addTask-box dialog-box button-box">
     <el-dialog
-      title="事件详情"
+      title="工单详情"
       :visible.sync="dialogView"
       :close-on-click-modal="false"
       :before-close="closeView"
@@ -18,7 +18,20 @@
             <div class="list-items has-two-item">
               <div class="item-title">负责人：</div>
               <div class="item-content">
-                <span>{{ orderDetail.person }}</span>
+                <div>
+                  <span v-if="orderDetail.workTranfer.length != 0">
+                    <span
+                      v-for="(item, index) in orderDetail.workTranfer"
+                      :key="index"
+                    >
+                      <span>{{ item.workPerson }}</span>
+                      <span class="transfer-icon" @click="openTransferReason(index)">
+                        <img src="../../assets/arrow-right.png" alt="">
+                      </span>
+                    </span>
+                  </span>
+                  <span>{{ orderDetail.person }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -222,6 +235,105 @@
               </div>
             </div>
           </div>
+
+          <!-- 设备信息 -->
+          <div v-if="orderDetail.deviceDetails != null" class="div-title">设备信息</div>
+          <div v-if="orderDetail.deviceDetails != null" class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">设备编号：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.deviceDetails.deviceCode }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">设备名称：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.deviceDetails.deviceName }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.deviceDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">设备点状态：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.deviceDetails.deviceStatusStr }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">设备坐标点：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.deviceDetails.devicePoint }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.deviceDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">地址：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.deviceDetails.address }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- 事件信息 -->
+          <div v-if="orderDetail.eventDetails != null" class="div-title">事件信息</div>
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">事件类型：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.typeStr }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">事件提交时间：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.creationTime }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">报告人：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.creationName }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">联系方式：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.phone }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">事件状态：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.statusStr }}</span>
+              </div>
+            </div>
+            <div class="list-items has-two-item">
+              <div class="item-title">提交工单时间：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.creationTime }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">异常类型：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.errorType }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="orderDetail.eventDetails != null"  class="list-item">
+            <div class="list-items has-two-item">
+              <div class="item-title">巡检内容：</div>
+              <div class="item-content">
+                <span>{{ orderDetail.eventDetails.content }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -235,11 +347,18 @@
       :file-data="fileData"
       @closePreview="closePreview"
     ></preview>
+
+    <reason
+      :dialog-reason="dialogReason"
+      :transfer-info="transferInfo"
+      @closeReason="closeTransferReason"
+    ></reason>
   </div>
 </template>
 
 <script>
 import Preview from '@/components/upLoad/Preview.vue';
+import Reason from './TransferReason.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: workOrderState} = createNamespacedHelpers('workOrderManagement');
 const {mapActions: uploadActions} = createNamespacedHelpers('upload');
@@ -247,7 +366,8 @@ export default {
   name: 'OrderDetail',
   props: ['dialogView'],
   components: {
-    Preview
+    Preview,
+    Reason
   },
   data() {
     return {
@@ -255,7 +375,12 @@ export default {
       dialogPreview: false,
 
       // 图片信息
-      fileData: {}
+      fileData: {},
+
+      dialogReason: false,
+
+      // 转派原因
+      transferInfo: {}
     }
   },
   computed: {
@@ -284,6 +409,16 @@ export default {
         fileName: data.url
       };
       this.downloadFile(param);
+    },
+    // 打开转派原因
+    openTransferReason(index) {
+      // console.log(index);
+      this.transferInfo = this.orderDetail.workTranfer[index];
+      this.dialogReason = true;
+    },
+    // 关闭转派原因
+    closeTransferReason(data) {
+      this.dialogReason = data;
     }
   }
 };
@@ -300,10 +435,16 @@ export default {
     .list-box {
       padding: 0 40px;
 
+      .div-title {
+        border-bottom: 1px solid #4b77be;
+        line-height: 30px;
+        padding: 0 5px 0;
+      }
+
       .list-item {
         display: flex;
         justify-content: space-between;
-        height: 40px;
+        /* height: 40px; */
         line-height: 40px;
 
         .list-items {
@@ -324,6 +465,19 @@ export default {
           .item-content {
             span {
               color: #999999;
+            }
+
+            .transfer-icon {
+              width: 20px;
+              height: 20px;
+              display: inline-block;
+              margin: 0 10px;
+              cursor: pointer;
+
+              img {
+                width: 100%;
+                height: 100%;
+              }
             }
 
             .view-button {

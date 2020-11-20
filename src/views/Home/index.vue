@@ -65,7 +65,7 @@ export default {
     Page
   },
   mounted() {
-    console.log(this.pageCount)
+    // console.log(this.pageCount)
     this.getMemberList();
   },
   methods: {

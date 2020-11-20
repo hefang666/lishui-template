@@ -145,7 +145,7 @@ export default {
 
       // 循环每一个人象地图中添加人的位置及信息
       data.forEach((member, index) => {
-        console.log('member :>> ', member);
+        // console.log('member :>> ', member);
         const overlayDom = document.querySelector(
           `#overlay-element-${member.userId}`
         );
@@ -191,7 +191,7 @@ export default {
     },
     // 移除人员时删除人员信息
     handleAnchorLeave(member) {
-      console.log(member);
+      // console.log(member);
       setTimeout(() => {
         if (!this.isOverlayEnter) {
           this.map.removeOverlay(this.overlays[member.userId]);
@@ -202,7 +202,7 @@ export default {
       this.isOverlayEnter = true;
     },
     handleOverlayLeave(member) {
-      console.log(member);
+      // console.log(member);
       this.isOverlayEnter = false;
       this.map.removeOverlay(this.overlays[member.userId]);
     },

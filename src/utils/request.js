@@ -36,7 +36,7 @@ service.interceptors.request.use(
     console.log('token :>> ', token);
     // config.headers['Authorization'] = 'Bearer ' + token;
 
-    config.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY6KeS6ImyIiwi6K6_5a6i54K5566h55CG6KeS6ImyIl0sImh0dHA6Ly93d3cuYXNwbmV0Ym9pbGVycGxhdGUuY29tL2lkZW50aXR5L2NsYWltcy90ZW5hbnRJZCI6IjEwMTU5IiwiVXNlck5hbWUiOiJOSkxTIiwiT3JnSWQiOiIxMDI5NCIsIlRydWVOYW1lIjoi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY55So5oi3IiwiQXZhdGVyIjoiIiwiT3JnTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoSIsIlRlbmFudE5hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnRDb25uZWN0U3RyaW5nIjoiIiwiUm9sZXMiOiIxNjMxODIsMTYzMTg0Iiwic3ViIjoiMTAyOTQiLCJqdGkiOiI5OTJhMDQ2MS02MTM1LTRlMWMtOTBmOC1jNTk5NzRiZjU1ODMiLCJpYXQiOjE2MDUxNTA0MDMsIm5iZiI6MTYwNTE1MDQwMywiZXhwIjoxNjA1MTkzNjAzLCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.qnHe_SNk5t-b8iDH_v8XQ0VzLB1dgQ7sr0VlL_LXbN8';    
+    config.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEwMjk0IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6Ik5KTFMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY6KeS6ImyIiwi6K6_5a6i54K5566h55CG6KeS6ImyIl0sImh0dHA6Ly93d3cuYXNwbmV0Ym9pbGVycGxhdGUuY29tL2lkZW50aXR5L2NsYWltcy90ZW5hbnRJZCI6IjEwMTU5IiwiVXNlck5hbWUiOiJOSkxTIiwiT3JnSWQiOiIxMDI5NCIsIlRydWVOYW1lIjoi5rqn5rC05pm65oWn5rC05Yqh566h55CG5ZGY55So5oi3IiwiQXZhdGVyIjoiIiwiT3JnTmFtZSI6Iua6p-awtOaZuuaFp-awtOWKoSIsIlRlbmFudE5hbWUiOiLmuqfmsLTmmbrmhafmsLTliqEiLCJUZW5hbnRDb25uZWN0U3RyaW5nIjoiIiwiUm9sZXMiOiIxNjMxODIsMTYzMTg0Iiwic3ViIjoiMTAyOTQiLCJqdGkiOiIzMDg2ODdmYS0wMWRjLTRiNWYtYTJiNi04YjlkZGE3YTRiMWEiLCJpYXQiOjE2MDU4MzQ2MDIsIm5iZiI6MTYwNTgzNDYwMiwiZXhwIjoxNjA1ODc3ODAyLCJpc3MiOiJTbnRTb2Z0IiwiYXVkIjoiU250U29mdCJ9.Z_9FbPUEazlRJ3F6iJ4P8OxUxO6ZBXVb1Xd6NrNzVfw';    
     // console.log(config);
     return config;
   },
@@ -91,12 +91,17 @@ service.interceptors.response.use(
     // }
   },
   error => {
+    console.log(error);
     // Message({
     //   message: error.message,
     //   type: 'error',
     //   duration: 5 * 1000
     // });
-    return Promise.reject(error.response.data.error);
+    if (error.response.data == undefined) {
+      return Promise.reject({message: '请求失败'});
+    } else {
+      return Promise.reject(error.response.data.error);
+    }
     // return error.response.data;
   }
 );

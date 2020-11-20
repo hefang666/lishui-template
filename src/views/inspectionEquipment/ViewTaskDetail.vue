@@ -89,7 +89,7 @@
                     <div class="item-content">
                       <span>{{ taskDetail.areaName }}</span>
                       <el-button @click="viewRoute" class="view-button"
-                        >查看路线</el-button
+                        >查看片区</el-button
                       >
                     </div>
                   </div>
@@ -155,7 +155,7 @@
                 ></page>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="巡检路径" name="inspectionPath">
+            <el-tab-pane label="巡检片区" name="inspectionPath">
               <div class="inspectionPath-box">
                 <div class="map-box">
                   <map-route ref="map" :areaInfo="areaDetailsInfo" :mapid="'sss_' + taskDetail.id"></map-route>
@@ -164,7 +164,7 @@
                   <div class="inspectionPath-info-item">
                     <div class="inspectionPath-info-items">
                       <div class="inspectionPath-info-item-title">
-                        巡检路线：
+                        片区名称：
                       </div>
                       <div class="inspectionPath-info-item-content">
                         {{ taskDetail.areaName }}
@@ -347,7 +347,7 @@ export default {
 
     // tabs切换时的点击事件
     handleClick(tab) {
-      console.log(tab);
+      // console.log(tab);
       if (tab.name == 'equipmentInfo') {
         this.getData();
       } else if (tab.name == 'inspectionPath') {
@@ -378,26 +378,26 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.pageSize = data;
       this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.currentPage = data;
       this.getData();
     },
     // 查看按钮
     handleSee(row) {
-      console.log(row);
+      // console.log(row);
       let param = {
         deviceId: row.id,
         taskId: this.taskDetail.id,
         inspectionStatus: row.inspectionStatus,
         status: row.status
       }
-      console.log(param);
+      // console.log(param);
       this.GetPointDetails(param);
       this.dialogEqui = true;
     },

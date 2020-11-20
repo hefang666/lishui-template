@@ -63,13 +63,13 @@ export default {
     },
 
     // 获取从分页传过来的每页多少条数据
-    changePageSize(data) {
-      console.log(data);
-    },
+    // changePageSize(data) {
+    //   console.log(data);
+    // },
     // 获取从分页传过来的当前页数
-    changeCurrentPage(data) {
-      console.log(data);
-    }
+    // changeCurrentPage(data) {
+    //   console.log(data);
+    // }
   }
 };
 </script>

@@ -85,7 +85,7 @@
                     <div class="item-content">
                       <span>{{ taskDetail.areaName }}</span>
                       <el-button @click="viewRoute" class="view-button"
-                        >查看路线</el-button
+                        >查看片区</el-button
                       >
                     </div>
                   </div>
@@ -389,15 +389,19 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
+      this.pageSize = data;
+      this.getData();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
+      this.currentPage = data;
+      this.getData();
     },
     // 查看按钮
     handleSee(row) {
-      console.log(row);
+      // console.log(row);
       let param = {
         deviceId: row.id,
         status: row.status,

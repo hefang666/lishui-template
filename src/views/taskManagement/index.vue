@@ -370,7 +370,7 @@ export default {
     // 多选选择后拿到的数据
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      // console.log(this.multipleSelection);
     },
 
     // 判断是否只选了一行（有些操作只能选择一行）并进行相关的提示
@@ -392,7 +392,7 @@ export default {
 
     // 重启任务
     restart() {
-      console.log(this.onlyOne());
+      // console.log(this.onlyOne());
       // 返回为真时进行下一步
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status == 3) {
@@ -420,7 +420,7 @@ export default {
         // 判断选中的项里是否包含有不符合条件的列
         let flag = false;
         this.multipleSelection.forEach(item => {
-          console.log('item :>> ', item);
+          // console.log('item :>> ', item);
           if (item.status == 3 || item.status == 5) {
             // 执行删除操作
             flag = true;
@@ -511,7 +511,7 @@ export default {
 
     // 操作栏里的完成
     handleComplete(row) {
-      console.log('点击了完成');
+      // console.log('点击了完成');
       let param = {
         Id: row.id,
         operate: 2
@@ -698,12 +698,12 @@ export default {
     },
     // 关闭新增弹窗
     closeAdd(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogAdd = data;
     },
     // 执行新增后的操作
     getAddData(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogAdd = data;
       // this.iconStr = 'el-icon-circle-check';
       // this.dialogMessage = true;
@@ -776,10 +776,10 @@ export default {
           });
       } else if (data.type == 'suspend') {
         // 暂停
-        console.log(this.multipleSelection[0].id);
+        // console.log(this.multipleSelection[0].id);
         param.id = this.multipleSelection[0].id;
         param.operate = 1;
-        console.log(param);
+        // console.log(param);
         this.UpdateTaskStatus(param).then(res => {
           if (res.success) {
             this.getData();
@@ -816,7 +816,7 @@ export default {
     },
     // 获取数据
     getData() {
-      console.log(this.currentPage);
+      // console.log(this.currentPage);
       let param = {
         currentPage: this.currentPage,
         maxResultCount: this.pageSize,
@@ -863,7 +863,7 @@ export default {
     }
   },
   mounted() {
-    console.log(this.currentPage);
+    // console.log(this.currentPage);
     this.pageSize = this.pageData[0];
     this.getData();
   }

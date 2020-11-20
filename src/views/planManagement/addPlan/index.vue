@@ -381,16 +381,16 @@ export default {
 
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.inCharge = data.personinfo[0].trueName;
       this.inChargeInfo = data.personinfo[0];
-      console.log(this.inChargeInfo);
+      // console.log(this.inChargeInfo);
     },
 
     // 关闭选择参与人弹窗
     closePar(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogPar = data.dialogCharge;
     },
 
@@ -401,10 +401,10 @@ export default {
 
     // 选择了参与人并点击了确定
     checkedPar(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogPar = data.dialogCharge;
       this.participants = data.personinfo;
-      console.log(this.participants);
+      // console.log(this.participants);
     },
 
     // 点击选择片区按钮
@@ -424,7 +424,7 @@ export default {
 
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogArea = data.dialogArea;
       this.areaInfo = data.areaInfo;
       // this.addForm.inCharge = data.name;
@@ -501,6 +501,13 @@ export default {
         this.dialogMessage = true;
         return;
       }
+
+      if (this.areaInfo.name == '') {
+        this.setMessage('请选择区域');
+        this.dialogMessage = true;
+        return;
+      }
+
 
       if (this.participants.length == 0) {
         this.setMessage('请选择参与人');
@@ -604,7 +611,7 @@ export default {
                   this.customDate[i].endTime
                 )
               ) {
-                console.log('符合');
+                // console.log('符合');
               } else {
                 this.setMessage('第' + (i + 1) + '次结束时间未大于开始时间');
                 this.dialogMessage = true;
@@ -624,7 +631,7 @@ export default {
                 this.customDate[i].beginTime
               )
             ) {
-              console.log('符合');
+              // console.log('符合');
               // 判断结束时间是否大于开始时间
               if (
                 judgeTime(
@@ -632,7 +639,7 @@ export default {
                   this.customDate[i].endTime
                 )
               ) {
-                console.log('符合');
+                // console.log('符合');
               } else {
                 this.setMessage('第' + (i + 1) + '次的结束时间未大于开始时间');
                 this.dialogMessage = true;
@@ -662,14 +669,16 @@ export default {
         dateTimeLists: timeList,
         user: user
       };
-      console.log(param);
+      // console.log(param);
       this.addPlan(param).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.success) {
           let data = false;
           this.$emit('getAddData', data);
           this.clearData();
         }
+      }).catch(() => {
+        this.dialogMessage = true;
       });
     }
   }

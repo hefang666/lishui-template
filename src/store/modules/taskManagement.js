@@ -362,6 +362,7 @@ var actions = {
           }
         })
         .catch(error => {
+          console.log(error);
           commit('set_message', error.message);
           reject(error);
         });

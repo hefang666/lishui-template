@@ -1,11 +1,11 @@
 <template>
   <div class="chooseEquipment-box">
     <div class="inspection-route-information-box">
-      <div class="inspection-title">巡检路线</div>
+      <div class="inspection-title">巡检片区</div>
       <div class="inspection-content">
         <div class="inspection-info-box-top">
           <div class="inspection-item">
-            <div class="item-left">路线名称：</div>
+            <div class="item-left">片区名称：</div>
             <div class="item-right">{{ areaDetailsInfo.name }}</div>
           </div>
           <div class="inspection-item">
@@ -183,31 +183,31 @@ export default {
     // 设备选中的行（多选）
     clickRowEqui(val) {
       this.checkedEqui = val;
-      console.log(this.checkedEqui);
+      // console.log(this.checkedEqui);
     },
     // 设备选择的行（单选）
     clickEqui(val) {
-      console.log(val);
+      // console.log(val);
       this.devInfo = val;
     },
     // 管道选中的行（多选）
     clickRowConduit(val) {
       this.checkedCon = val;
-      console.log(this.checkedCon);
+      // console.log(this.checkedCon);
     },
     // 管道选中的行（单选）
     clickConduit(val) {
-      console.log(val);
+      // console.log(val);
       this.devInfo = val;
     },
     // 设备查看按钮
     handleSeeEquipment(row) {
-      console.log(row);
+      // console.log(row);
       this.$emit('clickView', row);
     },
     // 管道查看按钮
     handleSeeConduit(row) {
-      console.log(row);
+      // console.log(row);
       this.$emit('clickView', row);
     }
   }

@@ -395,18 +395,18 @@ export default {
         pageIndex: this.planCurrentPage,
         maxResultCount:this.planPageSize
       };
-      console.log(param);
+      // console.log(param);
       this.getPlan(param);
     },
 
     // 获取任务列表
     getTaskList() {
       let param = {
-        userId: this.checkedId,
+        Id: this.checkedId,
         pageIndex: this.taskCurrentPage,
         maxResultCount:this.taskPageSize
       };
-      console.log(param);
+      // console.log(param);
       this.getTask(param);
     },
 
@@ -417,41 +417,47 @@ export default {
         pageIndex: this.taskCurrentPage,
         maxResultCount:this.taskPageSize
       };
-      console.log(param);
+      // console.log(param);
       this.getOrder(param);
     },
 
     // 获取计划从分页传过来的每页多少条数据
     changePlanPageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.planPageSize = data;
+      this.getPlanList();
     },
     // 获取计划从分页传过来的当前页数
     changePlanCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.planCurrentPage = data;
+      this.getPlanList();
     },
 
     // 获取任务从分页传过来的每页多少条数据
     changeTaskPageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.taskPageSize = data;
+      this.getTaskList();
     },
     // 获取任务从分页传过来的当前页数
     changeTaskCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.taskCurrentPage = data;
+      this.getTaskList();
     },
 
     // 获取工单从分页传过来的每页多少条数据
     changeOrderPageSize(data) {
-      console.log(data);
+      // console.log(data);
       this.orderPageSize = data;
+      this.getOrderList();
     },
     // 获取工单从分页传过来的当前页数
     changeOrderCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
       this.orderCurrentPage = data;
+      this.getOrderList();
     },
 
     // 查看计划按钮
@@ -504,7 +510,7 @@ export default {
         id: row.id
       };
       this.GetWorkOrderDetails(param).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.success) {
           // let param = {
           //   Id: res.result.areaId
@@ -524,7 +530,7 @@ export default {
 
     // 选中的行
     clickPlanRow(val) {
-      console.log(val);
+      // console.log(val);
       this.checkedName = val.name;
     },
 

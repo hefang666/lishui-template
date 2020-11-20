@@ -111,7 +111,7 @@ export default {
 
     // 删除片区
     deleteArea() {
-      console.log(this.chooseAreaId)
+      // console.log(this.chooseAreaId)
       let chooseAreaId = this.chooseAreaId;
       if(chooseAreaId.length < 1) {
         this.$message({
@@ -197,8 +197,8 @@ export default {
         };
         if(_this.handleStatus === 1) {
           this.addAreaFunc(areaDetail)    
-          .then(resp => {
-            console.log(resp)
+          .then(() => {
+            // console.log(resp)
             this.resetArea();
             this.submitLoading = false; 
           })
@@ -217,8 +217,8 @@ export default {
           }
           areaDetail.id = id;
           this.updataAreaFunc(areaDetail)
-          .then(resp => {
-            console.log(resp);
+          .then(() => {
+            // console.log(resp);
             this.resetArea();
             this.submitLoading = false; 
           })

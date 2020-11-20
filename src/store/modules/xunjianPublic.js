@@ -145,7 +145,7 @@ var actions = {
     return new Promise((resolve, reject) => {
       getPeopleList(data)
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.success) {
             commit('set_person_list', response.result.items);
             commit('set_personPage', {

@@ -7,7 +7,6 @@
       :key="index + 'img'"
       style="min-width: 20px; cursor: pointer;"
       class="index-map-archor-img"
-      v-show="item.isOnline"
     >
       <img
         src="@/assets/icon-location-active.png"
@@ -20,7 +19,6 @@
       v-for="(item, index) in memberList"
       :key="index + 'overlay'"
       :id="`overlay-element-${item.userId}`"
-      v-show="item.isOnline"
       @mouseenter="() => handleOverlayEnter(item)"
       @mouseleave="() => handleOverlayLeave(item)"
     >
@@ -121,7 +119,9 @@ export default {
       minZoom: 5,
       target: 'map'
     });
-    this.addMember(this.memberList);
+    this.$nextTick(() => {
+      this.addMember(this.memberList);
+    })
   },
   methods: {
     routePush(path) {
@@ -130,12 +130,14 @@ export default {
     // 向地图中增加人员位置
     addMember(data) {
       const position = data.map(item => {
-        const location = item.location.split(',');
+        console.log(item)
+        const location = [119.0319, 31.6655];
+        // const location = item.location.split(',');
         const x = Number(location[0]);
         const y = Number(location[1]);
         return [x, y];
       });
-      this.position = [...this.position, ...position];
+      this.position = [...position];
       // 将默认的第一个人设为中心位置
       if (position[0]) this.map.getView().setCenter(position[0]);
       // 循环每一个人象地图中添加人的位置及信息
@@ -156,10 +158,10 @@ export default {
           positioning: 'center-center',
           position: position[index]
         });
+        this.map.addOverlay(overlay);
+        this.map.addOverlay(anchor);
         this.overlays = {...this.overlays, [`${member.userId}`]: overlay};
         this.anchors = {...this.anchors, [`${member.userId}`]: anchor};
-        // this.map.addOverlay(overlay);
-        this.map.addOverlay(anchor);
       });
     },
     handleAnchorEnter(member) {
@@ -167,7 +169,7 @@ export default {
     },
     // 移除人员时删除人员信息
     handleAnchorLeave(member) {
-      console.log(member);
+      // console.log(member);
       setTimeout(() => {
         if (!this.isOverlayEnter) {
           this.map.removeOverlay(this.overlays[member.userId]);
@@ -178,23 +180,24 @@ export default {
       this.isOverlayEnter = true;
     },
     handleOverlayLeave(member) {
-      console.log(member);
+      // console.log(member);
       this.isOverlayEnter = false;
       this.map.removeOverlay(this.overlays[member.userId]);
     },
     // 将地图聚焦到选中人选的位置
     focusOnCurrentMember(index) {
+      console.log(index);
       let newmemberList = [];
       newmemberList.push(this.memberList[index]);
       this.memberIndex = index;
-      if (this.memberList[index].isOnline) {
-        if (this.clickarr.indexOf(newmemberList[0].userId) != -1) {
-          this.map.getView().setCenter(this.position[index]);
-        } else {
-          this.clickarr.push(this.memberList[index].userId);
-          this.addMember(newmemberList);
-        }
+      // if (this.memberList[index].isOnline) {
+      if (this.clickarr.indexOf(newmemberList[0].userId) != -1) {
+        this.map.getView().setCenter(this.position[index]);
+      } else {
+        this.clickarr.push(this.memberList[index].userId);
+        this.addMember(newmemberList);
       }
+      // }
     }
   }
 };

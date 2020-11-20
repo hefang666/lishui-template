@@ -42,7 +42,7 @@
                   <el-button
                     type="text"
                     class="operate-button"
-                    @click="handleSee(scope.row)"
+                    @click="handleSee(scope.row, scope.$index)"
                     >查看</el-button
                   >
                 </template>
@@ -66,6 +66,7 @@
     <online
       :dialog-online="dialogOnline"
       :user-id="checkedId"
+      ref="online"
       @closeOnline="closeOnline"
     ></online>
   </div>
@@ -103,19 +104,25 @@ export default {
     };
   },
   computed: {
-    ...mapState(['attendanceList', 'attendanceTotal'])
+    ...mapState(['attendanceList', 'attendanceTotal', 'messageText', 'localList'])
   },
   methods: {
-    ...mapActions(['GetByUserId']),
+    ...mapActions(['GetByUserId', 'GetLocationList']),
     //查询
     attenquery() {
-      let date = parseTime(
-        this.searchWords,
-        '{y}-{m}'
-      )
+      let date;
+      if (this.searchWords != '') {
+        date = parseTime(
+          this.searchWords,
+          '{y}-{m}'
+        );
+      } else {
+        date = '';
+      }
+      
       let param = {
         oneDay: date,
-        userId: this.ID,
+        userId: this.attendanceId,
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       }
@@ -127,22 +134,40 @@ export default {
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
-      console.log(data);
+      // console.log(data);
+      this.pageSize = data;
+      this.attenquery();
     },
     // 获取从分页传过来的当前页数
     changeCurrentPage(data) {
-      console.log(data);
+      // console.log(data);
+      this.currentPage = data;
+      this.attenquery();
     },
     // 查看
-    handleSee(row) {
-      this.checkedId = row.userId;
-      this.dialogOnline = true;
-      console.log(row);
+    handleSee(row, index) {
+      this.checkedId = row.userId + '' + index;
+      // console.log();
+      let param = {
+        UserId: row.userId,
+        OneDay: row.oneDay
+      }
+      // console.log(param);
+      this.GetLocationList(param).then(res => {
+        if (res.success) {
+          this.dialogOnline = true;
+          if (this.localList.length != 0) {
+            this.$refs.online.initGuiji();
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      })
     },
 
     // 关闭人员轨迹弹窗
     closeOnline(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogOnline = data;
     }
   }

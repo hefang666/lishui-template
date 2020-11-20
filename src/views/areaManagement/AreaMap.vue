@@ -86,6 +86,7 @@
     },
     mounted() {
       this.initMap();
+      // console.log('初始化地图了');
     },
     methods: {
       // 初始化地图
@@ -115,6 +116,7 @@
           layerName: '天地图电子底图'
         });
         const zoomMap = this.zoomMap;
+        // console.log(zoomMap);
         this.map = new SNTGIS.Map({
           layers: [tdMap, dmLayer, pointLayer, lineLayer],
           // center: [104.1526230224237, 30.01244851052735],
@@ -200,7 +202,7 @@
           if (_this.drawMapAreaSource.getFeatures().length > 0) {
             event.preventDefault();
             let coordinate = _this.map.getEventCoordinate(event);
-            console.log(coordinate)
+            // console.log(coordinate)
             menuOverlay.setPosition(coordinate);
           }
         })

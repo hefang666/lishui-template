@@ -292,7 +292,7 @@ export default {
         maxResultCount: 30,
         name: data
       };
-      console.log(param);
+      // console.log(param);
       this.searchPlan(param).catch(() => {
         this.dialogMessage = true;
       });
@@ -322,7 +322,7 @@ export default {
 
     // 表格里的修改
     handleEdit(row) {
-      console.log(row);
+      // console.log(row);
       if (row.status == 2) {
         let param = {
           Id: row.id
@@ -345,7 +345,7 @@ export default {
 
     // 表格里的查看
     handleSee(row) {
-      console.log(row);
+      // console.log(row);
       let param = {
         id: row.id
       };
@@ -355,9 +355,9 @@ export default {
             let param = {
               Id: res.result.areaId
             }
-            console.log();
+            // console.log();
             this.getAreaDetailInfo(param).then(res => {
-              console.log(res)
+              // console.log(res)
               if (res.success) {
                 this.dialogView = true;
               }
@@ -377,7 +377,7 @@ export default {
 
     // 关闭修改弹窗
     closeEdit(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogEdit = data;
     },
 

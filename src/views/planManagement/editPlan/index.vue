@@ -210,7 +210,7 @@ export default {
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       let data = false;
-      console.log(data);
+      // console.log(data);
       this.$emit('closeEdit', data);
     },
     // 点击选择负责人按钮
@@ -245,7 +245,7 @@ export default {
     },
     // 参与人
     checkedPar(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogPar = data.dialogCharge;
       this.perData = [];
       data.personinfo.forEach(item => {
@@ -254,7 +254,7 @@ export default {
           userName: item.trueName
         })
       });
-      console.log(this.perData);
+      // console.log(this.perData);
       this.editPlanDetails.user = this.perData;
 
       // for (var i = 0; i < this.perData.length; i++) {
@@ -281,7 +281,7 @@ export default {
     },
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {
-      console.log(data);
+      // console.log(data);
       this.dialogArea = data.dialogArea;
       // this.editForm.inCharge = data.name;
     },
@@ -356,7 +356,7 @@ export default {
           return;
         };
       }
-      console.log(this.editPlanDetails);
+      // console.log(this.editPlanDetails);
 
       let param = {
         id: this.editPlanDetails.id,

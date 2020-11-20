@@ -20,6 +20,9 @@
         <p>坐标:{{ currentFeature.values_.geometry.flatCoordinates[0] + ',' + currentFeature.values_.geometry.flatCoordinates[1] }}</p>
         <p>地址:{{ currentFeature.values_.Location }}</p>
       </div> -->
+      <div class="map-member-img" id="map-orbit-0">
+        <img src="./icon-oribt.png" />
+    </div>
     </div>
   </div>
 </template>
@@ -58,6 +61,7 @@ import {
 } from '@/api/api';
 // import {createNamespacedHelpers} from 'vuex';
 // const {mapState} = createNamespacedHelpers('mapdata');
+import arraw from "@/components/mapRoute/icon-arrow.png";
 export default {
   props: {
     width: {
@@ -79,6 +83,41 @@ export default {
       default: () => {
         return {};
       }
+    },
+    localtionData: {
+      type: Array,
+      default: () => {
+        return [
+        // {
+        //     name: '1',
+        //     location: '119.090167,31.685065'
+        //   },
+        //   {
+        //     name: '1',
+        //     location: '119.089017,31.629985'
+        //   },
+        //   {
+        //     name: '1',
+        //     location: '119.062571,31.665889'
+        //   },
+        //   {
+        //     name: '1',
+        //     location: '119.040724,31.677198'
+        //   },
+        //   {
+        //     name: '1',
+        //     location: '119.024626,31.634904'
+        //   },
+        //   {
+        //     name: '1',
+        //     location: '119.014278,31.595051'
+        //   }
+        ];
+      }
+    },
+    maptype: {
+      type: String,
+      default: 'map'
     }
   },
   data() {
@@ -127,7 +166,12 @@ export default {
       drawLineLayer: {},
       drawAreaLayer: {},
       // 区域居中位置
-      mapLocation: []
+      mapLocation: [],
+      zoom: 12,
+      // 人员轨迹人头
+      overlays:{},
+      //定时器
+      timer: null
     };
   },
   // computed: {
@@ -163,7 +207,8 @@ export default {
     const zoomMap = this.zoomMap;
     this.map = new SNTGIS.Map({
       layers: [tdMap, dmLayer, pointLayer, lineLayer],
-      center: [104.1526230224237, 30.01244851052735],
+      // center: [104.1526230224237, 30.01244851052735],
+      center: [119.0319,31.6655],
       zoom: zoomMap,
       maxZoom: 18,
       minZoom: 5,
@@ -198,7 +243,27 @@ export default {
       this.mapOverlay();
       this.drawLineLayerFunc();
       this.drawPointLayerFunc();
-      this.setAreaInfo(this.areaInfo)
+      this.setAreaInfo(this.areaInfo);
+
+      console.log(this.maptype);
+      console.log(this.maptype == 'localtion')
+      if (this.maptype == 'localtion') {
+        // 代表是位置
+        // 需要画出人员轨迹
+        
+        console.log('这里是查看人员轨迹');
+        // this.addOverLayer();
+        this.initLineOrbit();
+        // this.drawOrditOnMap(list);
+
+        if (this.localtionData.length == 0){
+          // 没有数据，不绘制
+        } else {
+          // 有数据
+          this.initLineOrbit();
+        }
+        // 绘制人员轨迹
+      }
     },
     
 
@@ -232,6 +297,7 @@ export default {
       this.drawAreaLayer = drawAreaLayer;
       this.map.addLayer(drawAreaLayer);
     },
+
 
     drawLineLayerFunc() {
       let drawLineStyle = new window.ol.style.Style({
@@ -443,6 +509,253 @@ export default {
         return selectPoint;
         // this.areaObj.selectPoint = selectPoint;
       },
+
+      // 悬浮人头
+      /** 向地图中添加悬浮元素
+       * layObj 悬浮元素需要的数据
+       * name  悬浮元素需要作为对象存储的名称及类名的名称依据  非必填
+       * position 二位数据  悬浮位置的数组列表 必填 如：[[106.54258025120019,29.561620073599133],[106.54258025120019,29.561620073599133]]
+       * isShow 是否一开始就添加到地图中   true为是  false 后期添加  默认为true
+       * centerPosition  是否默认需要将地图定位到居中位置  是传入居中位置[经度， 维度]  非必传
+       * dom  标签id除了序号的名称 比如  aa-0 传入#aa  序号在id中必须有的  从0开始
+       */
+      addOverLayer(layObj) {
+        // 初始化人头定位
+        // var positionPoint = this.localtionData[0].point;
+        console.log('向地图中添加悬浮元素');
+        console.log(layObj);
+        // var overlay;
+        console.log(layObj)
+        if (!layObj) {
+          var positionPoint = [119.0319,31.6655];
+          this.overlays = new window.ol.Overlay({
+            element: document.querySelector('#map-orbit-0'),
+            className: 'customer-overlay customer-overlay-1',
+            position: positionPoint,
+            positioning: 'center-center',
+            offset: [30, -35]
+          });
+        } else {
+          console.log(layObj)
+          this.overlays = new window.ol.Overlay(layObj);
+        }
+        // this[overlays] = overlay;
+        // console.log(overlay)
+        this.map.addOverlay(this.overlays);       // addOverlay
+    },
+
+    // 初始化人员轨迹图层
+    initLineOrbit(name) {
+      var _this = this;
+      var layername = name ? name + 'OrbitLayer' : 'lineOrbitLayer'
+      var sourcename = name ? name + 'OrbitSource' : 'lineOrbitSource'
+
+      let orbitSource = new window.ol.source.Vector({});
+      this[sourcename] = orbitSource;
+      var orbitLayer = new window.ol.layer.Vector({
+          source: orbitSource,
+          updateWhileInteracting: true,
+          style: _this.orbitStyle,
+          zoom: _this.zoom
+      });
+      this[layername] = orbitLayer;
+      this.map.addLayer(orbitLayer);
+      // console.log(this[layername]);
+
+      // var localtionData = [
+          // {
+          //   name: '1',
+          //   location: '119.090167,31.685065'
+          // },
+          // {
+          //   name: '1',
+          //   location: '119.089017,31.629985'
+          // },
+          // {
+          //   name: '1',
+          //   location: '119.062571,31.665889'
+          // },
+          // {
+          //   name: '1',
+          //   location: '119.040724,31.677198'
+          // },
+          // {
+          //   name: '1',
+          //   location: '119.024626,31.634904'
+          // },
+          // {
+          //   name: '1',
+          //   location: '119.014278,31.595051'
+          // }
+      //   ]
+      this.drawOrditOnMap(this.localtionData);
+      // this.$nextTick(() => {
+      //   this.drawAnmateByOribt(this.localtionData);
+      // })
+    },
+    /*
+        样式方法回调  返回路径样式及 路径上箭头 及 箭头样式和旋转角度
+        feature: 地图上的要素对象，既有属性，也有坐标图形。
+        res：当前地图分辨率参数。
+    */
+    // 根据人员位置列表会绘制人员轨迹
+    drawOrditOnMap(userRoute) {
+      console.log(userRoute);
+
+        // for(var i = 0; i<userRoute.length; i++) {
+            var coordinates = [];
+            for( var i = 0; i < userRoute.length; i++) {
+              if (userRoute[i].location != null) {
+                var point = userRoute[i].location.split(',')
+                coordinates.push([Number(point[0]), Number(point[1])])
+              }
+                // var point = userRoute[i].location.split(',')
+                // coordinates.push([Number(point[0]), Number(point[1])])
+            }
+            // alert(JSON.stringify(coordinates));
+            console.log(coordinates);
+            this.drawOribitRoute(coordinates);
+            this.$nextTick(() => {
+              this.drawAnmateByOribt(coordinates);
+            })
+        // }
+    },
+    // 根据多点绘制路径
+    drawOribitRoute(pointList, name) {
+      console.log(pointList);
+      var sourcename = name ? name + 'OrbitSource' : 'lineOrbitSource'
+      var feature = new window.ol.Feature({
+          geometry: new window.ol.geom.LineString(pointList)
+      })
+      console.log(feature);
+      this[sourcename].addFeature(feature);
+      console.log(this[sourcename]);
+    },
+
+    // 绘制人位置及跳动
+    drawAnmateByOribt(userRoute) {
+      console.log(userRoute);
+      var position = userRoute[0];
+        // var position = userRoute[0].location.split(',');
+        // document.querySelector(".map-member-img").css({opacity: 1})
+        this.addOverLayer({
+            // element: document.querySelector('#map-orbit-0'),
+            // className: 'customer-overlay customer-overlay-1',
+            // position: [[Number(position[0]), Number(position[1])]],
+            // offset: [0, -23.5],
+            // // isCenter: true,
+            // name: 'oribtlay',
+            // centerPosition: [Number(position[0]), Number(position[1])],
+            // positioning: 'center-center'
+
+            element: document.querySelector('#map-orbit-0'),
+            className: 'customer-overlay customer-overlay-1',
+            // position: [Number(position[0]), Number(position[1])],
+            position: position,
+            positioning: 'center-center',
+            offset: [0, 0]
+        })
+        this.addMemberAnimate(userRoute);
+    },
+
+    // 执行人员跳动
+    addMemberAnimate(userRoute) {
+        var _this = this;
+        var index = 1;
+        _this.timer = setInterval(function() {
+            // var location = userRoute[index].location.split(',');
+            // _this.overlays.setPosition([Number(location[0]), Number(location[1])]);
+            _this.overlays.setPosition(userRoute[index]);
+            index++;
+            if(index >= userRoute.length) index = 0;
+        }, 1000);
+    },
+
+    // 清楚人员运动定时器
+    clearTimer() {
+      clearInterval(this.timer);
+    },
+
+    orbitStyle(feature, res) {
+        // let _this = this;
+        var geometry = feature.getGeometry();
+        var length = geometry.getLength();
+        var stpes = 40;
+        var geo_steps = stpes * res;
+        var arrowsNum = parseInt(length / geo_steps);
+        var styles = [
+            // linestring
+            new window.ol.style.Style({
+                stroke: new window.ol.style.Stroke({
+                    color: 'rgba(29, 191, 124, 1)',
+                    width: 6
+                }),
+            })
+        ];
+        var tree = new window.RBush();
+        geometry.forEachSegment(function(start, end) {
+            var dx = end[0] - start[0];
+            var dy = end[1] - start[1];
+
+            //计算每个segment的方向，即箭头旋转方向
+            var rotation = Math.atan2(dy, dx);
+            var geom = new window.ol.geom.LineString([start, end]);
+            var extent = geom.getExtent();
+            var item = {
+                minX: extent[0],
+                minY: extent[1],
+                maxX: extent[2],
+                maxY: extent[3],
+                geom: geom,
+                rotation: rotation
+            };
+            tree.insert(item);
+        });
+        for (var i = 1; i < arrowsNum; i++) {
+            var arraw_coor = geometry.getCoordinateAt(i * 1.0 / arrowsNum);
+            var tol = 0.0001; //查询设置的点的容差，测试地图单位是米。如果是4326坐标系单位为度的话，改成0.0001.
+            var arraw_coor_buffer = [arraw_coor[0] - tol, arraw_coor[1] - tol, arraw_coor[0] + tol, arraw_coor[1] + tol];
+            //进行btree查询
+            var treeSearch = tree.search({
+                minX: arraw_coor_buffer[0],
+                minY: arraw_coor_buffer[1],
+                maxX: arraw_coor_buffer[2],
+                maxY: arraw_coor_buffer[3]
+            });
+            var arrow_rotation;
+            //只查询一个，那么肯定是它了，直接返回
+            if (treeSearch.length == 1)
+                arrow_rotation = treeSearch[0].rotation;
+            else if (treeSearch.length > 1) {
+                var results = treeSearch.filter(function(item) {
+                    //箭头点与segment相交，返回结果。该方法实测不是很准，可能是计算中间结果
+                    //保存到小数精度导致查询有点问题
+                    // if(item.geom.intersectsCoordinate(arraw_coor))
+                    //   return true;
+
+                    //换一种方案，设置一个稍小的容差，消除精度问题
+                    var _tol = 0.00001; //消除精度误差的容差
+                    if (item.geom.intersectsExtent([arraw_coor[0] - _tol, arraw_coor[1] - _tol, arraw_coor[0] + _tol, arraw_coor[1] + _tol]))
+                        return true;
+                })
+                if (results.length > 0)
+                    arrow_rotation = results[0].rotation;
+            }
+            styles.push(new window.ol.style.Style({
+                geometry: new window.ol.geom.Point(arraw_coor),
+                image: new window.ol.style.Icon({
+                    src: arraw,
+                    anchor: [0.75, 0.5],
+                    rotateWithView: true,
+                    rotation: -arrow_rotation
+                })
+            }));
+        }
+        return styles;
+    },
+
+
+
     // showRouteMsgInMap(mapdata) {
     //   let {
     //     startPoint,
@@ -1076,5 +1389,14 @@ export default {
 }
 .ol-unselectable {
   display: block !important;
+}
+.map-member-img {
+  width: 45px;
+  height: 50px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

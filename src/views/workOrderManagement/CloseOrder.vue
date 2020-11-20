@@ -69,7 +69,7 @@ export default {
       this.$emit('closeOrder', data);
     },
     determine() {
-      console.log('点击了确定');
+      // console.log('点击了确定');
       if (this.reason == '') {
         this.setMessage('原因不能为空！');
         this.dialogMessage = true;
