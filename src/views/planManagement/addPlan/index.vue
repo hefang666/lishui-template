@@ -579,7 +579,11 @@ export default {
         // 计划时效超过当前日期一周以上
         let interval = 7 * 24;
         if (judgeTime(start, limitTime, interval)) {
-          dayStr = this.selectWeek;
+          if (this.selectWeek == 7) {
+            dayStr = 0;
+          } else {
+            dayStr = this.selectWeek;
+          }
         } else {
           this.setMessage('时效日期必须超过当前日期一周');
           this.dialogMessage = true;

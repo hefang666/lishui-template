@@ -1,8 +1,9 @@
 // 根据开发环境或者生产环境判断使用的地址  地址不定
 // const baseURL = 'http://192.168.9.44:9090/'
 
-let host = 'http://221.226.213.42:9090/';
+// let host = 'http://221.226.213.42:9090/';
 // let host = 'http://192.168.10.214:8091/';
+let host = 'http://192.168.9.44:9090/';
 
 if (window.top.apiUrl) {
   // console.log('拿到窗口地址了');

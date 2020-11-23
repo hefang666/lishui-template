@@ -52,7 +52,7 @@ var state = {
     },
     {
       label: '周日',
-      value: 0
+      value: 7
     }
   ],
   // 每月数据
