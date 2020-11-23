@@ -1,7 +1,7 @@
 // 根据开发环境或者生产环境判断使用的地址  地址不定
 // const baseURL = 'http://192.168.9.44:9090/'
 
-let host = 'http://221.226.213.42:9090/';
+let host = 'http://192.168.9.44:9090/';
 // let host = 'http://192.168.10.214:8091/';
 
 if (window.top.apiUrl) {
@@ -35,6 +35,7 @@ const workSpace = 'http://www.OpenGIS.com/OpenGIS';
 // 地图中心点坐标
 // const mapCenter = [119.05, 31.57];
 const mapCenter = [119.0319, 31.6655];
+// const mapCenter = [106.548293, 29.565552];
 const mapMaxZoom = 22;
 
 // 地图服务器地址

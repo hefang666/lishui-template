@@ -136,6 +136,7 @@ let actions = {
   },
   // 获取区域列表
   getAreaListFunc({commit, state}) {
+    console.log('state :>> ', state);
     return new Promise((resolve, reject) => {
       getAreaList({
         pageIndex: state.areaListInfo.pageIndex,

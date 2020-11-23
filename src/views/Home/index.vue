@@ -3,8 +3,14 @@
     <Map ref="map" />
     <div class="index-member">
       <div class="search-box">
-        <el-input placeholder="请输入人员名称" @keyup.enter.native="searchMember" v-model="searchWords"></el-input>
-        <el-button class="search-button" @click="searchMember" type="primary">查询</el-button>
+        <el-input
+          placeholder="请输入人员名称"
+          @keyup.enter.native="searchMember"
+          v-model="searchWords"
+        ></el-input>
+        <el-button class="search-button" @click="searchMember" type="primary"
+          >查询</el-button
+        >
       </div>
       <div class="border index-member-box">
         <div class="index-menber-title">人员列表</div>
@@ -15,7 +21,10 @@
             :key="index"
             @click="changeMember(index)"
           >
-            <img class="mr-5" :src="item.isOnline ? memberActive : memberGray" />
+            <img
+              class="mr-5"
+              :src="item.isOnline ? memberActive : memberGray"
+            />
             <span class="title">
               <span class="mr-5">{{ item.userName }}</span>
               <span>{{ item.mobile }}</span>
@@ -27,11 +36,11 @@
             layout="sizes,total,jump"
             :total="pageTotal"
             :pager-count="5"
-            :pageData="[5,10,15]"
+            :pageData="[5, 10, 15]"
             :pageLength="pageCount"
             :currentPage="pageNum"
-            @handleSizeChange="changePageSize"
-            @handleCurrentChange="changePageNum"
+            @changePageSize="changePageSize"
+            @changeCurrentPage="changeTablePage"
           >
           </Page>
         </div>
@@ -42,7 +51,7 @@
 
 <script>
 import Map from './Map';
-import Page from "@/components/page/Page";
+import Page from '@/components/page/Page';
 import memberActive from '@/assets/icon-member-active.png';
 import memberGray from '@/assets/icon-member-gray.png';
 import {createNamespacedHelpers} from 'vuex';
@@ -67,12 +76,17 @@ export default {
   mounted() {
     // console.log(this.pageCount)
     this.getMemberList().then(() => {
-      console.log(this.memberList)
-      this.$refs.map.addMember(this.memberList)
+      console.log(this.memberList);
+      this.$refs.map.addMember(this.memberList);
     });
   },
   methods: {
-    ...mapActions(['getMemberList', 'changeSearchName', 'changePageCount', 'changePageNum']),
+    ...mapActions([
+      'getMemberList',
+      'changeSearchName',
+      'changePageCount',
+      'changePageNum'
+    ]),
     changeMember(index) {
       this.currentIndex = index;
       this.$refs.map.focusOnCurrentMember(this.memberList[index], index);
@@ -87,11 +101,13 @@ export default {
     // 改变每页显示的数量
     changePageSize(num) {
       this.changePageCount(num);
+      this.getMemberList();
     },
 
     // 改变显示的页数
-    changePageNum(page) {
-      this.changePageNum(page)
+    changeTablePage(page) {
+      this.changePageNum(page);
+      this.getMemberList();
     }
   }
 };
