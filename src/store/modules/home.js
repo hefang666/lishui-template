@@ -66,6 +66,7 @@ var actions = {
 
   // 获取人员列表
   getMemberList({commit, state}) {
+    console.log('state :>> ', state);
     let options = {
       userName: state.searchName,
       pageIndex: state.pageNum,
@@ -76,6 +77,24 @@ var actions = {
       getMemberList(options)
         .then(response => {
           if (response.success) {
+            // response.result.items[2].location = '106.546817,29.557991';
+            // response.result.items[2].isOnline = true;
+            response.result.items.map(item => {
+              if (item.onlineTime) {
+                let newitem = item.onlineTime.replace('T', ' ');
+                item.onlineTime = newitem;
+              }
+              if (item.taskLists.length != 0) {
+                item.taskLists.forEach(task => {
+                  if (task.planStartTime != null) {
+                    task.planStartTime = task.planStartTime.replace('T', ' ');
+                  }
+                  if (task.planEndTime != null) {
+                    task.planEndTime = task.planEndTime.replace('T', ' ');
+                  }
+                });
+              }
+            });
             commit('update_memberList', response.result.items);
             resolve(response);
           }

@@ -278,17 +278,25 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
-      this.selectType = 'single';
-      this.dialogCharge = true;
-      this.getOrganizationData();
-      this.getRoleData();
+      // console.log('点击了选择负责人');
+      this.$nextTick(() => {
+        this.selectType = 'single';
+        // console.log(this.selectType);
+        this.dialogCharge = true;
+        this.getOrganizationData();
+        this.getRoleData();
+      })
     },
     // 点击选择参与人按钮
     choosePart() {
-      this.selectType = 'multiple';
-      this.dialogCharge = true;
-      this.getOrganizationData();
-      this.getRoleData();
+      // console.log('点击了选择参与人');
+      this.$nextTick(() => {
+        this.selectType = 'multiple';
+        // console.log(this.selectType);
+        this.dialogCharge = true;
+        this.getOrganizationData();
+        this.getRoleData();
+      })
     },
     // 关闭选择负责人弹窗
     closeChoosePeople(data) {

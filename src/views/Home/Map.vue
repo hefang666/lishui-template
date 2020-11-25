@@ -26,7 +26,7 @@
     >
       <div class="task-title clearfix">
         {{ item.userName }}（{{ item.onlineTime || '' }}）
-        <span class="fr">时长：{{ item.duration }} h</span>
+        <span class="fr">时长：{{ item.duration.toFixed(1) }} h</span>
       </div>
       <el-tabs
         tab-position="bottom"
@@ -35,15 +35,20 @@
         class="snt-tabs-bottom"
       >
         <el-tab-pane label="任务" name="first">
-          <el-carousel v-if="item.taskLists && item.taskLists.length > 0" trigger="click" :autoplay="autoplay" height="145px">
+          <el-carousel
+            v-if="item.taskLists && item.taskLists.length > 0"
+            trigger="click"
+            :autoplay="autoplay"
+            height="145px"
+          >
             <el-carousel-item
               v-for="(task, index) in item.taskLists"
               :key="'index_task_' + index"
             >
               <div class="bg-white">
                 <p>
-                  任务名称：{{ task.taskName
-                  }}<label class="m-l-5">进行中</label>
+                  任务名称：{{ task.taskName }}
+                  <label class="m-l-5">进行中</label>
                 </p>
                 <p>任务类别：{{ task.type }}</p>
                 <p>预计开始时间：{{ task.planStartTime }}</p>
@@ -54,7 +59,12 @@
           </el-carousel>
         </el-tab-pane>
         <el-tab-pane label="工单" name="second">
-          <el-carousel v-if="item.workOrderLists && item.workOrderLists.length > 0" trigger="click" :autoplay="autoplay" height="145px">
+          <el-carousel
+            v-if="item.workOrderLists && item.workOrderLists.length > 0"
+            trigger="click"
+            :autoplay="autoplay"
+            height="145px"
+          >
             <el-carousel-item
               v-for="(order, index) in item.workOrderLists"
               :key="'index_order_' + index"
@@ -84,7 +94,7 @@ import {createNamespacedHelpers} from 'vuex';
 const {mapState} = createNamespacedHelpers('home');
 import {mapCenter, mapMaxZoom} from '@/api/api';
 import locationActive from '@/assets/icon-location-active.png';
-import locationGray from '@/assets/icon-location-gray.png'
+import locationGray from '@/assets/icon-location-gray.png';
 export default {
   data() {
     return {
@@ -133,10 +143,9 @@ export default {
     },
     // 向地图中增加人员位置
     addMember(data) {
-      const position = data.map((item) => {
-        console.log(111)
-        if(!item.location)
-          return;
+      const position = data.map(item => {
+        console.log(111);
+        if (!item.location) return;
         // const location = [(119.0319 +  0.01 * index), (31.6655 + 0.01 * index)];
         const location = item.location.split(',');
         const x = Number(location[0]);
@@ -146,9 +155,10 @@ export default {
       this.position = [...position];
       // 将默认的第一个人设为中心位置
       if (position[0]) this.map.getView().setCenter(position[0]);
+      console.log('position[0] :>> ', position[0]);
       // 循环每一个人象地图中添加人的位置及信息
       data.forEach((member, index) => {
-        if(!member.location) return;
+        if (!member.location) return;
         const overlayDom = document.querySelector(
           `#overlay-element-${member.userId}`
         );
@@ -172,10 +182,10 @@ export default {
       });
     },
     handleAnchorEnter(member) {
-      if(this.currentMemberId >= 0) {
+      if (this.currentMemberId >= 0) {
         this.map.removeOverlay(this.overlays[this.currentMemberId]);
         this.currentMemberId = -1;
-      }  
+      }
       this.map.addOverlay(this.overlays[member.userId]);
     },
     // 移除人员时删除人员信息
@@ -196,10 +206,10 @@ export default {
     },
     // 将地图聚焦到选中人选的位置
     focusOnCurrentMember(member, index) {
-      if(!member.location) return false;
-      if(this.currentMemberId >= 0)
+      if (!member.location) return false;
+      if (this.currentMemberId >= 0)
         this.map.removeOverlay(this.overlays[this.currentMemberId]);
-      this.map.addOverlay(this.overlays[member.userId])
+      this.map.addOverlay(this.overlays[member.userId]);
       this.currentMemberId = member.userId;
       this.map.getView().setCenter(this.position[index]);
     }

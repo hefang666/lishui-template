@@ -234,6 +234,8 @@
     <choose-people
       :dialog-charge="dialogCharge"
       :select-type="'single'"
+      :charge-info="chargeInfo"
+      :trans-order="isTransfer"
       @closeChoosePeople="closeChoosePeople"
       @checkedPerson="checkedPerson"
     ></choose-people>
@@ -305,7 +307,13 @@ export default {
           return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
           // return time.getTime() <= Date.now();    //禁用今天以及以前的日期
         }
-      }
+      },
+
+      // 负责人信息
+      chargeInfo: {},
+
+      // 是否是转工单
+      isTransfer: true
     };
   },
   methods: {
@@ -327,6 +335,11 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
+      console.log(this.eventDetails);
+      this.chargeInfo = {
+        userName: this.eventDetails.creationName,
+        userId: this.eventDetails.creationId
+      }
       this.getOrganizationData();
       this.getRoleData();
       this.dialogCharge = true;

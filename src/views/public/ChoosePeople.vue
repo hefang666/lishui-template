@@ -107,7 +107,7 @@
             </div>
             <div class="table-box">
               <el-table
-                v-if="selectType == 'single'"
+                v-show="selectType == 'single'"
                 v-loading="loading"
                 :data="personList"
                 :stripe="true"
@@ -139,7 +139,7 @@
                 ></el-table-column>
               </el-table>
               <el-table
-                v-if="selectType == 'multiple'"
+                v-show="selectType == 'multiple'"
                 v-loading="loading"
                 ref="multipleTable"
                 :data="personList"
@@ -222,6 +222,16 @@ export default {
     selectType:{
       type:String,
       default:'single'
+    },
+    transOrder: {
+      type: Boolean,
+      default: false
+    },
+    chargeInfo: {
+      type: Object,
+      default: function() {
+        return {}
+      }
     }
   },
   components: {
@@ -300,6 +310,14 @@ export default {
       };
       this.$emit('closeChoosePeople', data);
     },
+    // 清空数据
+    clearDate() {
+      if (this.selectType == 'single') {
+        this.selectedData = [];
+      } else if (this.selectType == 'multiple') {
+        this.multipleSelection = [];
+      }
+    },
     // 选中的行
     clickRow(val) {
       // this.personInfo = val;
@@ -315,6 +333,7 @@ export default {
     // 点击确定
     determine() {
       // console.log(this.selectedData);
+      console.log(this.selectType);
       if (this.selectedData.length == 0) {
         if (this.selectType == 'single') {
           this.setMessage('请选择负责人！');
@@ -326,6 +345,14 @@ export default {
         // alert('请选择负责人！');
         return;
       } else {
+        if (this.transOrder) {
+          if (this.chargeInfo.userIf == this.selectedData[0].userId) {
+            this.setMessage('无法转给自己！');
+            this.dialogMessage = true;
+            return
+          }
+        }
+
         let data = {
           type: this.selectType,
           personinfo: this.selectedData,

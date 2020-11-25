@@ -245,15 +245,15 @@ export default {
       this.drawPointLayerFunc();
       this.setAreaInfo(this.areaInfo);
 
-      console.log(this.maptype);
-      console.log(this.maptype == 'localtion')
+      // console.log(this.maptype);
+      // console.log(this.maptype == 'localtion')
       if (this.maptype == 'localtion') {
         // 代表是位置
         // 需要画出人员轨迹
         
-        console.log('这里是查看人员轨迹');
+        // console.log('这里是查看人员轨迹');
         // this.addOverLayer();
-        this.initLineOrbit();
+        // this.initLineOrbit();
         // this.drawOrditOnMap(list);
 
         if (this.localtionData.length == 0){
@@ -600,7 +600,7 @@ export default {
     */
     // 根据人员位置列表会绘制人员轨迹
     drawOrditOnMap(userRoute) {
-      console.log(userRoute);
+      // console.log(userRoute);
 
         // for(var i = 0; i<userRoute.length; i++) {
             var coordinates = [];
@@ -613,7 +613,8 @@ export default {
                 // coordinates.push([Number(point[0]), Number(point[1])])
             }
             // alert(JSON.stringify(coordinates));
-            console.log(coordinates);
+            // console.log(coordinates);
+            this.map.getView().setCenter(coordinates[0]);
             this.drawOribitRoute(coordinates);
             this.$nextTick(() => {
               this.drawAnmateByOribt(coordinates);

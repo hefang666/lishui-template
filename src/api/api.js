@@ -2,6 +2,7 @@
 // const baseURL = 'http://192.168.9.44:9090/'
 
 // let host = 'http://221.226.213.42:9090/';
+
 // let host = 'http://192.168.10.214:8091/';
 let host = 'http://192.168.9.44:9090/';
 
@@ -10,7 +11,7 @@ if (window.top.apiUrl) {
   host = window.top.apiUrl;
 }
 const baseURL = process.env.NODE_ENV === 'development' ? '/api' : host;
-// console.log(baseURL);
+console.log(baseURL);
 
 // const baseURLS = process.env.NODE_ENV == 'development' ? baseURL : baseURL;
 // console.log(baseURLS);
@@ -36,6 +37,7 @@ const workSpace = 'http://www.OpenGIS.com/OpenGIS';
 // 地图中心点坐标
 // const mapCenter = [119.05, 31.57];
 const mapCenter = [119.0319, 31.6655];
+// const mapCenter = [106.548293, 29.565552];
 const mapMaxZoom = 22;
 
 // 地图服务器地址

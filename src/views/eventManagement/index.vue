@@ -26,7 +26,7 @@
           <el-button type="primary" plain @click="close">关闭</el-button>
           <el-button type="primary" plain @click="transfer">转工单</el-button>
           <el-button type="primary" plain @click="See">查看</el-button>
-          <el-button type="primary" plain>导出</el-button>
+          <el-button type="primary" plain @click="exportData">导出</el-button>
         </el-button-group>
       </div>
     </div>

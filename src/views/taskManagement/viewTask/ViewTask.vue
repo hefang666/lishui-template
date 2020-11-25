@@ -36,7 +36,7 @@
                     <div class="item-title">参与人：</div>
                     <div class="item-content">
                       <span
-                        v-for="(item, index) in taskDetail.participant"
+                        v-for="(item, index) in taskDetail.participants"
                         :key="index"
                       >
                         <span v-if="index != 0">、</span>

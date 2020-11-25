@@ -459,8 +459,9 @@ export default {
 
     // 关闭任务
     close() {
+      // console.log('点击了关闭');
       if (this.onlyOne()) {
-        if (this.multipleSelection[0].statusList != 3) {
+        if (this.multipleSelection[0].status != 3) {
           // 关闭任务只能对已暂停状态的任务进行
           this.setMessage('该状态不能关闭');
           this.iconStr = 'el-icon-warning-outline';
