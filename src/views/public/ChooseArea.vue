@@ -2,8 +2,10 @@
   <div class="choosePeople-box dialog-box button-box">
     <el-dialog
       title="选择片区"
+      v-if="dialogArea"
       :visible.sync="dialogArea"
       :before-close="closeChooseArea"
+      :destroy-on-close="true"
     >
       <div class="content-box">
         <div class="content_box">
@@ -57,6 +59,7 @@
           <page
             :page-data="[30, 40, 50, 100]"
             :total="areaTotal"
+            :currentPage="currentPage"
             @changePageSize="changePageSize"
             @changeCurrentPage="changeCurrentPage"
           ></page>
@@ -104,6 +107,24 @@ export default {
     Page,
     ViewRoute
   },
+  watch: {
+    'dialogArea': function() {
+      // console.log(this.dialogArea);
+      if (this.dialogArea) {
+        // console.log(this.currentPage);
+        // console.log(this.pageSize);
+        // console.log(this.areaTotal);
+        var _this = this;
+        setTimeout(function() {
+          _this.getData();
+        }, 200)
+        
+      }
+      // console.log(this.areaTotalCount);
+      // this.areaTotal = this.areaTotalCount;
+      // console.log(this.areaTotal);
+    }
+  },
   data() {
     return {
       // 搜素的关键字
@@ -131,11 +152,14 @@ export default {
       currentPage: 1,
 
       // 每页数量
-      pageSize: 30
+      pageSize: 30,
+
+      // 区域总页数
+      areaTotal: 1
     };
   },
   computed: {
-    ...xunjianState(['areaList', 'areaTotal'])
+    ...xunjianState(['areaList', 'areaTotalCount'])
   },
   methods: {
     ...areaActions(['getAreaDetailInfo']),
@@ -145,6 +169,7 @@ export default {
         dialogArea: false
       };
       this.$emit('closeChooseArea', data);
+      this.clearPage();
     },
     // 选中的行
     clickRow(val) {
@@ -159,7 +184,11 @@ export default {
         pageIndex: this.currentPage,
         maxResultCount: this.pageSize
       }
-      this.getAreaLists(param);
+      this.getAreaLists(param).then(res => {
+        if (res.success) {
+          this.areaTotal = res.result.totalCount;
+        }
+      });
     },
     // 点击确定
     determine() {
@@ -213,6 +242,7 @@ export default {
           this.$emit('checkedArea', data);
         }
       }
+      // this.clearPage();
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -268,6 +298,12 @@ export default {
           this.conInfo = data.conInfo;
         }
       }
+    },
+    // 分页信息恢复
+    clearPage() {
+      // console.log(111111111111);
+      this.currentPage = 1;
+      this.pageSize = 30;
     }
   },
   mounted() {}

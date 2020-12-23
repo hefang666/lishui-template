@@ -6,6 +6,7 @@ export function getMemberList(data) {
   return request({
     url: api + 'PersonService/GetAllLocationAndTaskAndWorkOrderLists',
     method: 'post',
-    data
+    data,
+    timeout: 300000
   });
 }

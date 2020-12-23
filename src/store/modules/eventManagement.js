@@ -1,4 +1,10 @@
-import {GetEventList, GetEventDetails, UpdateEventById} from '@/api/event';
+import {
+  GetEventList,
+  GetEventDetails,
+  UpdateEventById,
+  getEventType
+} from '@/api/event';
+import {getCurrentUserInfo} from '@/api/other';
 import {parseTime} from '@/utils/index.js';
 
 var state = {
@@ -19,10 +25,6 @@ var state = {
   ],
   // 异常类型
   exceptionTypeData: [
-    // {
-    //   value: 0,
-    //   label: '全部'
-    // },
     {
       value: 1,
       label: '外观损坏'
@@ -84,7 +86,9 @@ var state = {
   // 请求列表时的加载状态
   loading: false,
   // 事件page
-  eventPageData: [30, 40, 50, 100]
+  eventPageData: [30, 40, 50, 100],
+  //事件类型
+  eventTypeData: []
 };
 
 var mutations = {
@@ -107,6 +111,10 @@ var mutations = {
   // 改变加载状态
   set_loading: function(state, data) {
     state.loading = data;
+  },
+  // 设置事件类型
+  set_eventTypeData: function(state, data) {
+    state.eventTypeData = data;
   }
 };
 
@@ -136,8 +144,8 @@ var actions = {
           }
         })
         .catch(error => {
-          commit('set_message', error.message);
           commit('set_loading', false);
+          commit('set_message', error.message);
           reject(error);
         });
     });
@@ -195,6 +203,51 @@ var actions = {
   // 改变消息内容
   setMessage({commit}, data) {
     commit('set_message', data);
+  },
+  //获取事件类型
+  getEventTypeData({commit}, data) {
+    console.log(data);
+    return new Promise((resolve, reject) => {
+      getEventType(data)
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            var result = [
+              {
+                name: '请选择事件类型',
+                value: 0
+              }
+            ];
+            if (response.result.length != 0) {
+              response.result.forEach(item => {
+                result.push(item);
+              });
+            }
+            commit('set_eventTypeData', result);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
+  },
+  // 获取当前用户信息
+  getCurrentUser({commit}) {
+    return new Promise((resolve, reject) => {
+      getCurrentUserInfo()
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          commit('set_message', error.message);
+          reject(error);
+        });
+    });
   }
 };
 

@@ -6,14 +6,14 @@
       :close-on-click-modal="false"
       :before-close="closeAdd"
     >
-      <div class="content-box form-box">
+      <div class="content-box form-box" @click="checkedSelection">
         <div class="content_box">
           <div>
             <div class="list-item has-two-item">
               <div class="items-box">
                 <div class="title">
                   <span class="tips">*</span>
-                  <span>任务名称：</span>
+                  <span>计划名称：</span>
                 </div>
                 <div class="content">
                   <div class="list-item-content-box">
@@ -113,7 +113,12 @@
                             <span class="tips">*</span>
                           </div>
                           <div class="select-box">
-                            <el-select
+                            <scope-selection
+                              ref="chooseDay"
+                              @chooseInfo="getWeek"
+                              @clearInfo="clearWeek"
+                            ></scope-selection>
+                            <!-- <el-select
                               v-model="selectWeek"
                               placeholder="请选择"
                               @change="getSelectWeek"
@@ -124,7 +129,7 @@
                                 :label="item.label"
                                 :value="item.value"
                               ></el-option>
-                            </el-select>
+                            </el-select> -->
                           </div>
                         </div>
                       </el-tab-pane>
@@ -135,7 +140,13 @@
                             <span class="tips">*</span>
                           </div>
                           <div class="select-box">
-                            <el-select
+                            <scope-selection
+                              :datas="monthlyData"
+                              :colsNum="colsNum"
+                              @chooseInfo="getMonth"
+                              @clearInfo="clearMonth"
+                            ></scope-selection>
+                            <!-- <el-select
                               v-model="selectMonth"
                               placeholder="请选择"
                               @change="getSelectMonth"
@@ -146,7 +157,7 @@
                                 :label="item.label"
                                 :value="item.value"
                               ></el-option>
-                            </el-select>
+                            </el-select> -->
                           </div>
                         </div>
                       </el-tab-pane>
@@ -270,6 +281,7 @@ import '@/fonts/iconfont.css';
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
+import ScopeSelection from '@/components/scopeSelection/ScopeSelection.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {
   mapState: planState,
@@ -283,7 +295,8 @@ export default {
   components: {
     ChoosePeople,
     ChooseArea,
-    Message
+    Message,
+    ScopeSelection
   },
   computed: {
     ...planState(['weeklyData', 'monthlyData', 'messageText'])
@@ -323,10 +336,12 @@ export default {
       activeName: 'weekly',
 
       // 每周下拉框选择的数据
-      selectWeek: '',
+      // selectWeek: '',
+      weekInfo: '',
 
       // 每月下拉框选择的数据
-      selectMonth: '',
+      // selectMonth: '',
+      monthInfo: '',
 
       // 自定义当前有几次任务
       customNum: 1,
@@ -348,7 +363,9 @@ export default {
           // return time.getTime() < Date.now() - 8.64e7;   //禁用以前的日期，今天不禁用
           return time.getTime() <= Date.now();    //禁用今天以及以前的日期
         }
-      }
+      },
+      // 每列多少个
+      colsNum: 7
     };
   },
   methods: {
@@ -431,17 +448,19 @@ export default {
     },
 
     // 每周选择
-    getSelectWeek(val) {
-      this.selectWeek = val;
-    },
+    // getSelectWeek(val) {
+    //   this.selectWeek = val;
+    // },
 
     //每月选择
-    getSelectMonth(val) {
-      this.selectMonth = val;
-    },
+    // getSelectMonth(val) {
+    //   this.selectMonth = val;
+    // },
 
     // tab切换
-    handleClick() {},
+    handleClick() {
+
+    },
 
     // 点击自定义每行后面的操作
     operate() {
@@ -489,10 +508,37 @@ export default {
       ];
       this.timeLimit = '';
     },
+    // 获取周的数据
+    getWeek(data) {
+      console.log(data);
+      this.weekInfo = data;
+    },
+    // 清除周数据
+    clearWeek(data) {
+      console.log(data);
+      // this.monthInfo = data;
+      this.weekInfo = '';
+    },
+    // 获取月的数据
+    getMonth(data) {
+      console.log(data);
+      this.monthInfo = data;
+    },
+    // 清除月数据
+    clearMonth(data) {
+      console.log(data);
+      // this.monthInfo = data;
+      this.monthInfo = '';
+    },
+    // 点击其他地方，判断里面是否被隐藏
+    checkedSelection() {
+      this.$refs.chooseDay.closeBox();
+    },
 
     // 点击确定
     determine() {
-      let dayStr = '';
+      let startDay = 0;
+      let endDay = 0;
       let user = [],
         timeList = [],
         cycle;
@@ -530,7 +576,18 @@ export default {
 
       if (this.activeName == 'weekly') {
         cycle = 1;
-        if (this.selectWeek == '') {
+        // if (this.selectWeek == '') {
+        //   this.setMessage('请选择每周时间');
+        //   this.dialogMessage = true;
+        //   return;
+        // } else {
+        //   if (this.timeLimit == '') {
+        //     this.setMessage('请选择计划时效');
+        //     this.dialogMessage = true;
+        //     return;
+        //   }
+        // }
+        if (this.weekInfo == '') {
           this.setMessage('请选择每周时间');
           this.dialogMessage = true;
           return;
@@ -543,7 +600,18 @@ export default {
         }
       } else if (this.activeName == 'monthly') {
         cycle = 2;
-        if (this.selectMonth == '') {
+        // if (this.selectMonth == '') {
+        //   this.setMessage('请选择每月时间');
+        //   this.dialogMessage = true;
+        //   return;
+        // } else {
+        //   if (this.timeLimit == '') {
+        //     this.setMessage('请选择计划时效');
+        //     this.dialogMessage = true;
+        //     return;
+        //   }
+        // }
+        if (this.monthInfo == '') {
           this.setMessage('请选择每月时间');
           this.dialogMessage = true;
           return;
@@ -579,11 +647,13 @@ export default {
         // 计划时效超过当前日期一周以上
         let interval = 7 * 24;
         if (judgeTime(start, limitTime, interval)) {
-          if (this.selectWeek == 7) {
-            dayStr = 0;
-          } else {
-            dayStr = this.selectWeek;
-          }
+          // if (this.selectWeek == 7) {
+          //   dayStr = 0;
+          // } else {
+          //   dayStr = this.selectWeek;
+          // }
+          startDay = Number(this.weekInfo.firstCheck);
+          endDay = Number(this.weekInfo.secondCheck);
         } else {
           this.setMessage('时效日期必须超过当前日期一周');
           this.dialogMessage = true;
@@ -594,7 +664,9 @@ export default {
         let day = mGetDate();
         let interval = day * 24;
         if (judgeTime(start, limitTime, interval)) {
-          dayStr = this.selectMonth;
+          // dayStr = this.selectMonth;
+          startDay = Number(this.monthInfo.firstCheck);
+          endDay = Number(this.monthInfo.secondCheck);
         } else {
           this.setMessage('时效日期必须超过当前日期一个月');
           this.dialogMessage = true;
@@ -669,11 +741,13 @@ export default {
         areaId: this.areaInfo.id,
         status: 1,
         endTime: limitTime,
-        day: dayStr,
+        // day: dayStr,
+        startDay: startDay,
+        endDay: endDay,
         dateTimeLists: timeList,
         user: user
       };
-      // console.log(param);
+      console.log(param);
       this.addPlan(param).then(res => {
         // console.log(res);
         if (res.success) {
@@ -726,7 +800,7 @@ export default {
               }
             }
             .select-box {
-              width: 150px;
+              width: 180px;
             }
           }
           .custom-box {

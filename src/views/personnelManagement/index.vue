@@ -33,7 +33,7 @@
           :stripe="true"
           tooltip-effect="dark"
           border
-          height="830"
+          height="790"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >

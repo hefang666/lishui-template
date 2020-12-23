@@ -616,9 +616,12 @@ export default {
             // console.log(coordinates);
             this.map.getView().setCenter(coordinates[0]);
             this.drawOribitRoute(coordinates);
-            this.$nextTick(() => {
-              this.drawAnmateByOribt(coordinates);
-            })
+            if (coordinates.length > 1) {
+              this.$nextTick(() => {
+                this.drawAnmateByOribt(coordinates);
+              })
+            }
+            
         // }
     },
     // 根据多点绘制路径
@@ -628,9 +631,9 @@ export default {
       var feature = new window.ol.Feature({
           geometry: new window.ol.geom.LineString(pointList)
       })
-      console.log(feature);
+      // console.log(feature);
       this[sourcename].addFeature(feature);
-      console.log(this[sourcename]);
+      // console.log(this[sourcename]);
     },
 
     // 绘制人位置及跳动

@@ -81,14 +81,14 @@
               </div>
             </div> -->
           </div>
-          <div class="list-item">
+          <!-- <div class="list-item">
             <div class="list-items">
               <div class="item-title">预估损失水量：</div>
               <div class="item-content">
                 <span>{{ eventDetails.predictWaterLoss }}</span>
               </div>
             </div>
-          </div>
+          </div> -->
           <div class="list-item">
             <div class="list-items">
               <div class="item-title">巡检内容：</div>
@@ -106,7 +106,7 @@
                 <div class="enclosure-box">
                   <div class="image-box">
                     <div
-                      v-for="(item, index) in eventDetails.resourcelist"
+                      v-for="(item, index) in eventDetails.resourceList"
                       :key="index"
                       @click="openPre(item)"
                       class="img-box"
@@ -235,10 +235,10 @@ export default {
                 .img-box {
                   width: 90px;
                   height: 90px;
-                  background: red;
                   margin-right: 20px;
                   margin-top: 10px;
                   float: left;
+                  cursor: pointer;
                 }
               }
               

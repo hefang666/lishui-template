@@ -163,9 +163,25 @@
     <choose-area
       :dialog-area="dialogArea"
       :type="'view'"
+      ref="chooseArea"
       @closeChooseArea="closeChooseArea"
       @checkedArea="checkedArea"
     ></choose-area>
+    <!-- <el-dialog
+      title="选择片区"
+      :visible.sync="dialogArea"
+      :before-close="closeChooseArea"
+      :destroy-on-close="true"
+    >
+      <choose-area
+        :type="'view'"
+        ref="chooseArea"
+      ></choose-area>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="closeChooseArea">返回</el-button>
+      <el-button type="primary" @click="determine">确 定</el-button>
+    </div>
+  </el-dialog> -->
   </div>
 </template>
 
@@ -174,7 +190,7 @@ import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import ChooseArea from '@/views/public/ChooseArea.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
-const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
+const {mapState: xunjianState, mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 const {mapState: taskState, mapActions: taskActions} = createNamespacedHelpers(
   'taskManagement'
 );
@@ -187,7 +203,8 @@ export default {
     Message
   },
   computed: {
-    ...taskState(['messageText'])
+    ...taskState(['messageText']),
+    ...xunjianState(['areaTotalCount'])
   },
   data() {
     return {
@@ -403,20 +420,44 @@ export default {
 
     // 点击选择片区按钮
     chooseArea() {
-      let param = {
-        pageIndex: 1,
-        maxResultCount: 30
-      };
+      this.dialogArea = true;
+      // this.$nextTick(() => {
+      //   this.$refs.chooseArea.getData();
+      // })
+      
+      // this.$nextTick(() => {
+        this.dialogArea = true;
+      // })
+      // let param = {
+      //   pageIndex: 1,
+      //   maxResultCount: 30
+      // };
       // console.log(param);
-      this.getAreaLists(param).then(res => {
-        if (res.success) {
-          this.dialogArea = true;
-        }
-      });
+      // this.$nextTick(() => {
+      //   var _this = this;
+      //   setTimeout(function() {
+      //     _this.getAreaLists(param).then(res => {
+      //       console.log(res);
+      //       if (res.success) {
+      //         console.log(_this.areaTotalCount);
+      //       }
+      //     });
+      //   }, 300)
+        
+      // })
+      
     },
     // 关闭选择片区弹窗
-    closeChooseArea(data) {
-      this.dialogArea = data.dialogArea;
+    // closeChooseArea(data) {
+    //   this.dialogArea = data.dialogArea;
+    // },
+    closeChooseArea() {
+      this.dialogArea = false;
+    },
+    determine() {
+      this.$refs.chooseArea.determine();
+      this.dialogArea = false;
+
     },
     // 选择片区弹窗选择了片区并点击了确定按钮
     checkedArea(data) {

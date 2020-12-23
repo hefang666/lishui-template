@@ -186,6 +186,13 @@ export default {
           })
           return false;
         }
+        if (_this.areaInfo.selectPoint == 0 && _this.areaInfo.selectLine != 0 && _this.areaInfo.lineLength < 1) {
+          this.$message({
+            type: 'error',
+            message: '当前选择区域管道长度不足1km，请重置区域'
+          })
+          return false;
+        }
         this.submitLoading = true;
         let areaDetail = {
           name: _this.ruleForm.name,

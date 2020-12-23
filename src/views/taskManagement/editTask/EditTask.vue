@@ -63,12 +63,21 @@
                   <span>参与人：</span>
                 </div>
                 <div class="content">
-                  <span
-                    v-for="(item, index) in taskDetails.participant"
+                  <el-button
+                    class="choose-active"
+                    type="primary"
+                    plain
+                    v-for="(item, index) in taskDetails.user"
+                    :key="index"
+                  >
+                    {{ item.userName }}
+                  </el-button>
+                  <!-- <span
+                    v-for="(item, index) in taskDetails.participants"
                     :key="index"
                   >
                     {{ item }}
-                  </span>
+                  </span> -->
                   <!-- <span>{{ taskDetails.participant }}</span> -->
                   <!-- <el-button
                     class="choose-active"
@@ -168,7 +177,7 @@
             <div class="list-item">
               <div class="items-box">
                 <div class="title">
-                  <span class="tips">*</span>
+                  <span v-if="taskDetails.type == 1" class="tips">*</span>
                   <span>备注：</span>
                 </div>
                 <div class="conten">
@@ -314,11 +323,15 @@ export default {
       } else if (data.type == 'multiple') {
         // 参与人
         this.partData = data.personinfo;
-        this.taskDetails.participant = [];
+        this.taskDetails.participants = [];
         this.taskDetails.participantIds = [];
+        this.taskDetails.user = [];
         this.partData.forEach(item => {
-          this.taskDetails.participant.push(item.trueName);
-          this.taskDetails.participantIds.push(item.trueName);
+          this.taskDetails.participants.push(item.trueName);
+          this.taskDetails.participantIds.push(item.id);
+          this.taskDetails.user.push({
+            userName: item.trueName
+          });
         });
       }
       this.dialogCharge = data.dialogCharge;
@@ -388,12 +401,15 @@ export default {
         return;
       }
 
-      if (this.taskDetails.remark == '' || this.taskDetails.remark == null) {
-        this.setMessage('任务备注不能为空');
-        this.iconStr = 'el-icon-warning-outline'
-        this.dialogMessage = true;
-        return;
+      if (this.taskDetails.type == 1 && (this.taskDetails.remark == '' || this.taskDetails.remark == null)) {
+        // if () {
+          this.setMessage('任务备注不能为空');
+          this.iconStr = 'el-icon-warning-outline'
+          this.dialogMessage = true;
+          return;
+        // }
       }
+      
 
       let param;
       if (this.taskDetails.type == 1) {

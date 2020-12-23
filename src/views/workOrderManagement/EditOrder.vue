@@ -69,7 +69,7 @@
                         class="choose-active"
                         type="primary"
                         plain
-                        v-if="orderDetails.areaName != ''"
+                        v-if="orderDetails.areaName != '' && orderDetails.areaName != null"
                         v-model="orderDetails.areaName"
                       >
                         {{ orderDetails.areaName }}
@@ -120,7 +120,108 @@
                 </div>
               </div>
             </el-form>
-            <div v-if="orderDetails.eventDetails != null" class="list-box">
+            <div class="list-box">
+              <!-- 设备信息 -->
+              <div v-if="orderDetails.deviceDetails != null" class="div-title">设备信息</div>
+              <div v-if="orderDetails.deviceDetails != null" class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">设备编号：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.deviceDetails.deviceCode }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">设备名称：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.deviceDetails.deviceName }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.deviceDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">设备点状态：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.deviceDetails.deviceStatusStr }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">设备坐标点：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.deviceDetails.devicePoint }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.deviceDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">地址：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.deviceDetails.address }}</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 事件信息 -->
+              <div v-if="orderDetails.eventDetails != null" class="div-title">事件信息</div>
+              <div v-if="orderDetails.eventDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">事件类型：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.typeStr }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">事件提交时间：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.creationTime }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.eventDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">报告人：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.creationName }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">联系方式：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.phone }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.eventDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">事件状态：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.statusStr }}</span>
+                  </div>
+                </div>
+                <div class="list-items has-two-item">
+                  <div class="item-title">提交工单时间：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.creationTime }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.eventDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">异常类型：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.errorType }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="orderDetails.eventDetails != null"  class="list-item">
+                <div class="list-items has-two-item">
+                  <div class="item-title">巡检内容：</div>
+                  <div class="item-content">
+                    <span>{{ orderDetails.eventDetails.content }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- <div v-if="orderDetails.eventDetails != null" class="list-box">
               <div class="list-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">设备名称：</div>
@@ -156,6 +257,10 @@
                     <span>{{ orderDetails.eventDetails.deviceStatusStr }}</span>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div v-if="orderDetails.eventDetails != null" class="list-box">
+              <div class="list-item">
                 <div class="list-items has-two-item">
                   <div class="item-title">异常类型：</div>
                   <div class="item-content">
@@ -231,7 +336,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -271,6 +376,7 @@ import Message from '@/components/promptMessage/PromptMessage.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: workOrderState, mapActions: workOrderActions} = createNamespacedHelpers('workOrderManagement');
 const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
+const {mapActions: xunjianActions} = createNamespacedHelpers('xunjianPublic');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'EditOrder',
@@ -311,6 +417,7 @@ export default {
   methods: {
     ...workOrderActions(['setMessage', 'updateWorkOrder']),
     ...uploadActions(['downloadFile', 'clearFileDate']),
+    ...xunjianActions(['getOrganizationData', 'getRoleData']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeEdit() {
       // console.log('点击了取消');
@@ -323,7 +430,10 @@ export default {
     },
     // 点击选择负责人按钮
     choosePerson() {
+      console.log('点击了选择人员');
       this.dialogCharge = true;
+      this.getOrganizationData();
+      this.getRoleData();
     },
 
     // 关闭选择负责人弹窗
@@ -333,10 +443,9 @@ export default {
     },
     // 选择负责人弹窗选择了负责人并点击了确定按钮
     checkedPerson(data) {
-      // console.log(data);
       this.dialogCharge = data.dialogCharge;
       this.orderDetails.person = data.personinfo[0].trueName;
-      this.personInfo = data.personinfo;
+      this.personInfo = data.personinfo[0];
     },
     // 打开预览弹窗
     showPreview(data) {
@@ -394,13 +503,22 @@ export default {
       let param = {
         id: this.orderDetails.id,
         type: this.orderDetails.type,
-        personId: this.orderDetails.personId,
-        person: this.orderDetails.person,
         planCompleteTime: this.orderDetails.planCompleteTime,
         content: this.orderDetails.content,
         areaId: this.orderDetails.areaId,
         resourcelist: this.fileListData
       }
+
+      if (this.personInfo == '') {
+        //没有修改负责人
+        param.personId = this.orderDetails.personId;
+        param.person = this.orderDetails.person;
+      } else {
+        // 修改了负责人
+        param.personId = this.personInfo.id
+        param.person = this.personInfo.trueName;
+      }
+      
 
       // console.log(param);
 
@@ -415,6 +533,7 @@ export default {
         }
       }).catch((err) => {
         console.log(err);
+        this.dialogMessage = true;
       })
     },
     // 预览
@@ -510,11 +629,17 @@ export default {
     .list-box {
       padding: 0 40px;
 
+      .div-title {
+        border-bottom: 1px solid #4b77be;
+        line-height: 30px;
+        padding: 0 5px 0;
+      }
       .list-item {
         display: flex;
         justify-content: space-between;
         height: 40px;
         line-height: 40px;
+        margin-top: 0;
 
         .list-items {
           display: flex;

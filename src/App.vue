@@ -22,7 +22,8 @@ export default {
     // console.log(baseURL);
     // 上传及预览图片地址设置
     this.$store.state.upload.httpUrl = baseURL;
-    // console.log(this.$store.state.upload);
+    this.$store.state.upload.actionUrl = baseURL + 'api/UploadFiles/UploadProfilePicture';
+    // console.log(this.$store.state.upload.httpUrl);
   },
 };
 </script>

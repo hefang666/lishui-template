@@ -347,7 +347,7 @@ export default {
       } else if (this.editPlanDetails.cycle == 3) {
         // 自定义
         // 必须大于自定义的最后一次结束时间
-        if (judgeTime(this.editPlanDetails.dateTimeLists[this.editPlanDetails.dateTimeLists.length - 1].endTime, limitTime)) {
+        if (judgeTime(this.editPlanDetails.taskLists[this.editPlanDetails.taskLists.length - 1].endTime, limitTime)) {
           // dayStr = this.selectMonth;
           this.editPlanDetails.endTime = parseTime(this.editPlanDetails.endTime, '{y}-{m}-{d}');
         } else {

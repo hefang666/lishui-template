@@ -2,7 +2,8 @@ import {
   getPeopleList,
   getOrganizationData,
   getRoleData,
-  GetAreaLists
+  GetAreaLists,
+  getCurrentUserInfo
 } from '@/api/other';
 import {filterArray, addIcon, processingNodes} from '@/utils/index';
 
@@ -95,14 +96,15 @@ var state = {
         id: 11340
       }
     ],
-    areaTotal: 1
-  }
+    areaTotalCount: 1
+  },
+  //登录信息
+  loginInfo: {}
 };
 
 var mutations = {
   // 设置人员数据
   set_person_list: function(state, list) {
-    console.log('list :>> ', list);
     state.personList = list;
   },
   // 设置组织数据
@@ -129,12 +131,15 @@ var mutations = {
   },
   // 设置片区页数信息
   set_areaPagesInfo: function(state, data) {
-    state.areaTotal = data;
-    console.log(state.areaTotal);
+    state.areaTotalCount = data;
   },
   // 改变加载状态
   set_loading: function(state, data) {
     state.loading = data;
+  },
+  // 设置登录信息
+  set_loginInfo: function(state, data) {
+    state.loginInfo = data;
   }
 };
 
@@ -185,40 +190,41 @@ var actions = {
     return new Promise((resolve, reject) => {
       getRoleData()
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.success) {
             for (var i = 0; i < response.result.length; i++) {
               response.result[i].roleName = response.result[i].orgName;
             }
-            var data = [
-              {
-                id: 10249,
-                orgName: '仁寿供排水有限责任公司',
-                orgType: 1,
-                orgTypeToString: null,
-                parentId: 0,
-                roleItems: [
-                  {
-                    roleId: 163151,
-                    roleName: '仁寿供排水有限责任公司管理员角色'
-                  }
-                ]
-              },
-              {
-                id: 10251,
-                orgName: '调度中心',
-                orgType: 2,
-                orgTypeToString: null,
-                parentId: 10249,
-                roleItems: [
-                  {
-                    roleId: 163159,
-                    roleName: '121'
-                  }
-                ]
-              }
-            ];
-            var roles = filterArray(data);
+            // var data = [
+            //   {
+            //     id: 10249,
+            //     orgName: '仁寿供排水有限责任公司',
+            //     orgType: 1,
+            //     orgTypeToString: null,
+            //     parentId: 0,
+            //     roleItems: [
+            //       {
+            //         roleId: 163151,
+            //         roleName: '仁寿供排水有限责任公司管理员角色'
+            //       }
+            //     ]
+            //   },
+            //   {
+            //     id: 10251,
+            //     orgName: '调度中心',
+            //     orgType: 2,
+            //     orgTypeToString: null,
+            //     parentId: 10249,
+            //     roleItems: [
+            //       {
+            //         roleId: 163159,
+            //         roleName: '121'
+            //       }
+            //     ]
+            //   }
+            // ];
+            // var roles = filterArray(data);
+            var roles = filterArray(response.result);
             roles = processingNodes(roles);
             roles = addIcon(roles);
             commit('set_roleData', roles);
@@ -247,9 +253,33 @@ var actions = {
         });
     });
   },
+  // 获取当前登录的用户信息
+  getCurrentInfo({commit}) {
+    return new Promise((resolve, reject) => {
+      getCurrentUserInfo()
+        .then(response => {
+          console.log(response);
+          if (response.success) {
+            commit('set_loginInfo', response.result);
+            resolve(response);
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  },
   // 设置提示语
   setMessage({commit}, data) {
     commit('set_message', data);
+  },
+  setPersonList({commit}, data) {
+    commit('set_person_list', data);
+    let page = {
+      totalCount: 0,
+      totalPages: 0
+    };
+    commit('set_personPage', page);
   }
 };
 

@@ -34,3 +34,11 @@ export function GetAreaLists(data) {
     data
   });
 }
+
+// 获取当前登录用户信息
+export function getCurrentUserInfo() {
+  return request({
+    url: personApi + 'User/GetCurrentUserDetail',
+    method: 'get'
+  });
+}

@@ -88,7 +88,8 @@ var state = {
     statusStr: '',
     stopReason: null,
     type: '',
-    typeStr: ''
+    typeStr: '',
+    user: []
   },
   // 设备点巡检信息列表
   inspectionPointList: [],
@@ -134,12 +135,14 @@ var mutations = {
   // 设置任务详情信息
   set_taskDetail: function(state, data) {
     state.taskDetail = data;
+  },
+  // 设置吧修改任务详情
+  set_taskDetails: function(state, data) {
     state.taskDetails = data;
   },
   // 设置设备点巡检信息列表
   set_inspectionPointList: function(state, data) {
     state.inspectionPointList = data;
-    console.log(state.inspectionPointList);
   },
   // 设置设备点巡检列表总数
   set_inspectionPointTotal: function(state, data) {
@@ -163,22 +166,22 @@ var mutations = {
 
 var actions = {
   // 获取数据
-  getTaskList({commit}, param) {
+  getTaskList({commit}, data) {
     commit('set_loading', true);
-    let data = '';
-    console.log(param);
-    if (param.status == 0) {
-      data = {
-        pageIndex: param.currentPage,
-        maxResultCount: param.maxResultCount
-      };
-    } else {
-      data = {
-        status: param.status,
-        pageIndex: param.currentPage,
-        maxResultCount: param.maxResultCount
-      };
-    }
+    // let data = '';
+    // console.log(param);
+    // if (param.status == 0) {
+    //   data = {
+    //     pageIndex: param.currentPage,
+    //     maxResultCount: param.maxResultCount
+    //   };
+    // } else {
+    //   data = {
+    //     status: param.status,
+    //     pageIndex: param.currentPage,
+    //     maxResultCount: param.maxResultCount
+    //   };
+    // }
     return new Promise((resolve, reject) => {
       getTaskList(data)
         .then(response => {
@@ -307,7 +310,22 @@ var actions = {
             if (data.endTime != null || data.endTime != '') {
               data.endTime = parseTime(data.endTime, '{y}-{m}-{d} {h}:{i}');
             }
+
+            let datas = data;
+            if (datas.participants.length != 0) {
+              datas.user = [];
+              datas.participants.forEach(item => {
+                datas.user.push({
+                  userName: item
+                });
+              });
+            } else {
+              datas.user = [];
+            }
+            console.log(parseTime('2020-12-09T23:59:59', '{y}-{m}-{d} {h}:{i}'));
+            console.log(data);
             commit('set_taskDetail', data);
+            commit('set_taskDetails', datas);
             resolve(response);
           }
         })
@@ -377,6 +395,8 @@ var actions = {
           if (response.success) {
             if (response.result != null) {
               commit('set_pointDetails', response.result);
+            } else {
+              commit('set_pointDetails', {});
             }
             resolve(response);
           }

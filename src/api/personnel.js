@@ -41,7 +41,8 @@ export function GetLocationList(data) {
   return request({
     url: api + 'PersonService/GetLocationList',
     method: 'post',
-    data
+    data,
+    timeout: 300000
   });
 }
 

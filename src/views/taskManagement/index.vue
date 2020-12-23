@@ -42,7 +42,7 @@
     <div v-show="isScreen" class="screen-box select_box">
       <div class="item-box">
         <div class="item has-two">
-          <div class="item-title">计划名称：</div>
+          <div class="item-title">任务名称：</div>
           <div class="item-content">
             <el-input v-model="taskName"></el-input>
           </div>
@@ -89,7 +89,7 @@
           :data="taskList"
           :stripe="true"
           tooltip-effect="dark"
-          height="830"
+          :height="tabHeight"
           border
           style="width: 100%"
           @selection-change="handleSelectionChange"
@@ -278,7 +278,18 @@ export default {
       'messageText',
       'pageData',
       'loading'
-    ])
+    ]),
+    getTableHeight() {
+      console.log(window.innerHeight);
+      return window.innerHeight;
+    }
+  },
+  watch: {
+    getTableHeight(val) {
+      console.log(val);
+      // this.tabHeight = val;
+      // console.log(this.tabHeight);
+    }
   },
   data() {
     return {
@@ -354,7 +365,10 @@ export default {
       messageT: '请确认操作',
 
       // icon的class
-      iconStr: 'el-icon-warning-outline'
+      iconStr: 'el-icon-warning-outline',
+
+      // 表格高度
+      tabHeight: 719
     };
   },
   methods: {
@@ -521,7 +535,7 @@ export default {
         .then(res => {
           if (res.success) {
             this.iconStr = 'el-icon-circle-check';
-            this.setMessage('修改成功');
+            this.setMessage('操作成功');
             this.dialogMessage = true;
             this.getData();
           }
@@ -819,7 +833,7 @@ export default {
     getData() {
       // console.log(this.currentPage);
       let param = {
-        currentPage: this.currentPage,
+        pageIndex: this.currentPage,
         maxResultCount: this.pageSize,
         status: this.currentState
       };

@@ -25,66 +25,105 @@
       @mouseleave="() => handleOverlayLeave(item)"
     >
       <div class="task-title clearfix">
-        {{ item.userName }}（{{ item.onlineTime || '' }}）
-        <span class="fr">时长：{{ item.duration.toFixed(1) }} h</span>
+        人员详情
       </div>
-      <el-tabs
-        tab-position="bottom"
-        type="card"
-        value="first"
-        class="snt-tabs-bottom"
-      >
-        <el-tab-pane label="任务" name="first">
-          <el-carousel
-            v-if="item.taskLists && item.taskLists.length > 0"
-            trigger="click"
-            :autoplay="autoplay"
-            height="145px"
-          >
-            <el-carousel-item
-              v-for="(task, index) in item.taskLists"
-              :key="'index_task_' + index"
+      <div class="person-info-box">
+        <div class="person-info">
+          {{ item.userName }}&nbsp;&nbsp;&nbsp;&nbsp;
+          <span v-if="item.isOnline">{{ item.onlineTime || '' }}</span>
+          <span v-else class="color-gray">{{ item.offlineTime || '' }}</span>
+          <span class="fr onlineTime-span">时长：{{ item.duration.toFixed(1) }} h</span>
+        </div>
+      </div>
+      <div class="tabs-box">
+        <el-tabs
+          tab-position="bottom"
+          type="card"
+          value="first"
+          class="snt-tabs-bottom"
+        >
+          <el-tab-pane label="任务" name="first">
+            <div
+              class="nothing-box"
+              v-if="item.taskLists.length == 0"
             >
-              <div class="bg-white">
-                <p>
-                  任务名称：{{ task.taskName }}
-                  <label class="m-l-5">进行中</label>
-                </p>
-                <p>任务类别：{{ task.type }}</p>
-                <p>预计开始时间：{{ task.planStartTime }}</p>
-                <p>预计结束时间：{{ task.planEndTime }}</p>
-                <p>巡检片区：{{ task.taskAreaName }}</p>
+              <div class="nothing-img">
+                <img src="../../assets/nothing.png" alt="">
               </div>
-            </el-carousel-item>
-          </el-carousel>
-        </el-tab-pane>
-        <el-tab-pane label="工单" name="second">
-          <el-carousel
-            v-if="item.workOrderLists && item.workOrderLists.length > 0"
-            trigger="click"
-            :autoplay="autoplay"
-            height="145px"
-          >
-            <el-carousel-item
-              v-for="(order, index) in item.workOrderLists"
-              :key="'index_order_' + index"
+              <div class="nothing">暂无内容...</div>
+            </div>
+            <el-carousel
+              v-if="item.taskLists && item.taskLists.length > 0"
+              trigger="click"
+              :autoplay="autoplay"
+              height="160px"
+              class="bg-f5"
             >
-              <div class="bg-white">
-                <p>
-                  工单类型：{{ order.workTypeStr
-                  }}<label class="m-l-5">进行中</label>
-                </p>
-                <p>
-                  <span class="order-title fl">工单内容：</span>
-                  <span class="order-content">
-                    {{ order.content }}
-                  </span>
-                </p>
+              <el-carousel-item
+                v-for="(task, index) in item.taskLists"
+                :key="'index_task_' + index"
+              >
+                <div>
+                  <p class="display-between">
+                    <span class="task-name-box">
+                      任务名称：{{ task.taskName }}
+                    </span>
+                    <label class="m-l-5">进行中</label>
+                  </p>
+                  <p>任务类别：{{ task.taskTypeStr }}</p>
+                  <p>预计开始时间：{{ task.planStartTime }}</p>
+                  <p>预计结束时间：{{ task.planEndTime }}</p>
+                  <p>巡检片区：{{ task.areaName }}</p>
+                </div>
+              </el-carousel-item>
+            </el-carousel>
+          </el-tab-pane>
+          <el-tab-pane label="工单" name="second">
+            <div
+              class="nothing-box"
+              v-if="item.workOrderLists.length == 0"
+            >
+              <div class="nothing-img">
+                <img src="../../assets/nothing.png" alt="">
               </div>
-            </el-carousel-item>
-          </el-carousel>
-        </el-tab-pane>
-      </el-tabs>
+              <div class="nothing">暂无内容...</div>
+            </div>
+            <el-carousel
+              v-if="item.workOrderLists && item.workOrderLists.length > 0"
+              trigger="click"
+              :autoplay="autoplay"
+              height="160px"
+              class="bg-f5"
+            >
+              <el-carousel-item
+                v-for="(order, index) in item.workOrderLists"
+                :key="'index_order_' + index"
+              >
+                <div>
+                  <p class="display-between">
+                    <span class="task-name-box">
+                      工单类型：{{ order.typeStr }}
+                    </span>
+                    <label class="m-l-5">进行中</label>
+                  </p>
+                  <!-- <p>
+                    工单类型：{{ order.workTypeStr}}
+                    <label class="m-l-5">进行中</label>
+                  </p> -->
+                  <p>工单提交时间：{{ order.creationTime }}</p>
+                  <p>预计完成时间：{{ order.planEndTime }}</p>
+                  <p>
+                    <span class="order-title fl">工单内容：</span>
+                    <span class="order-content">
+                      {{ order.content }}
+                    </span>
+                  </p>
+                </div>
+              </el-carousel-item>
+            </el-carousel>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
 </template>

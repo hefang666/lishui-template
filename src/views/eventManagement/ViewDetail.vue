@@ -86,14 +86,14 @@
               </div>
             </div>
           </div>
-          <div class="list-item">
+          <!-- <div class="list-item">
             <div class="list-items">
               <div class="item-title">预估损失水量：</div>
               <div class="item-content">
                 <span>{{ eventDetails.predictWaterLoss }}</span>
               </div>
             </div>
-          </div>
+          </div> -->
           <div class="list-item">
             <div class="list-items">
               <div class="item-title">巡检内容：</div>
@@ -107,14 +107,28 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div
+                  <div class="image-box">
+                    <div
+                      v-for="(item, index) in eventDetails.resourceList"
+                      :key="index"
+                      @click="previewImg(item)"
+                      class="img-box"
+                    >
+                      <el-image
+                        style="width: 100%; height: 100%"
+                        :src="httpUrl + item.url"
+                        fit="cover"
+                      ></el-image>
+                    </div>
+                  </div>
+                  <!-- <div
                     v-for="(item, index) in eventDetails.resourcelist"
                     :key="index"
                     class="enclosure-item">
                     <div class="enclosure-title">{{ item.fileName }}</div>
                     <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
                     <div class="enclosure-preview" @click="previewImg(item)">预览</div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -139,7 +153,7 @@
 import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: eventState} = createNamespacedHelpers('eventManagement');
-const {mapActions: uploadActions} = createNamespacedHelpers('upload');
+const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
 export default {
   name: 'ViewDetail',
   props: ['dialogView'],
@@ -156,7 +170,8 @@ export default {
     };
   },
   computed: {
-    ...eventState(['eventDetails'])
+    ...eventState(['eventDetails']),
+    ...uploadState(['httpUrl'])
   },
   methods: {
     ...uploadActions(['downloadFile']),
@@ -234,7 +249,19 @@ export default {
               color: #ffffff;
             }
             .enclosure-box {
-              .enclosure-item {
+              display: flex;
+              .image-box {
+                clear: both;
+                .img-box {
+                  width: 90px;
+                  height: 90px;
+                  margin-right: 20px;
+                  margin-top: 10px;
+                  float: left;
+                  cursor: pointer;
+                }
+              }
+              /* .enclosure-item {
                 display: flex;
 
                 .enclosure-title,
@@ -253,7 +280,7 @@ export default {
                   color: #4288f8;
                   cursor: pointer;
                 }
-              }
+              } */
             }
           }
         }

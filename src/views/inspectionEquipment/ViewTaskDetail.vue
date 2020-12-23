@@ -39,13 +39,15 @@
                     <div class="item-title">参与人：</div>
                     <div class="item-content">
                       <!-- <span>{{ taskDetail.participants }}</span> -->
-                      <span
-                        v-for="(item, index) in taskDetail.participant"
-                        :key="index"
-                      >
-                        <span v-if="index != 0">、</span>
-                        {{ item }}
-                      </span>
+                      <div class="partic-linheight">
+                        <span
+                          v-for="(item, index) in taskDetail.participant"
+                          :key="index"
+                        >
+                          <span v-if="index != 0">、</span>
+                          {{ item }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -112,6 +114,7 @@
                     :stripe="true"
                     tooltip-effect="dark"
                     height="400"
+                    border
                     style="width: 100%"
                     :highlight-current-row="true"
                   >
@@ -149,7 +152,7 @@
                 </div>
                 <page
                   :page-data="[30, 40, 50, 100]"
-                  :total="400"
+                  :total="inspectionPointTotal"
                   @changePageSize="changePageSize"
                   @changeCurrentPage="changeCurrentPage"
                 ></page>
@@ -175,7 +178,7 @@
                         设备点数：
                       </div>
                       <div class="inspectionPath-info-item-content">
-                        {{ areaDetail.pointCount }}
+                        {{ areaDetailsInfo.pointCount }}
                       </div>
                     </div>
                     <div class="inspectionPath-info-items">
@@ -183,7 +186,7 @@
                         管道长度：
                       </div>
                       <div class="inspectionPath-info-item-content">
-                        {{ areaDetail.pipelineLength }}
+                        {{ areaDetailsInfo.pipelineLength }}
                       </div>
                     </div>
                   </div>
@@ -288,7 +291,7 @@ export default {
     Message
   },
   computed: {
-    ...taskState(['taskDetail', 'inspectionPointList', 'areaDetail', 'messageText']),
+    ...taskState(['taskDetail', 'inspectionPointList', 'inspectionPointTotal', 'areaDetail', 'messageText']),
     ...areaState(['areaDetailsInfo'])
   },
   data() {
@@ -438,7 +441,7 @@ export default {
         .list-item {
           display: flex;
           justify-content: space-between;
-          height: 40px;
+          /* height: 40px; */
           line-height: 40px;
 
           .list-items {
@@ -457,10 +460,15 @@ export default {
             }
 
             .item-content {
+              flex: 1;
               span {
                 color: #999999;
               }
 
+              .partic-linheight {
+                line-height: 25px;
+                padding-top: 7px;
+              }
               .view-button {
                 margin-left: 10px;
               }
@@ -484,14 +492,15 @@ export default {
         padding: 0 40px;
         .table-box {
           margin: 0 0 10px 0;
-          border: 1px solid #ddd;
-          box-sizing: border-box;
+          /* border: 1px solid #ddd;
+          box-sizing: border-box; */
         }
       }
 
       .inspectionPath-box {
         display: flex;
         justify-content: space-between;
+        height: 440px;
         .map-box {
           width: 70%;
         }

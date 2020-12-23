@@ -72,6 +72,7 @@
               <div class="list-item">
                 <div class="items-box">
                   <div class="title">
+                    <span class="tips">*</span>
                     <span>备注：</span>
                   </div>
                   <div class="conten">
@@ -180,14 +181,14 @@
                   </div>
                 </div>
               </div>
-              <div class="list-item has-two-item">
+              <!-- <div class="list-item has-two-item">
                 <div class="list-items">
                   <div class="item-title">预估损失水量：</div>
                   <div class="item-content">
                     <span>{{ eventDetails.predictWaterLoss }}</span>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <div class="list-item">
                 <div class="list-items">
                   <div class="item-title">巡检内容：</div>
@@ -201,14 +202,28 @@
                   <div class="item-title">附件：</div>
                   <div class="item-content">
                     <div class="enclosure-box">
-                      <div
-                        v-for="(item, index) in eventDetails.resourcelist"
+                      <div class="image-box">
+                        <div
+                          v-for="(item, index) in eventDetails.resourceList"
+                          :key="index"
+                          @click="previewImg(item)"
+                          class="img-box"
+                        >
+                          <el-image
+                            style="width: 100%; height: 100%"
+                            :src="httpUrl + item.url"
+                            fit="cover"
+                          ></el-image>
+                        </div>
+                      </div>
+                      <!-- <div
+                        v-for="(item, index) in eventDetails.resourceList"
                         :key="index"
                         class="enclosure-item">
                         <div class="enclosure-title">{{ item.fileName }}</div>
-                        <div class="enclosure-download">下载</div>
-                        <div class="enclosure-preview">预览</div>
-                      </div>
+                        <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
+                        <div class="enclosure-preview" @click="previewImg(item)">预览</div>
+                      </div> -->
                     </div>
                   </div>
                 </div>
@@ -271,7 +286,7 @@ export default {
   },
   computed: {
     ...eventState(['orderTypeData', 'eventDetails', 'messageText']),
-    ...uploadState(['fileListData'])
+    ...uploadState(['fileListData','httpUrl'])
   },
   data() {
     return {
@@ -320,9 +335,10 @@ export default {
     ...eventActions(['UpdateEvent', 'setMessage']),
     ...xunjianActions([
       'getOrganizationData',
-      'getRoleData'
+      'getRoleData',
+      'getCurrentInfo'
     ]),
-    ...uploadActions(['clearFileDate']),
+    ...uploadActions(['clearFileDate', 'downloadFile']),
     // 点击取消或者右上角的×关闭新增弹窗
     closeTransfer() {
       // console.log('点击了取消');
@@ -332,17 +348,23 @@ export default {
         data: []
       };
       this.$emit('closeTransfer', data);
+      this.clearData();
     },
     // 点击选择负责人按钮
     choosePerson() {
-      console.log(this.eventDetails);
-      this.chargeInfo = {
-        userName: this.eventDetails.creationName,
-        userId: this.eventDetails.creationId
-      }
-      this.getOrganizationData();
-      this.getRoleData();
-      this.dialogCharge = true;
+      this.getCurrentInfo().then(res => {
+        console.log(res);
+        console.log(res.result);
+        if (res.success) {
+          this.chargeInfo = {
+            userName: res.result.trueName,
+            userId: res.result.id
+          }
+          this.getOrganizationData();
+          this.getRoleData();
+          this.dialogCharge = true;
+        }
+      })
     },
     
     // 关闭选择负责人弹窗
@@ -404,6 +426,12 @@ export default {
         return;
       }
 
+      if (this.remarks == '') {
+        this.setMessage('请填写备注信息');
+        this.dialogMessage = true;
+        return;
+      }
+
       let param = {
         Id: this.eventDetails.id,
         status: 2,
@@ -420,6 +448,7 @@ export default {
           let data = false;
           // console.log('data :>> ', data);
           this.$emit('checkedTransfer', data);
+          this.clearData();
         }
       }).catch(() => {
         this.dialogMessage = true;
@@ -435,6 +464,19 @@ export default {
       this.remarks = '';
       this.endTime = '';
       this.clearFileDate();
+    },
+    // 预览
+    previewImg(data) {
+      this.fileData = data;
+      this.dialogPreview = true;
+    },
+    // 下载
+    downLoadPic(data) {
+      var param = {
+        downLoadName: data.fileName,
+        fileName: data.url
+      };
+      this.downloadFile(param);
     }
   }
 };
@@ -532,7 +574,19 @@ export default {
               color: #ffffff;
             }
             .enclosure-box {
-              .enclosure-item {
+              display: flex;
+              .image-box {
+                clear: both;
+                .img-box {
+                  width: 90px;
+                  height: 90px;
+                  margin-right: 20px;
+                  margin-top: 10px;
+                  float: left;
+                  cursor: pointer;
+                }
+              }
+              /* .enclosure-item {
                 display: flex;
 
                 .enclosure-title,
@@ -540,7 +594,7 @@ export default {
                 .enclosure-preview {
                   padding: 0 10px;
                 }
-              }
+              } */
             }
           }
         }

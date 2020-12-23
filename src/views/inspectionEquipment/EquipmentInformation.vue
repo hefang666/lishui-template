@@ -76,7 +76,21 @@
               <div class="item-title">附件：</div>
               <div class="item-content">
                 <div class="enclosure-box">
-                  <div
+                  <div class="image-box">
+                    <div
+                      v-for="(item, index) in pointDetails.resourceList"
+                      :key="index"
+                      @click="previewImg(item)"
+                      class="img-box"
+                    >
+                      <el-image
+                        style="width: 100%; height: 100%"
+                        :src="httpUrl + item.url"
+                        fit="cover"
+                      ></el-image>
+                    </div>
+                  </div>
+                  <!-- <div
                     v-for="(item, index) in pointDetails.resourcelist"
                     :key="index"
                     class="enclosure-item"
@@ -84,7 +98,7 @@
                     <div class="enclosure-title">{{ item.fileName }}</div>
                     <div class="enclosure-download" @click="downLoadPic(item)">下载</div>
                     <div class="enclosure-preview" @click="previewImg(item)">预览</div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -109,7 +123,7 @@
 import Preview from '@/components/upLoad/Preview.vue';
 import {createNamespacedHelpers} from 'vuex';
 const {mapState: taskState} = createNamespacedHelpers('taskManagement');
-const {mapActions: uploadActions} = createNamespacedHelpers('upload');
+const {mapState: uploadState, mapActions: uploadActions} = createNamespacedHelpers('upload');
 export default {
   name: 'EquipmentInformation',
   props: ['dialogEqui'],
@@ -117,7 +131,8 @@ export default {
     Preview
   },
   computed: {
-    ...taskState(['pointDetails'])
+    ...taskState(['pointDetails']),
+    ...uploadState(['httpUrl'])
   },
   data() {
     return {
@@ -209,7 +224,19 @@ export default {
         }
 
         .enclosure-box {
-          .enclosure-item {
+          display: flex;
+              .image-box {
+                clear: both;
+                .img-box {
+                  width: 90px;
+                  height: 90px;
+                  margin-right: 20px;
+                  margin-top: 10px;
+                  float: left;
+                  cursor: pointer;
+                }
+              }
+          /* .enclosure-item {
             display: flex;
 
             .enclosure-title,
@@ -228,7 +255,7 @@ export default {
               color: #4288f8;
               cursor: pointer;
             }
-          }
+          } */
         }
       }
     }

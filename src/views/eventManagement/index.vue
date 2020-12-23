@@ -54,19 +54,19 @@
         </div>
         <div class="item has-two">
           <div class="item-title">
-            <span style="color: red;">*</span>
-            异常类型：
+            <!-- <span style="color: red;">*</span> -->
+            事件类型：
           </div>
           <div class="item-content">
             <el-select
-              v-model="exceptionType"
-              placeholder="请选择异常类型"
+              v-model="eventType"
+              placeholder="请选择事件类型"
               @change="selectType"
             >
               <el-option
-                v-for="(item,index) in exceptionTypeData"
+                v-for="(item,index) in eventTypeData"
                 :key="index"
-                :label="item.label"
+                :label="item.name"
                 :value="item.value"></el-option>
             </el-select>
           </div>
@@ -99,7 +99,7 @@
           :stripe="true"
           border
           tooltip-effect="dark"
-          height="830"
+          height="790"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
@@ -124,11 +124,11 @@
             label="异常类型"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             prop="predictWaterLoss"
             label="预估损失水量"
             show-overflow-tooltip
-          ></el-table-column>
+          ></el-table-column> -->
           <el-table-column
             prop="statusStr"
             label="事件状态"
@@ -258,12 +258,13 @@ export default {
   },
   computed: {
     ...eventState([
-      'exceptionTypeData',
+      // 'exceptionTypeData',
       'eventList',
       'messageText',
       'eventListTotal',
       'loading',
-      'eventPageData'
+      'eventPageData',
+      'eventTypeData'
     ])
   },
   data() {
@@ -292,7 +293,7 @@ export default {
       // 人员信息
       personInfo: {},
       // 异常类型
-      exceptionType: 1,
+      eventType: 0,
       // 提交时间
       submissionTime: '',
 
@@ -338,10 +339,11 @@ export default {
       'GetEventList',
       'GetEventDetails',
       'UpdateEvent',
-      'setMessage'
+      'setMessage',
+      'getEventTypeData',
+      'getCurrentUser'
     ]),
     ...xunjianActions([
-      
       'getOrganizationData',
       'getRoleData'
     ]),
@@ -363,6 +365,18 @@ export default {
       this.isScreen = !this.isScreen;
       if (this.isScreen) {
         this.screen = '收起';
+        // console.log('当前为点击筛选，请求事件类型');
+        this.getCurrentUser().then(res => {
+          if (res.success) {
+            var data = {
+              cateCode: 'EventType',
+              orgId: res.result.orgId
+            }
+            console.log(data);
+            this.getEventTypeData(data);
+          }
+        })
+        // this.getEventTypeData();
       } else {
         this.screen = "筛选";
       }
@@ -378,27 +392,36 @@ export default {
       // console.log(this.exceptionType);
       // console.log(this.exceptionType == '');
 
-      if (this.exceptionType == '') {
-        this.setMessage('异常类型不能为空');
-        this.dialogMessage = true;
-        return;
-      }
+      // if (this.exceptionType == '') {
+      //   this.setMessage('异常类型不能为空');
+      //   this.dialogMessage = true;
+      //   return;
+      // }
 
-      let time = parseTime(this.submissionTime, '{y}-{m}-{d}');
+      
       let param = {
-        errorType: this.exceptionType,
-        creationName: this.personInfo.trueName,
-        creationTime: time,
+        // creationName: this.personInfo.trueName,
+        // creationTime: time,
         pageIndex: this.currentPage,
-        maxResultCount: this.pageSize,
+        maxResultCount: this.pageSize
       };
-      // console.log(param);
+      if (this.personInfo.trueName != undefined) {
+        param.creationName = this.personInfo.trueName;
+      }
+      if (this.submissionTime != '' && this.submissionTime != null) {
+        let time = parseTime(this.submissionTime, '{y}-{m}-{d}');
+        param.creationTime = time;
+      }
+      if (this.eventType != 0) {
+        param.type = Number(this.eventType);
+      }
+      console.log(param);
       this.GetEventList(param);
       this.clearData();
     },
     // 点击搜索后，搜索框内容置为原样
     clearData() {
-      this.exceptionType = 1;
+      this.eventType = 0;
       this.personInfo = {};
       this.person = '';
       this.submissionTime = '';
@@ -535,7 +558,7 @@ export default {
 
     // 异常类型选择
     selectType(val) {
-      this.exceptionType = val;
+      this.eventType = val;
     },
 
     // 关闭操作提示弹窗
@@ -602,6 +625,7 @@ export default {
         this.UpdateEvent(param).then(res => {
           if (res.success) {
             this.dialogMessage = true;
+            this.getData();
           }
         }).catch(() => {
           this.dialogMessage = true;
@@ -610,18 +634,10 @@ export default {
     },
 
     getData() {
-      let param;
-      if (this.currentIndex == 0) {
-        param = {
-          pageIndex: this.currentPage,
-          maxResultCount: this.pageSize,
-        }
-      } else {
-        param = {
-          pageIndex: this.currentPage,
-          maxResultCount: this.pageSize,
-          status: this.currentIndex,
-        }
+      let  param = {
+        pageIndex: this.currentPage,
+        maxResultCount: this.pageSize,
+        status: this.currentIndex,
       }
       this.GetEventList(param).catch(() => {
         this.dialogMessage = true;

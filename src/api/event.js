@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import {api} from '@/api/api.js';
+import {api, personApi} from '@/api/api.js';
 
 // 获取事件列表
 export function GetEventList(data) {
@@ -25,5 +25,15 @@ export function UpdateEventById(data) {
     url: api + 'EventService/UpdateEventById',
     method: 'post',
     data
+  });
+}
+
+// 获取事件类型
+export function getEventType(data) {
+  console.log(data);
+  return request({
+    url: personApi + 'Dictionary/GetDictionaryByCateCode',
+    method: 'get',
+    params: data
   });
 }

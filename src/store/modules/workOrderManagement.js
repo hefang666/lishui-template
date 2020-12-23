@@ -62,7 +62,8 @@ var state = {
   orderDetail: {
     eventDetails: {},
     workTranfer: [],
-    deviceDetails: {}
+    deviceDetails: {},
+    resourceList: []
   },
 
   // 请求列表时的加载状态

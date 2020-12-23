@@ -1,8 +1,8 @@
 <template>
   <div class="addOrder-box dialog-box">
     <el-dialog
-      title="新增工单"
-      :visible.sync="dialogAdd"
+      title="补录工单"
+      :visible.sync="dialogSupple"
       :close-on-click-modal="false"
       :before-close="closeAdd"
     >
@@ -181,7 +181,7 @@ const {mapActions: uploadActions} = createNamespacedHelpers('upload');
 import {parseTime, judgeTime} from '@/utils/index';
 export default {
   name: 'AddOrder',
-  props: ['dialogAdd'],
+  props: ['dialogSupple'],
   components: {
     ChoosePeople,
     ChooseArea,

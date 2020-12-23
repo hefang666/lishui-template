@@ -3,7 +3,7 @@ var state = {
   map: {},
   searchName: '',
   pageNum: 1,
-  pageCount: 10,
+  pageCount: 20,
   pageTotal: 10,
   memberList: [
     // {
@@ -66,12 +66,11 @@ var actions = {
 
   // 获取人员列表
   getMemberList({commit, state}) {
-    console.log('state :>> ', state);
+    // console.log('state :>> ', state);
     let options = {
       userName: state.searchName,
       pageIndex: state.pageNum,
-      maxResultCount: state.pageCount,
-      status: 0
+      maxResultCount: state.pageCount
     };
     return new Promise((resolve, reject) => {
       getMemberList(options)
@@ -84,6 +83,10 @@ var actions = {
                 let newitem = item.onlineTime.replace('T', ' ');
                 item.onlineTime = newitem;
               }
+              if (item.offlineTime) {
+                let newitem = item.offlineTime.replace('T', ' ');
+                item.offlineTime = newitem;
+              }
               if (item.taskLists.length != 0) {
                 item.taskLists.forEach(task => {
                   if (task.planStartTime != null) {
@@ -94,8 +97,19 @@ var actions = {
                   }
                 });
               }
+              if (item.workOrderLists.length != 0) {
+                item.workOrderLists.forEach(order => {
+                  if (order.planEndTime != null) {
+                    order.planEndTime = order.planEndTime.replace('T', ' ');
+                  }
+                  if (order.creationTime != null) {
+                    order.creationTime = order.creationTime.replace('T', ' ');
+                  }
+                });
+              }
             });
             commit('update_memberList', response.result.items);
+            commit('update_page_total', response.result.totalCount);
             resolve(response);
           }
         })

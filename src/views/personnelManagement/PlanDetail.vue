@@ -38,7 +38,15 @@
             <div class="list-items has-two-item">
               <div class="item-title">参与人：</div>
               <div class="item-content">
-                <span>{{ planDetails.participant }}</span>
+                <div class="partic-linheight">
+                  <span
+                    v-for="(item, index) in planDetails.user"
+                    :key="index"
+                  >
+                    <span v-if="index != 0">、</span>
+                    {{ item.userName }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -144,7 +152,7 @@ export default {
     .list-item {
       display: flex;
       justify-content: space-between;
-      height: 40px;
+      /* height: 40px; */
       line-height: 40px;
 
       .list-items {
@@ -163,10 +171,15 @@ export default {
         }
 
         .item-content {
+          flex: 1;
           span {
             color: #999999;
           }
-
+          
+          .partic-linheight {
+            line-height: 25px;
+            padding-top: 7px;
+          }
           .view-button {
             margin-left: 10px;
           }

@@ -52,7 +52,7 @@ export default {
 .promptMessage-box {
   /deep/ .el-dialog {
     width: 280px !important;
-    margin-top: 30% !important;
+    margin-top: 38vh !important;
   }
   /deep/ .el-dialog__header {
     padding: 0 !important;

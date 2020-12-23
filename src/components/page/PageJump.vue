@@ -54,7 +54,10 @@ export default {
     },
     // 点击跳转
     jump() {
-      if(this.pageNum > this.pagesNum) this.pageNum = this.pagesNum;
+      // if(this.pageNum > this.pagesNum) this.pageNum = this.pagesNum;
+      // this.getInputValue();
+      // console.log(this.pagesNum);
+      // console.log(this.pageNum);
       this.$emit('handleCurrentChange', this.pageNum);
     }
   }

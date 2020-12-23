@@ -169,8 +169,10 @@ var actions = {
     let monthData = [];
     for (let i = 1; i <= day; i++) {
       monthData.push({
-        label: i + '号',
-        value: i
+        value: i,
+        name: i < 10 ? '0' + i : '' + i,
+        checked: false,
+        middleCheck: false
       });
     }
     commit('set_monthlyData', monthData);

@@ -25,6 +25,7 @@
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="addOrder">新增</el-button>
+          <el-button type="primary" plain @click="Supplement">补录</el-button>
           <el-button type="primary" plain @click="close">关闭</el-button>
           <el-button type="primary" plain @click="modify">修改</el-button>
           <el-button type="primary" plain @click="See">查看</el-button>
@@ -122,7 +123,7 @@
           :stripe="true"
           tooltip-effect="dark"
           border
-          height="830"
+          height="790"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
@@ -235,6 +236,13 @@
       @getAdd="getAdd"
     ></add-order>
 
+    <!-- 新增 -->
+    <supplement
+      :dialog-supple="dialogsupple"
+      @closeAdd="closeAdd"
+      @getAdd="getAdd"
+    ></supplement>
+
     <!-- 提示消息弹窗 -->
     <message
       :dialog-message="dialogMessage"
@@ -278,6 +286,7 @@
 import ChoosePeople from '@/views/public/ChoosePeople.vue';
 import Page from '@/components/page/Page.vue';
 import AddOrder from './Add.vue';
+import Supplement from './Supplement.vue';
 import EditOrder from './EditOrder.vue';
 import OrderDetail from './OrderDetail.vue';
 import CloseOrder from './CloseOrder.vue';
@@ -300,7 +309,8 @@ export default {
     OrderDetail,
     CloseOrder,
     Message,
-    Operate
+    Operate,
+    Supplement
   },
   data() {
     return {
@@ -363,6 +373,9 @@ export default {
 
       // 是否显示关闭工单弹窗
       dialogClose: false,
+
+      // 是否显示补录工单弹窗
+      dialogsupple: false,
 
       // 操作类型
       operateType: '',
@@ -699,6 +712,9 @@ export default {
       
       // 工单类型
       if (this.orderType == '') {
+        this.setMessage('请选择工单类型');
+        this.iconStr = 'el-icon-warning-outline';
+        this.dialogMessage = true;
         return;
       }
       // 工单提交时间
@@ -773,24 +789,31 @@ export default {
       this.screen = '筛选';
     },
 
+    // 补录工单
+    Supplement() {
+
+    },
+
     // 导出
     exportData() {
       let HeaderData = [
-        '人员姓名',
-        '所属部门',
-        '联系方式',
-        '今日上线时间',
-        '今日离线时间'
+        '工单类型',
+        '负责人',
+        '工单提交时间',
+        '完成时间',
+        '预计完成时间',
+        '工单状态'
       ];
       let TextName = [
-        'userName',
-        'orgName',
-        'mobile',
-        'onlineTime',
-        'offlineTime'
+        'typeStr',
+        'person',
+        'creationTime',
+        'completeTime',
+        'completeTime',
+        'statusStr'
       ]
       let tableData;
-      let tableName = '人员列表';
+      let tableName = '工单列表';
 
       if (this.multipleSelection.length == 0) {
         tableData = this.orderList;

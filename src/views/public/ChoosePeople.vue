@@ -99,7 +99,7 @@
                       v-for="(item, index) in selectedData"
                       :key="index"
                     >
-                      {{ item.nickName }}
+                      {{ item.trueName }}
                     </li>
                   </ul>
                 </div>
@@ -303,12 +303,13 @@ export default {
     ])
   },
   methods: {
-    ...mapActions(['getPeopleList', 'getOrganizationData', 'setMessage']),
+    ...mapActions(['getPeopleList', 'getOrganizationData', 'setMessage', 'setPersonList']),
     closeChoosePeople() {
       let data = {
         dialogCharge: false
       };
       this.$emit('closeChoosePeople', data);
+      this.clearPersonDate();
     },
     // 清空数据
     clearDate() {
@@ -333,7 +334,7 @@ export default {
     // 点击确定
     determine() {
       // console.log(this.selectedData);
-      console.log(this.selectType);
+      // console.log(this.selectType);
       if (this.selectedData.length == 0) {
         if (this.selectType == 'single') {
           this.setMessage('请选择负责人！');
@@ -345,9 +346,13 @@ export default {
         // alert('请选择负责人！');
         return;
       } else {
+        // console.log(this.transOrder);
         if (this.transOrder) {
-          if (this.chargeInfo.userIf == this.selectedData[0].userId) {
-            this.setMessage('无法转给自己！');
+          // console.log(this.chargeInfo);
+          // console.log(this.selectedData[0]);
+          // console.log(this.chargeInfo.userId == this.selectedData[0].id);
+          if (this.chargeInfo.userId == this.selectedData[0].id) {
+            this.setMessage('无法给自己转派工单！');
             this.dialogMessage = true;
             return
           }
@@ -366,6 +371,11 @@ export default {
     // 清除选中的数据
     clearPerson(){
       this.selectedData = [];
+    },
+    // 清楚数据
+    clearPersonDate() {
+      var data = []
+      this.setPersonList(data);
     },
     // 获取从分页传过来的每页多少条数据
     changePageSize(data) {
@@ -406,7 +416,6 @@ export default {
     },
     // 点击树形节点(组织)并查询人员
     nodeClick(data) {
-      // console.log(data.nodeData);
       this.typeId = data.nodeData.id;
       // let param = {
       //   SelectType: this.typeSelectValue,
@@ -420,11 +429,12 @@ export default {
     },
     // 点击树形节点（角色）并查询人员
     getRoleNode(data) {
+      console.log(data);
       if (data.nodeData.disabled) {
         this.typeId = 0;
         return;
       }
-      this.typeId = data.nodeData.id;
+      this.typeId = data.nodeData.roleId;
       // let param = {
       //   SelectType: this.typeSelectValue,
       //   TypeId: data.nodeData.roleId,

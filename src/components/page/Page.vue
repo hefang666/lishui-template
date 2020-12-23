@@ -47,7 +47,7 @@ export default {
     },
     total: {
       type: Number,
-      default: 100
+      default: 1
     },
     currentPage: {
       type: Number,

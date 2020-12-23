@@ -60,6 +60,7 @@ export default {
 <style lang="scss">
 .search-box {
   width: 100%;
+  height: 28px;
   display: inline-block;
   vertical-align: middle;
   .el-input {

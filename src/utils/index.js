@@ -519,3 +519,39 @@ export function formatJson(filterVal, jsonData) {
 //   // var reg = /[`~!#$%^&*()_\-+=<>?:\"{}|,.\/;'\\[\]]/im;
 //   return reg.test(data);
 // }
+
+/**
+ * 数据处理，为每一个数据增添一个是否选中的属性,是否处于选中的开始、结束之间的状态
+ * @param {*} data
+ */
+export function setDataAttr(data) {
+  if (data.length != 0) {
+    data.forEach(item => {
+      item.checked = false;
+      item.middleCheck = false;
+    });
+  }
+  return data;
+}
+
+/**
+ * 数据处理，将一个数据转换为需要的二维数据
+ * @param {data} 一维数组
+ * @param {num} 每组数组的个数
+ */
+export function processingData(data, num) {
+  var newArray = [];
+  if (data.length != 0) {
+    // 一共有多少个数组
+    // var cols = Math.ceil(data / num);
+    data.forEach((item, index) => {
+      const page = Math.floor(index / num); // 计算该元素为第几个素组内
+      // 判断是否存在
+      if (!newArray[page]) {
+        newArray[page] = [];
+      }
+      newArray[page].push(item);
+    });
+  }
+  return newArray;
+}

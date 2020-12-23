@@ -156,9 +156,12 @@ export default {
       this.GetLocationList(param).then(res => {
         if (res.success) {
           this.dialogOnline = true;
-          if (this.localList.length != 0) {
-            this.$refs.online.initGuiji();
-          }
+          setTimeout(() => {
+            if (this.localList.length != 0) {
+              this.$refs.online.initGuiji();
+            }
+          }, 700)
+          
         }
       }).catch(err => {
         console.log(err);

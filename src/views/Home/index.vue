@@ -36,7 +36,7 @@
             layout="sizes,total,jump"
             :total="pageTotal"
             :pager-count="5"
-            :pageData="[5, 10, 15]"
+            :pageData="[20, 35, 50]"
             :pageLength="pageCount"
             :currentPage="pageNum"
             @changePageSize="changePageSize"

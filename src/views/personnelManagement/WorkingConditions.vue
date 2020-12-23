@@ -499,7 +499,8 @@ export default {
           });
           // this.dialogView = true;
         }
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err);
         console.log('获取失败');
       });
     },

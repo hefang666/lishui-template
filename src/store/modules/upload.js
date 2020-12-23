@@ -1,6 +1,6 @@
 var state = {
   fileListData: [],
-  // actionUrl: 'http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture',
+  actionUrl: 'http://192.168.9.44:9090/api/UploadFiles/UploadProfilePicture',
   httpUrl: 'http://192.168.9.44:9090/'
 };
 

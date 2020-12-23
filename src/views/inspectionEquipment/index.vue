@@ -24,7 +24,7 @@
           :stripe="true"
           border
           tooltip-effect="dark"
-          height="830"
+          height="790"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >

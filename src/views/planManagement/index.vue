@@ -19,12 +19,18 @@
         </div>
         <div class="left-search">
           <snt-search
-            :placeholder="'请输入任务名称'"
+            :placeholder="'请输入计划名称'"
             @changeSearch="getSearchText"
             @submit="search"
           />
+          <!-- <span style="position: relative;" @click="openSearchData">选择控件</span> -->
         </div>
+        <!-- <div style="width: 150px; height: 28px;">
+          <scope-selection></scope-selection>
+        </div> -->
       </div>
+      
+      
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" plain @click="openAdd">新增</el-button>
@@ -44,7 +50,7 @@
           :data="planList"
           :stripe="true"
           tooltip-effect="dark"
-          height="830"
+          height="790"
           border
           style="width: 100%"
           @selection-change="handleSelectionChange"
@@ -110,17 +116,17 @@
         @changeCurrentPage="changeCurrentPage"
       ></page>
     </div>
-    <!-- 新增任务弹框 -->
+    <!-- 新增计划弹框 -->
     <add-plan
       :dialog-add="dialogAdd"
       @closeAdd="closeAdd"
       @getAddData="getAddData"
     ></add-plan>
 
-    <!-- 任务详情弹窗 -->
+    <!-- 计划详情弹窗 -->
     <view-plan :dialog-view="dialogView" @closeView="closeView"></view-plan>
 
-    <!-- 修改任务弹窗 -->
+    <!-- 修改计划弹窗 -->
     <edit-plan :dialog-edit="dialogEdit" @closeEdit="closeEdit"></edit-plan>
 
     <!-- 提示消息弹窗 -->
@@ -138,6 +144,8 @@
       @closeOperate="closeOperate"
       @determine="determine"
     ></operate>
+
+    
   </div>
 </template>
 
@@ -149,6 +157,9 @@ import ViewPlan from './viewPlan/ViewPlan.vue';
 import EditPlan from './editPlan/index.vue';
 import Message from '@/components/promptMessage/PromptMessage.vue';
 import Operate from '@/components/operationTips/OperationTips.vue';
+
+// import ScopeSelection from '@/components/scopeSelection/ScopeSelection.vue';
+
 import {createNamespacedHelpers} from 'vuex';
 const {mapState, mapActions} = createNamespacedHelpers('planManagement');
 const {mapActions: areaActions} = createNamespacedHelpers('area');
@@ -161,7 +172,8 @@ export default {
     ViewPlan,
     EditPlan,
     Message,
-    Operate
+    Operate,
+    // ScopeSelection
   },
   data() {
     return {
@@ -208,11 +220,15 @@ export default {
       messageT: '请确认操作',
 
       // 计划详情
-      details: ''
+      details: '',
+
+      //
+      dialogSearch: false
     };
   },
   mounted() {
     this.getData();
+    console.log(this.$refs.selection);
   },
   computed: {
     ...mapState([
@@ -425,7 +441,7 @@ export default {
       }
     },
 
-    // 删除任务
+    // 删除计划
     del() {
       if (this.multipleSelection.length == 0) {
         this.setMessage('请选择要操作数据');
@@ -439,7 +455,7 @@ export default {
             flag = true;
           } else {
             flag = false;
-            this.setMessage('只允许删除已暂停和已关闭的任务');
+            this.setMessage('只允许删除已暂停的计划');
             this.dialogMessage = true;
           }
         });
@@ -453,7 +469,7 @@ export default {
       }
     },
 
-    // 暂停任务
+    // 暂停计划
     suspend() {
       if (this.onlyOne()) {
         if (this.multipleSelection[0].status != 1) {
@@ -479,6 +495,7 @@ export default {
           .then(res => {
             if (res.success) {
               this.dialogMessage = true;
+              this.getData();
             }
           })
           .catch(() => {
@@ -497,7 +514,7 @@ export default {
         this.deletePlan(param)
           .then(res => {
             if (res.success) {
-              this.getData()
+              this.getData();
             }
           })
           .catch(() => {
@@ -523,6 +540,7 @@ export default {
           .then(res => {
             if (res.success) {
               this.dialogMessage = true;
+              this.getData();
             }
           })
           .catch(() => {
@@ -595,5 +613,8 @@ export default {
       margin-top: 10px;
     }
   }
+}
+/deep/ .el-tabs__content {
+  overflow: inherit;
 }
 </style>

@@ -19,14 +19,41 @@ body {
   color: $menuActiveText;
 }
 .task-container {
-  width: 300px;
+  width: 400px;
   background: #fff;
   border: 1px solid #ddd;
   .task-title {
-    height: 25px;
-    line-height: 25px;
-    padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 20px;
     border-bottom: 1px solid #dfe4ed;
+
+    .onlineTime-span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      width: 100px;
+      text-align: right;
+    }
+  }
+  .person-info-box {
+    padding: 10px 20px;
+    .person-info {
+      padding: 0 10px;
+      height: 35px;
+      line-height: 35px;
+      background: #4b77be18;
+      .onlineTime-span {
+        width: 100px;
+        text-align: right;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .color-gray {
+        color: #9a9a9a;
+      }
+    }
   }
   .el-tabs--card {
     & > .el-tabs__header {
@@ -44,63 +71,98 @@ body {
     }
     .el-tab-pane {
       padding: 5px 0;
-      height: 145px;
+      height: 165px;
       line-height: 27px;
       label {
         font-weight: normal;
-        padding: 2px 4px;
-        background: $menuActiveText;
-        color: #fff;
-        border-radius: 4px;
+        padding: 0 10px;
+        height: 25px;
+        // background: $menuActiveText;
+        background: #D9EDFF;
+        color: #1890FF;
+        border-radius: 12px;
       }
       .order-content {
-        width: 198px;
+        width: 225px;
         display: inline-block;
-        height: 114px;
+        height: 50px;
         line-height: 19px;
-        overflow: hidden;
+        overflow: auto;
+        padding: 4px 5px;
       }
     }
   }
   // 首页轮播样式
   .el-carousel__item {
-    padding: 0 20px;
-    background: #fff;
+    padding: 10px 30px;
+    // padding: 0 20px;
+    // background: #fff;
   }
   .el-carousel__arrow {
     background: transparent;
     display: block !important;
     color: #ccc;
     font-size: 20px;
+    box-shadow: 0 0 5px #00000011;
   }
   .el-carousel__arrow--left {
     left: 0;
-    text-align: left;
+    // text-align: left;
+    background: #fff;
+    width: 25px;
+    height: 25px;
   }
   .el-carousel__arrow--right {
     right: 0;
-    text-align: right;
+    // text-align: right;
+    background: #fff;
+    width: 25px;
+    height: 25px;
+  }
+  .el-tabs__content {
+    overflow: auto;
   }
 }
-.snt-tabs-bottom {
-  &.el-tabs--card {
-    & > .el-tabs__header {
-      border-bottom: 0;
-      .el-tabs__item {
-        border-bottom-color: #fff;
-        &.is-active {
-          top: -1px;
-          border-top: 1px solid #fff;
-          color: $menuActiveText;
-        }
-        &:hover {
-          color: $menuActiveText;
+.tabs-box {
+  padding: 0 20px 10px;
+  .snt-tabs-bottom {
+    .nothing-box {
+      .nothing-img {
+        margin: auto;
+        text-align: center;
+      }
+      .nothing {
+        color: #999999;
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+    .task-name-box {
+      display: inline;
+      width: 235px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    &.el-tabs--card {
+      & > .el-tabs__header {
+        border-bottom: 0;
+        .el-tabs__item {
+          border-bottom-color: #fff;
+          &.is-active {
+            top: -1px;
+            border-top: 1px solid #fff;
+            color: $menuActiveText;
+          }
+          &:hover {
+            color: $menuActiveText;
+          }
         }
       }
     }
-  }
-  .el-tabs__nav-wrap {
-    margin-bottom: 0;
+    .el-tabs__nav-wrap {
+      margin-bottom: 0;
+    }
   }
 }
 .index-map-archor-img {
